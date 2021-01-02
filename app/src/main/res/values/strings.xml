@@ -1,10 +1,5 @@
 <resources>
     <string name="app_name">Graduation Project</string>
-    <string-array name="spinner_gender">
-        <item>Select Gender</item>
-        <item>Male</item>
-        <item>Female</item>
-    </string-array>
     <string-array name="spinner_month">
         <item>Month</item>
         <item>January</item>
@@ -46,7 +41,13 @@
         <item>2020</item>
     </string-array>
 
-    <string-array name="spinner_state">
+    <string-array name="gender">
+        <item>Select Gender</item>
+        <item>male</item>
+        <item>female</item>
+    </string-array>
+
+    <string-array name="state">
         <item>Select State</item>
         <item>Normal</item>
         <item>Deaf</item>

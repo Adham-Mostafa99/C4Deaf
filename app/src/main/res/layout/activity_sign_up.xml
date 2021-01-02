@@ -163,61 +163,34 @@
         </LinearLayout>
 
 
-        <TextView
+        <LinearLayout
             android:id="@+id/birth_day"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginVertical="8dp"
-            android:fontFamily="@font/andada"
-            android:text="Day of Birth"
-            android:textColor="#000"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@id/date"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/number" />
-
-        <LinearLayout
-            android:id="@+id/date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toTopOf="@id/spinner_select_gender"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/birth_day">
+            app:layout_constraintTop_toBottomOf="@id/number">
 
-            <EditText
-                android:id="@+id/edit_day"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:background="@drawable/day"
-                android:gravity="center"
-                android:hint="Day"
-                android:inputType="number" />
-
-            <Spinner
-                android:id="@+id/edit_month"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_marginHorizontal="24dp"
-                android:layout_weight="1"
-                android:background="@drawable/month"
-                android:gravity="center" />
+                android:layout_marginVertical="8dp"
+                android:fontFamily="@font/andada"
+                android:text="Day of Birth"
+                android:textColor="#000"
+                android:textSize="20sp" />
 
-            <Spinner
-                android:id="@+id/edit_year"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_weight="1"
-                android:background="@drawable/year"
-                android:gravity="center" />
+            <Button
+                android:id="@+id/date"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginVertical="8dp"
+                android:background="@drawable/clender" />
         </LinearLayout>
-
 
         <Spinner
             android:id="@+id/spinner_select_gender"
@@ -229,7 +202,7 @@
             app:layout_constraintBottom_toTopOf="@id/spinner_state"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/date" />
+            app:layout_constraintTop_toBottomOf="@id/birth_day" />
 
         <Spinner
             android:id="@+id/spinner_state"

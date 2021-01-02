@@ -2,6 +2,8 @@ package com.example.graduationproject;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,18 +12,27 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 
 import com.rilixtech.widget.countrycodepicker.CountryCodePicker;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,32 +56,36 @@ public class SignUp extends AppCompatActivity {
     CountryCodePicker code;
     @BindView(R.id.edit_phone)
     EditText editPhone;
-    @BindView(R.id.edit_day)
-    EditText editDay;
-    @BindView(R.id.edit_month)
-    Spinner editMonth;
-    @BindView(R.id.edit_year)
-    Spinner editYear;
     @BindView(R.id.spinner_select_gender)
-    Spinner spinnerSelectGender;
+    Spinner spinnerGender;
     @BindView(R.id.spinner_state)
     Spinner spinnerState;
     @BindView(R.id.check_box)
     CheckBox checkBox;
     @BindView(R.id.btn_sign_up)
     Button btnSignUp;
+    @BindView(R.id.date)
+    Button date;
 
-    //String[] gender = {"Select Gender", "male", "female"};
-//    private DatePickerDialog.OnDateSetListener mDateSetListener;
-//    private int day, month, year;
+    private String[] gender, state, months, year;
     private String userChosenPhoto;
-
+    public static List<Integer> dateTime = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         ButterKnife.bind(this);
+
+
+        gender = getResources().getStringArray(R.array.gender);
+        state = getResources().getStringArray(R.array.state);
+        months = getResources().getStringArray(R.array.spinner_month);
+        year = getResources().getStringArray(R.array.spinner_year);
+
+        //declare spinners
+        setSpinnerGender();
+        setSpinnerState();
 
         //get camera permission
         if (ContextCompat.checkSelfPermission(SignUp.this, Manifest.permission.CAMERA)
@@ -81,72 +96,76 @@ public class SignUp extends AppCompatActivity {
 
         }
 
-
+        //upload photo button
         uploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectProfileImage();
             }
         });
-    }
 
-    //        SetSpinnerMonth();
-//        SetSpinnerGender();
-//        SetSpinnerState();
-//        SetBirthDay();
-//
-//
-//    }
-//
-//    /*public void SetSpinnerMonth(){
-//        ArrayAdapter<CharSequence> adapter_month=
-//                ArrayAdapter.createFromResource(this,R.array.spinner_month,R.layout.style_spinner_text);
-//        adapter_month.setDropDownViewResource(R.layout.style_spinner_text);
-//        spinner_month.setAdapter(adapter_month);
-//    }*/
-//    public void SetSpinnerState() {
-//        ArrayAdapter<CharSequence> adapter_state =
-//                ArrayAdapter.createFromResource(this, R.array.spinner_state, R.layout.style_spinner_text);
-//        adapter_state.setDropDownViewResource(R.layout.style_spinner_text);
-//        spinner_state.setAdapter(adapter_state);
-//
-//    }
-//
-//    public void SetSpinnerGender() {
-//        ArrayList<String> list_gender = new ArrayList<>(Arrays.asList(gender));
-//        ArrayAdapter<String> adapter_gender =
-//                new ArrayAdapter<>(this, R.layout.style_spinner_text, gender);
-//        spinner_gender.setAdapter(adapter_gender);
-//    }
-//
-//    public void SetBirthDay() {
-//        txt_birth.setOnClickListener(new View.OnClickListener() {
-//            @RequiresApi(api = Build.VERSION_CODES.N)
+        date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment newFragment = new DatePickerFragment();
+                newFragment.show(getSupportFragmentManager(), "datePicker");
+            }
+        });
+
+        spinnerGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        spinnerState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+//        editPhone.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                Calendar cal = Calendar.getInstance();
-//                year = cal.get(Calendar.YEAR);
-//                month = cal.get(Calendar.MONTH);
-//                day = cal.get(Calendar.DAY_OF_MONTH);
-//
-//                DatePickerDialog datePickerDialog = new DatePickerDialog(SignUp.this,
-//                        android.R.style.Theme_Holo_Light_Dialog_MinWidth, new DatePickerDialog.OnDateSetListener() {
-//
-//                    @Override
-//                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-//                        month = month + 1;
-//                        ed_birth_day.setText(String.valueOf(dayOfMonth));
-//                        ed_birth_month.setText(String.valueOf(month));
-//                        ed_birth_year.setText(String.valueOf(year));
-//                    }
-//                }, year, month, day);
-//                datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//                datePickerDialog.show();
+//                code.registerPhoneNumberTextView(editPhone);
 //            }
 //        });
-//    }
-//
-//
+
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), dateTime.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+
+    public void setSpinnerState() {
+        ArrayAdapter<String> adapter_state = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, state);
+        //to specify the design of menu with items
+        adapter_state.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerState.setAdapter(adapter_state);
+    }
+
+
+    public void setSpinnerGender() {
+        ArrayAdapter<String> adapter_gender = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, gender);
+        //to specify the design of menu with items
+        adapter_gender.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerGender.setAdapter(adapter_gender);
+    }
 
     public void selectProfileImage() {
         final String[] items = {"Take Photo", "Choose From Gallery", "Cancel"};
@@ -177,13 +196,14 @@ public class SignUp extends AppCompatActivity {
             }
         });
         builder.create().show();
+
+
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         switch (userChosenPhoto) {
             case "Take Photo":
                 if (requestCode == 100 && resultCode == RESULT_OK) {
@@ -202,8 +222,41 @@ public class SignUp extends AppCompatActivity {
                 }
                 break;
         }
+    }
 
+    public static class DatePickerFragment extends DialogFragment
+            implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            if (dateTime.size() == 0) {
+                // Use the current date as the default date in the picker
+                final Calendar c = Calendar.getInstance();
+                int year = c.get(Calendar.YEAR);
+                int month = c.get(Calendar.MONTH);
+                int day = c.get(Calendar.DAY_OF_MONTH);
+                return new DatePickerDialog(getActivity(), this, year, month, day);
+            }
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(), this, dateTime.get(2), dateTime.get(1), dateTime.get(0));
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            // Do something with the date chosen by the user
+            if (dateTime.size() == 0) {
+                dateTime.add(0, day);
+                dateTime.add(1, month);
+                dateTime.add(2, year);
+            }
+            else {
+                dateTime.set(0, day);
+                dateTime.set(1, month);
+                dateTime.set(2, year);
+            }
+        }
 
     }
 }
+
+
 
