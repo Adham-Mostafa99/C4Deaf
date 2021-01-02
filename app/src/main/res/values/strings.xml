@@ -1,5 +1,19 @@
 <resources>
     <string name="app_name">Graduation Project</string>
+    <string name="pick_up_your_photo">Pick up your photo</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="enter_your_email">Enter Your Email</string>
+    <string name="enter_your_password">Enter Your Password</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="day_of_birth">Day of Birth</string>
+    <string name="i_accept_terms_amp_conditions"><![CDATA[I Accept Terms & Conditions]]></string>
+    <string name="already_have_account">Already Have Account ?</string>
+    <string name="signin">SignIn</string>
+    <string name="welcome_in_napp_name">Welcome in \nApp Name</string>
+    <string name="forgot_your_passwords">Forgot your passwords?</string>
+    <string name="don_t_have_account">Don\'t Have Account ?</string>
+    <string name="create_account">Create account</string>
     <string-array name="spinner_month">
         <item>Month</item>
         <item>January</item>
