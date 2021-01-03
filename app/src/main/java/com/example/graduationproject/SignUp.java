@@ -70,6 +70,8 @@ public class SignUp extends AppCompatActivity {
     Button signUpDateOfBirthDay;
     @BindView(R.id.error_no_date)
     TextView errorNoDate;
+    @BindView(R.id.sign_up_have_account)
+    TextView signUpHaveAccount;
 
     private String[] gender, state;
     private String userChosenPhoto;
@@ -188,6 +190,15 @@ public class SignUp extends AppCompatActivity {
                     Log.v("SignUpActivity", message);
                 }
 
+
+            }
+        });
+
+        //already have account
+        //so sign in instead
+        signUpHaveAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
             }
         });
