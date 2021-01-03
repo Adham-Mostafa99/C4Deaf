@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,6 +21,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -40,36 +42,40 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SignUp extends AppCompatActivity {
 
-    @BindView(R.id.profile_image)
-    CircleImageView profileImage;
-    @BindView(R.id.upload_image)
-    ImageView uploadImage;
-    @BindView(R.id.edit_first_name)
-    EditText editFirstName;
-    @BindView(R.id.edit_last_name)
-    EditText editLastName;
-    @BindView(R.id.edit_email)
-    EditText editEmail;
-    @BindView(R.id.edit_pass)
-    EditText editPass;
-    @BindView(R.id.code)
-    CountryCodePicker code;
-    @BindView(R.id.edit_phone)
-    EditText editPhone;
-    @BindView(R.id.spinner_select_gender)
-    Spinner spinnerGender;
-    @BindView(R.id.spinner_state)
-    Spinner spinnerState;
-    @BindView(R.id.check_box)
-    CheckBox checkBox;
-    @BindView(R.id.btn_sign_up)
-    Button btnSignUp;
-    @BindView(R.id.date)
-    Button date;
+    @BindView(R.id.sign_up_profile_image)
+    CircleImageView signUpProfileImage;
+    @BindView(R.id.sign_up_upload_image)
+    ImageView signUpUploadImage;
+    @BindView(R.id.sign_up_edit_first_name)
+    EditText signUpEditFirstName;
+    @BindView(R.id.sign_up_edit_last_name)
+    EditText signUpEditLastName;
+    @BindView(R.id.sign_up_edit_email)
+    EditText signUpEditEmail;
+    @BindView(R.id.sign_up_edit_pass)
+    EditText signUpEditPass;
+    @BindView(R.id.sign_up_country_code)
+    CountryCodePicker signUpCountryCode;
+    @BindView(R.id.sign_up_edit_phone)
+    EditText signUpEditPhone;
+    @BindView(R.id.sign_up_spinner_select_gender)
+    Spinner signUpSpinnerGender;
+    @BindView(R.id.sign_up_spinner_state)
+    Spinner signUpSpinnerState;
+    @BindView(R.id.sign_up_check_accepted_rules)
+    CheckBox signUpCheckAcceptedRules;
+    @BindView(R.id.sign_up_button)
+    Button signUpButton;
+    @BindView(R.id.sign_up_date_birth_day)
+    Button signUpDateOfBirthDay;
+    @BindView(R.id.error_no_date)
+    TextView errorNoDate;
 
-    private String[] gender, state, months, year;
+    private String[] gender, state;
     private String userChosenPhoto;
-    public static List<Integer> dateTime = new ArrayList<>();
+    private static List<Integer> dateTime = new ArrayList<>();
+    private String genderSelected, stateSelected;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,78 +83,149 @@ public class SignUp extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
         ButterKnife.bind(this);
 
+        init();
 
+        setPermissions();
+
+        //upload photo form camera or gallery button
+        signUpUploadImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadProfileImage();
+            }
+        });
+
+        //define user birthDate
+        signUpDateOfBirthDay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment newFragment = new DatePickerFragment();
+                newFragment.show(getSupportFragmentManager(), "datePicker");
+                //hide error message
+                errorNoDate.setVisibility(View.GONE);
+            }
+        });
+
+        //choose user gender
+        signUpSpinnerGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //male=1
+                //female=2
+                genderSelected = gender[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        //choose user state
+        signUpSpinnerState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //normal=1
+                //deaf=2
+                stateSelected = state[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        //sign up to create new account
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String firstName = signUpEditFirstName.getText().toString().trim();
+                String lastName = signUpEditLastName.getText().toString().trim();
+                String email = signUpEditEmail.getText().toString().trim();
+                String pass = signUpEditPass.getText().toString().trim();
+                String phone = signUpEditPhone.getText().toString().trim();
+                String fullPhone = signUpCountryCode.getFullNumberWithPlus().trim();
+                String date = dateTime.toString().trim();
+                String currentGender = genderSelected;
+                String currentState = stateSelected;
+
+                //check validate of input user information
+                if (firstName.isEmpty()) {
+                    signUpEditFirstName.setError("Enter your first name");
+                    signUpEditFirstName.requestFocus();
+                } else if (lastName.isEmpty()) {
+                    signUpEditLastName.setError("Enter your last name");
+                    signUpEditLastName.requestFocus();
+                } else if (email.isEmpty()) {
+                    signUpEditEmail.setError("Enter your email");
+                    signUpEditEmail.requestFocus();
+                } else if (pass.isEmpty()) {
+                    signUpEditPass.setError("Enter your password");
+                    signUpEditPass.requestFocus();
+                } else if (phone.isEmpty()) {
+                    signUpEditPhone.setError("Enter your phone");
+                    signUpEditPhone.requestFocus();
+                } else if (dateTime.isEmpty()) {
+                    //show error message
+                    errorNoDate.setVisibility(View.VISIBLE);
+                } else if (currentGender.equals(gender[0])) {
+                    Toast.makeText(getApplicationContext(), "Please select Gender", Toast.LENGTH_SHORT).show();
+                } else if (currentState.equals(state[0])) {
+                    Toast.makeText(getApplicationContext(), "Please select State", Toast.LENGTH_SHORT).show();
+                } else if (!signUpCheckAcceptedRules.isChecked()) {
+                    Toast.makeText(getApplicationContext(), "Please Agree Rules", Toast.LENGTH_SHORT).show();
+                } else {
+                    String message = "first name: " + firstName +
+                            "\nlast name: " + lastName +
+                            "\nemail: " + email +
+                            "\npass: " + pass +
+                            "\nphone: " + fullPhone +
+                            "\ndate: " + date +
+                            "\ngender: " + currentGender +
+                            "\nstate: " + currentState;
+                    Toast.makeText(getApplicationContext(), "done", Toast.LENGTH_SHORT).show();
+                    Log.v("SignUpActivity", message);
+                }
+
+
+            }
+        });
+
+    }
+
+    public void init() {
+        //requestFocus to firstName
+        signUpEditFirstName.requestFocus();
+
+        //declare StringArrays for Spinner
         gender = getResources().getStringArray(R.array.gender);
         state = getResources().getStringArray(R.array.state);
-        months = getResources().getStringArray(R.array.spinner_month);
-        year = getResources().getStringArray(R.array.spinner_year);
+
+        //define default spinner
+        genderSelected = gender[0];
+        stateSelected = state[0];
 
         //declare spinners
         setSpinnerGender();
         setSpinnerState();
 
-        //get camera permission
+        //hide error message
+        errorNoDate.setVisibility(View.GONE);
+
+        //connect code to phone editView
+        signUpCountryCode.registerPhoneNumberTextView(signUpEditPhone);
+
+    }
+
+    public void setPermissions() {
+        //set camera permission
         if (ContextCompat.checkSelfPermission(SignUp.this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(SignUp.this,
                     new String[]{Manifest.permission.CAMERA},
                     100);
-
         }
-
-        //upload photo button
-        uploadImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectProfileImage();
-            }
-        });
-
-        date.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogFragment newFragment = new DatePickerFragment();
-                newFragment.show(getSupportFragmentManager(), "datePicker");
-            }
-        });
-
-        spinnerGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        spinnerState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-//        editPhone.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                code.registerPhoneNumberTextView(editPhone);
-//            }
-//        });
-
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), dateTime.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
     }
 
 
@@ -156,7 +233,7 @@ public class SignUp extends AppCompatActivity {
         ArrayAdapter<String> adapter_state = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, state);
         //to specify the design of menu with items
         adapter_state.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerState.setAdapter(adapter_state);
+        signUpSpinnerState.setAdapter(adapter_state);
     }
 
 
@@ -164,10 +241,10 @@ public class SignUp extends AppCompatActivity {
         ArrayAdapter<String> adapter_gender = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, gender);
         //to specify the design of menu with items
         adapter_gender.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerGender.setAdapter(adapter_gender);
+        signUpSpinnerGender.setAdapter(adapter_gender);
     }
 
-    public void selectProfileImage() {
+    public void uploadProfileImage() {
         final String[] items = {"Take Photo", "Choose From Gallery", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(SignUp.this);
         builder.setTitle("Add Photo");
@@ -210,7 +287,7 @@ public class SignUp extends AppCompatActivity {
                     // get capture Image
                     Bitmap captureImage = (Bitmap) data.getExtras().get("data");
                     // set capture Image to ImageView
-                    profileImage.setImageBitmap(captureImage);
+                    signUpProfileImage.setImageBitmap(captureImage);
                 }
                 break;
             case "Choose From Gallery":
@@ -218,7 +295,7 @@ public class SignUp extends AppCompatActivity {
                     // get capture Image
                     Uri uri = data.getData();
                     // set capture Image to profileImage
-                    profileImage.setImageURI(uri);
+                    signUpProfileImage.setImageURI(uri);
                 }
                 break;
         }
@@ -247,8 +324,7 @@ public class SignUp extends AppCompatActivity {
                 dateTime.add(0, day);
                 dateTime.add(1, month);
                 dateTime.add(2, year);
-            }
-            else {
+            } else {
                 dateTime.set(0, day);
                 dateTime.set(1, month);
                 dateTime.set(2, year);

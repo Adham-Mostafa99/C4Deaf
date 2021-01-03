@@ -21,7 +21,7 @@
 
 
             <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/profile_image"
+                android:id="@+id/sign_up_profile_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -50,6 +50,7 @@
 
             <EditText
                 android:layout_width="match_parent"
+                android:id="@+id/sign_in_email"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/margin_horizontal_value"
                 android:layout_marginTop="48dp"
@@ -71,6 +72,7 @@
                 android:hint="@string/enter_your_password"
                 android:inputType="textPassword"
                 android:maxLines="1"
+                android:id="@+id/sign_in_password"
                 android:paddingHorizontal="@dimen/padding_horizontal_value" />
 
             <TextView
@@ -80,6 +82,7 @@
                 android:layout_marginHorizontal="@dimen/margin_horizontal_value"
                 android:fontFamily="@font/cagliostro"
                 android:gravity="center"
+                android:id="@+id/sign_in_forgot_pass"
                 android:text="@string/forgot_your_passwords"
                 android:textColor="@android:color/black"
                 android:textSize="18sp" />
@@ -93,7 +96,7 @@
                 android:background="@drawable/sign_in"
                 android:clickable="true"
                 android:focusable="true"
-                android:id="@+id/sign_in"/>
+                android:id="@+id/sign_in_button" />
 
             <Button
                 android:layout_width="wrap_content"
@@ -101,6 +104,7 @@
                 android:layout_gravity="center"
                 android:background="@drawable/google_sign_in"
                 android:clickable="true"
+                android:id="@+id/sign_in_by_google_button"
                 android:focusable="true" />
 
             <Button
@@ -109,6 +113,7 @@
                 android:layout_gravity="center"
                 android:background="@drawable/fb_sign_in"
                 android:clickable="true"
+                android:id="@+id/sign_in_by_fb_button"
                 android:focusable="true" />
 
             <LinearLayout
@@ -130,6 +135,7 @@
                     android:layout_gravity="center"
                     android:text="@string/create_account"
                     android:textColor="@android:color/black"
+                    android:id="@+id/sign_in_create_account"
                     android:textStyle="bold" />
 
             </LinearLayout>
