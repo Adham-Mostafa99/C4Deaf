@@ -50,4 +50,14 @@ dependencies {
     //butterKnife
     implementation 'com.jakewharton:butterknife:10.2.3'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
+
+    //recyclerView
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+
+    //Glide....load image by URL
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+
+    //divider recyclerView
+    implementation 'com.yqritc:recyclerview-flexibledivider:1.4.0'
 }

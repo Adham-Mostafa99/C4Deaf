@@ -3,4 +3,7 @@
     <dimen name="margin_horizontal_value">24dp</dimen>
     <dimen name="margin_vertical_value">8dp</dimen>
     <dimen name="padding_horizontal_value">16dp</dimen>
+    <dimen name="divider">.75dp</dimen>
+    <dimen name="leftmargin">112dp</dimen>
+    <dimen name="rightmargin">24dp</dimen>
 </resources>

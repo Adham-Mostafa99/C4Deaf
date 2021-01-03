@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="preloaded_fonts" translatable="false">
+        <item>@font/</item>
         <item>@font/advent_pro_thin</item>
         <item>@font/allerta</item>
         <item>@font/andada</item>
         <item>@font/cagliostro</item>
+        <item>@font/cambo</item>
+        <item>@font/catamaran_thin</item>
     </array>
 </resources>

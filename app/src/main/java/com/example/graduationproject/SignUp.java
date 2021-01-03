@@ -188,6 +188,8 @@ public class SignUp extends AppCompatActivity {
                             "\nstate: " + currentState;
                     Toast.makeText(getApplicationContext(), "done", Toast.LENGTH_SHORT).show();
                     Log.v("SignUpActivity", message);
+
+
                 }
 
 
