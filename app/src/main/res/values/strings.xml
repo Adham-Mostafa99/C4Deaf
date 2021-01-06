@@ -20,6 +20,7 @@
     <string name="last_message">last message....</string>
     <string name="time">11:08 PM</string>
 
+
     <string-array name="gender">
         <item>Select Gender</item>
         <item>male</item>
