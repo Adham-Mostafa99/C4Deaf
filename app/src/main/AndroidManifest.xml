@@ -18,9 +18,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.ChatMenuActivity">
-
-        </activity>
+        <activity android:name=".ui.ChatMenuActivity"></activity>
         <activity android:name=".ui.SignUpActivity" />
         <activity android:name=".ui.SignInActivity" />
 
