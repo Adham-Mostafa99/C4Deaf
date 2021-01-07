@@ -1,4 +1,4 @@
-package com.example.graduationproject;
+package com.example.graduationproject.ui;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -30,6 +30,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.graduationproject.R;
 import com.rilixtech.widget.countrycodepicker.CountryCodePicker;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SignUp extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
 
     @BindView(R.id.sign_up_profile_image)
     CircleImageView signUpProfileImage;
@@ -233,9 +234,9 @@ public class SignUp extends AppCompatActivity {
 
     public void setPermissions() {
         //set camera permission
-        if (ContextCompat.checkSelfPermission(SignUp.this, Manifest.permission.CAMERA)
+        if (ContextCompat.checkSelfPermission(SignUpActivity.this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(SignUp.this,
+            ActivityCompat.requestPermissions(SignUpActivity.this,
                     new String[]{Manifest.permission.CAMERA},
                     100);
         }
@@ -259,7 +260,7 @@ public class SignUp extends AppCompatActivity {
 
     public void uploadProfileImage() {
         final String[] items = {"Take Photo", "Choose From Gallery", "Cancel"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(SignUp.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
         builder.setTitle("Add Photo");
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override

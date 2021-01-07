@@ -1,4 +1,4 @@
-package com.example.graduationproject;
+package com.example.graduationproject.models;
 
 public class User {
     private String userName;
