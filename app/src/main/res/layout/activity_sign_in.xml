@@ -98,11 +98,12 @@
                 android:focusable="true"
                 android:id="@+id/sign_in_button" />
 
-            <com.google.android.gms.common.SignInButton
+            <Button
                 android:layout_width="230dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:clickable="true"
+                android:background="@drawable/google_sign_in"
                 android:id="@+id/sign_in_by_google_button"
                 android:focusable="true" />
 

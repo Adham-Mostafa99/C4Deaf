@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.example.graduationproject.ui.SignInActivity;
+
 public class activity_splash_screen extends AppCompatActivity {
 
     @Override
@@ -14,7 +16,7 @@ public class activity_splash_screen extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screen);
 
         new Handler().postDelayed(() -> {
-            startActivity(new Intent(activity_splash_screen.this,SignIn.class));
+            startActivity(new Intent(activity_splash_screen.this, SignInActivity.class));
             finish();
         }, 3000);
 
