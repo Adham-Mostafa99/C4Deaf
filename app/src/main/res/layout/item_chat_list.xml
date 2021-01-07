@@ -2,18 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="115dp"
+    android:layout_height="80dp"
     android:background="@color/item_chat_list_background"
-    android:padding="16dp">
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="8dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/user_photo"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        app:civ_border_width="1dp"
+        app:civ_border_width="0.50dp"
         android:src="@drawable/user_photo" />
 
     <LinearLayout
@@ -36,7 +37,7 @@
             android:fontFamily="@font/cambo"
             android:text="@string/user_name"
             android:textColor="@android:color/black"
-            android:textSize="24sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <TextView
@@ -46,7 +47,7 @@
             android:fontFamily="@font/catamaran_thin"
             android:text="@string/last_message"
             android:textColor="@android:color/black"
-            android:textSize="18sp"
+            android:textSize="12sp"
             android:textStyle="normal" />
     </LinearLayout>
 
@@ -59,7 +60,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginHorizontal="8dp"
         android:text="@string/time"
-        android:textSize="16sp" />
+        android:textSize="12sp" />
 
 
 </RelativeLayout>

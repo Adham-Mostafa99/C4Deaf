@@ -1,19 +1,21 @@
-package com.example.graduationproject;
+package com.example.graduationproject.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.graduationproject.R;
+import com.example.graduationproject.models.User;
 
 import java.util.ArrayList;
 
+import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
@@ -21,17 +23,19 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
     ArrayList<User> users;
     Context context;
+    OnItemClickListener onItemClickListener;
 
-    public ChatListAdapter(Context context, ArrayList<User> users) {
+    public ChatListAdapter(Context context, ArrayList<User> users,OnItemClickListener onItemClickListener) {
         this.context = context;
         this.users = users;
+        this.onItemClickListener=onItemClickListener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_chat_list, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view,onItemClickListener);
     }
 
     @Override
@@ -59,13 +63,30 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         TextView userName;
         TextView userMessage;
         TextView messageTime;
+        OnItemClickListener onItemClickListener;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView ,OnItemClickListener onItemClickListener) {
             super(itemView);
             userPhoto = itemView.findViewById(R.id.user_photo);
             userName = itemView.findViewById(R.id.user_name);
             userMessage = itemView.findViewById(R.id.user_message);
             messageTime = itemView.findViewById(R.id.message_time);
+            this.onItemClickListener=onItemClickListener;
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onItemClickListener.onClickItem(getAdapterPosition());
+                }
+            });
         }
     }
+
+    //make my onClick for the recyclerView
+    public interface OnItemClickListener {
+        void onClickItem(int position);
+    }
+
 }
+
+

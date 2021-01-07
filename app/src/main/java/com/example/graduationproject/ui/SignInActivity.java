@@ -1,4 +1,4 @@
-package com.example.graduationproject;
+package com.example.graduationproject.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,11 +10,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.graduationproject.R;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SignIn extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity {
 
     @BindView(R.id.sign_up_profile_image)
     CircleImageView profileImage;
@@ -58,7 +60,7 @@ public class SignIn extends AppCompatActivity {
                     signInPassword.requestFocus();
                 } else {
                     startActivity(
-                            new Intent(getApplicationContext(), SignUp.class));
+                            new Intent(getApplicationContext(), SignUpActivity.class));
                 }
 
             }
