@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,6 +13,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,12 +23,15 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
@@ -36,6 +42,7 @@ import com.rilixtech.widget.countrycodepicker.CountryCodePicker;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.zip.Inflater;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -138,7 +145,7 @@ public class SignUpActivity extends AppCompatActivity {
 
             }
         });
-
+        
         //sign up to create new account
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,6 +159,7 @@ public class SignUpActivity extends AppCompatActivity {
                 String date = dateTime.toString().trim();
                 String currentGender = genderSelected;
                 String currentState = stateSelected;
+
 
                 //check validate of input user information
                 if (firstName.isEmpty()) {
@@ -190,19 +198,63 @@ public class SignUpActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "done", Toast.LENGTH_SHORT).show();
                     Log.v("SignUpActivity", message);
 
-
+                    //confirming the uer email and phone number
+                    confirmEmailAndPhone();
                 }
-
 
             }
         });
 
-        //already have account
-        //so sign in instead
+        /**
+         * already have account
+         * so sign in instead
+         */
         signUpHaveAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+            }
+        });
+
+    }
+
+
+    public void confirmEmailAndPhone() {
+        //find the constrain in sign_up layout
+        // to be the parent o the popup Window
+        ConstraintLayout constraintLayout = findViewById(R.id.sign_up_layout);
+
+        //make the width and height for the pop Window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+
+        // lets taps outside the popup also dismiss it
+        boolean focusable = false;
+
+        //inflate new layout with specific layout(pop_layout) for the pop window
+        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popLayout = layoutInflater.inflate(R.layout.pop_layout, null);
+
+        //create instance of popupWindow by specific view, width, and height
+        PopupWindow popupWindow = new PopupWindow(popLayout, width, height, focusable);
+
+        //show the created instance in specific location
+        popupWindow.showAtLocation(constraintLayout, Gravity.CENTER, 0, 0);
+
+        //declare the cancel button in popWindow
+        Button cancelButton = popLayout.findViewById(R.id.cancel_button);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.dismiss();
+            }
+        });
+
+        Button okButton = popLayout.findViewById(R.id.ok_button);
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //handel click
             }
         });
 
@@ -242,14 +294,12 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-
     public void setSpinnerState() {
         ArrayAdapter<String> adapter_state = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, state);
         //to specify the design of menu with items
         adapter_state.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         signUpSpinnerState.setAdapter(adapter_state);
     }
-
 
     public void setSpinnerGender() {
         ArrayAdapter<String> adapter_gender = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, gender);
@@ -290,7 +340,6 @@ public class SignUpActivity extends AppCompatActivity {
 
 
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

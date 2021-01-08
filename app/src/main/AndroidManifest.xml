@@ -3,7 +3,6 @@
     package="com.example.graduationproject">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,16 +10,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.ChatPageActivity">
+        <activity android:name=".ui.ChatMenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.ChatMenuActivity"></activity>
         <activity android:name=".ui.SignUpActivity" />
-        <activity android:name=".ui.SignInActivity" />
+        <activity android:name=".ui.SignInActivity">
+
+        </activity>
 
         <meta-data
             android:name="preloaded_fonts"
