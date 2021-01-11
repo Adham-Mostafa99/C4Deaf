@@ -22,6 +22,7 @@
         <activity android:name=".ui.ChatMenuActivity" />
         <activity android:name=".ui.SignUpActivity" />
         <activity android:name=".ui.SignInActivity" />
+        <activity android:name=".activity_splash_screen" />
 
         <meta-data
             android:name="preloaded_fonts"
