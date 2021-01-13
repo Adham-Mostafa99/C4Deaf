@@ -60,53 +60,75 @@
         android:layout_height="match_parent"
         android:id="@+id/recycler_view_chat"
         android:layout_below="@+id/bar_layout"
-        android:layout_above="@+id/edit_and_send"/>
+        android:layout_above="@+id/deaf_edit_and_send"/>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/edit_and_send"
-        android:layout_width="340dp"
+    <LinearLayout
+        android:id="@+id/deaf_edit_and_send"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/padding_horizontal_value"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:background="@drawable/rectangle_message"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="10dp">
-        <ImageView
-            android:id="@+id/btn_emoji"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/emoji_icon"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-        <EditText
-            android:id="@+id/text_send"
-            android:layout_width="230dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            app:layout_constraintStart_toEndOf="@+id/btn_emoji"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginLeft="8dp"
-            android:hint="@string/type_a_message"/>
-        <ImageView
-            android:id="@+id/btn_send"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/arrow_send"
-            app:layout_constraintStart_toEndOf="@+id/text_send"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <ImageView
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:src="@drawable/record_image"
+        android:layout_alignParentStart="true"
+        android:paddingHorizontal="8dp"
         android:layout_alignParentBottom="true"
-        android:padding="5dp"
-        android:layout_margin="10dp" />
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="horizontal"
+        android:layout_alignParentLeft="true">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginVertical="8dp"
+            android:layout_marginRight="4dp"
+            android:contentDescription="message_record"
+            android:src="@drawable/record_image"
+            android:layout_marginEnd="4dp" />
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/edit_text_send"
+            android:layout_width="340dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:layout_marginLeft="4dp"
+            android:background="@drawable/input_background"
+            android:paddingHorizontal="@dimen/padding_horizontal_value"
+            android:layout_marginStart="4dp">
+
+            <ImageView
+                android:id="@+id/btn_emoji"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/emoji_icon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/text_send"
+                android:layout_width="230dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:hint="@string/type_a_message"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btn_emoji"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/btn_send"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="8dp"
+                android:src="@drawable/arrow_send"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/edit_text_send"
+                app:layout_constraintStart_toEndOf="@+id/text_send"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </RelativeLayout>
