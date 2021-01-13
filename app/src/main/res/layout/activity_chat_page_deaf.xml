@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<<<<<<< HEAD:app/src/main/res/layout/activity_chat_page.xml
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+=======
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+>>>>>>> 8bb66eae94e8f7b72c3a6415370b468aa74dc6d3:app/src/main/res/layout/activity_chat_page_deaf.xml
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+<<<<<<< HEAD:app/src/main/res/layout/activity_chat_page.xml
+    android:layout_alignParentStart="true"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentRight="true"
+    android:background="@drawable/chat_page_background">
+=======
+    android:background="@drawable/chat_wallpaper_background"
+    android:orientation="vertical"
+    tools:context=".ui.ChatPageDeaf">
+>>>>>>> 8bb66eae94e8f7b72c3a6415370b468aa74dc6d3:app/src/main/res/layout/activity_chat_page_deaf.xml
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/upper_background">
+
+        <ImageView
+            android:id="@+id/arrow_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:src="@drawable/back_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+<<<<<<< HEAD:app/src/main/res/layout/activity_chat_page.xml
+            app:layout_constraintTop_toTopOf="parent" />
+
+=======
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="TODO" />
+>>>>>>> 8bb66eae94e8f7b72c3a6415370b468aa74dc6d3:app/src/main/res/layout/activity_chat_page_deaf.xml
+        <ImageView
+            android:id="@+id/user_image"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
+            android:padding="4dp"
+            android:src="@drawable/photo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/arrow_back"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:fontFamily="@font/cambo"
+            android:text="@string/user_name"
+            android:textColor="@android:color/white"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/user_image"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+<<<<<<< HEAD:app/src/main/res/layout/activity_chat_page.xml
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/record_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginRight="4dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/edit_text_chat_message"
+            android:layout_marginEnd="4dp" />
+
+        <EditText
+            android:id="@+id/edit_text_chat_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/margin_vertical_value"
+            android:background="@drawable/input_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/margin_vertical_value"
+            android:src="@drawable/send_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/edit_text_chat_message" />
+=======
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/recycler_view_chat"
+        android:layout_below="@+id/bar_layout"
+        android:layout_above="@+id/edit_and_send"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/edit_and_send"
+        android:layout_width="340dp"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/padding_horizontal_value"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/rectangle_message"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="10dp">
+        <ImageView
+            android:id="@+id/btn_emoji"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/emoji_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+        <EditText
+            android:id="@+id/text_send"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@+id/btn_emoji"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginLeft="8dp"
+            android:hint="@string/type_a_message"/>
+        <ImageView
+            android:id="@+id/btn_send"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/arrow_send"
+            app:layout_constraintStart_toEndOf="@+id/text_send"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+>>>>>>> 8bb66eae94e8f7b72c3a6415370b468aa74dc6d3:app/src/main/res/layout/activity_chat_page_deaf.xml
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/record_image"
+        android:layout_alignParentBottom="true"
+        android:padding="5dp"
+        android:layout_margin="10dp" />
+
+<<<<<<< HEAD:app/src/main/res/layout/activity_chat_page.xml
+
+=======
+>>>>>>> 8bb66eae94e8f7b72c3a6415370b468aa74dc6d3:app/src/main/res/layout/activity_chat_page_deaf.xml
+</RelativeLayout>
