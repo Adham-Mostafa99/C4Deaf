@@ -9,21 +9,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.graduationproject.R;
 import com.example.graduationproject.models.Chat;
-import com.example.graduationproject.models.User;
 
 import java.util.ArrayList;
 import java.util.Random;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
     //specify type of view
     public static final int MSG_TYPE_LEFT = 0;
     public static final int MSG_TYPE_RIGHT = 1;
+    public static final int MSG_TYPE_LEFT_RECORD = 2;
+    public static final int MSG_TYPE_RIGHT_RECORD = 3;
 
 
     private ArrayList<Chat> chats;
@@ -42,17 +40,24 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         //which may be right for person or left for parentUser
         if (viewType == MSG_TYPE_RIGHT) {
             View view = LayoutInflater.from(context).inflate(R.layout.chat_item_right, parent, false);
-            return new ViewHolder(view);
-        } else {
+            return new ViewHolder(view, viewType);
+        } else if (viewType == MSG_TYPE_RIGHT_RECORD) {
+            View view = LayoutInflater.from(context).inflate(R.layout.chat_item_record_right, parent, false);
+            return new ViewHolder(view, viewType);
+        } else if (viewType == MSG_TYPE_LEFT) {
             View view = LayoutInflater.from(context).inflate(R.layout.chat_item_left, parent, false);
-            return new ViewHolder(view);
+            return new ViewHolder(view, viewType);
+        } else {
+            View view = LayoutInflater.from(context).inflate(R.layout.chat_item_record_left, parent, false);
+            return new ViewHolder(view, viewType);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Chat msg = chats.get(position);
-        holder.showMessage.setText(msg.getMessage());
+        if (holder.showMessage != null)
+            holder.showMessage.setText(msg.getMessage());
         holder.timeMessage.setText(msg.getTime());
 
     }
@@ -66,10 +71,21 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         TextView showMessage;
         TextView timeMessage;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, int viewType) {
             super(itemView);
-            showMessage = itemView.findViewById(R.id.show_message);
-            timeMessage = itemView.findViewById(R.id.time_message);
+            if (viewType == MSG_TYPE_RIGHT) {
+                showMessage = itemView.findViewById(R.id.right_show_message);
+                timeMessage = itemView.findViewById(R.id.right_time_message);
+            } else if (viewType == MSG_TYPE_RIGHT_RECORD) {
+                timeMessage = itemView.findViewById(R.id.right_time_message_record);
+            } else if (viewType == MSG_TYPE_LEFT) {
+                showMessage = itemView.findViewById(R.id.left_show_message);
+                timeMessage = itemView.findViewById(R.id.left_time_message);
+            } else {
+                timeMessage = itemView.findViewById(R.id.left_time_message_record);
+            }
+
+            
             //this.onItemClickListener = onItemClickListener;
 
         }
@@ -78,10 +94,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public int getItemViewType(int position) {
         //only for test view type
-        if (position % 2 == 0)
-            return MSG_TYPE_LEFT;
-        else
-            return MSG_TYPE_RIGHT;
+        Random random = new Random();
+        int test = random.nextInt(4);
+
+        switch (test) {
+            case 0:
+                return MSG_TYPE_LEFT;
+            case 1:
+                return MSG_TYPE_RIGHT;
+            case 2:
+                return MSG_TYPE_LEFT_RECORD;
+            default:
+                return MSG_TYPE_RIGHT_RECORD;
+        }
     }
 }
 
