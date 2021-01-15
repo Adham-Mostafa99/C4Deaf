@@ -5,12 +5,14 @@ public class Chat {
     private String receiver;
     private String message;
     private String time;
+    private int recordMsg;
 
-    public Chat(String sender, String receiver, String message, String time) {
+    public Chat(String sender, String receiver, String message, String time, int recordMsg) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
         this.time = time;
+        this.recordMsg = recordMsg;
     }
 
     public String getSender() {
@@ -27,5 +29,9 @@ public class Chat {
 
     public String getTime() {
         return time;
+    }
+
+    public int getRecordMsg() {
+        return recordMsg;
     }
 }

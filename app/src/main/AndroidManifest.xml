@@ -12,14 +12,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.ChatPageDeaf">
+
+        </activity>
+        <activity android:name=".ui.ChatPageNormal">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".ui.ChatPageNormal">
-
         </activity>
         <activity android:name=".ui.ChatMenuActivity" />
         <activity android:name=".ui.SignUpActivity" />

@@ -46,21 +46,21 @@ public class ChatPageDeaf extends AppCompatActivity {
     public void testChat() {
         ArrayList<Chat> arrayList = new ArrayList<>();
 
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
 
         DeafMessageAdapter adapter = new DeafMessageAdapter(arrayList, this);
         recyclerViewChatDeaf.setAdapter(adapter);
