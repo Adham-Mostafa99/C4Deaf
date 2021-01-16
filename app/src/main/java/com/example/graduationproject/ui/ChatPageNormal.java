@@ -1,14 +1,6 @@
 package com.example.graduationproject.ui;
 
-import android.net.Uri;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.MediaController;
-import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.VideoView;
 
@@ -47,18 +39,18 @@ public class ChatPageNormal extends AppCompatActivity {
     public void testChat(){
         ArrayList<Chat> arrayList = new ArrayList<>();
 
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test_record));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test_record));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test_record));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.long_test_record));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.long_test_record));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test));
         arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test1));
         arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test1));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test_record));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test_record));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test2));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test_record));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test_record));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test3));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test3));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test1));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test1));
 
 
         NormalMessageAdapter adapter=new NormalMessageAdapter(arrayList,this);

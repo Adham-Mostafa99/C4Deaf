@@ -1,10 +1,8 @@
 package com.example.graduationproject.adapters;
 
 import android.content.Context;
-import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.graduationproject.R;
@@ -37,8 +34,8 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
     private AudioManager audioManager;
     private int audioRequest;
     private AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener;
-
     private int lastPosition = -1;
+    private ImageView oldImageView = null;
 
 
     public NormalMessageAdapter(ArrayList<Chat> chats, Context context) {
@@ -88,6 +85,10 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         //message is record for sender
         else if (holder.getClass() == SenderViewHolderRecord.class) {
+
+            //initialize the old imageView
+            oldImageView = ((SenderViewHolderRecord) holder).senderPlayRecord;
+
             // media player is handled according to the
             // change in the focus which Android system grants for
             onAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
@@ -145,6 +146,7 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
                     // stop old and play new one
                     else {
                         playRecord(msg.getRecordMsg(), ((SenderViewHolderRecord) holder).senderPlayRecord, position);
+
                     }
 
                     //when the record finished
@@ -163,6 +165,9 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         //message is record for receiver
         else if (holder.getClass() == ReceiverViewHolderRecord.class) {
+            //initialize the old imageView
+            oldImageView = ((ReceiverViewHolderRecord) holder).receiverPlayRecord;
+
             // media player is handled according to the
             // change in the focus which Android system grants for
             onAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
@@ -241,16 +246,17 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
             mp.stop();
             mp.release();
             mp = null;
+            //loss or release audio focus
+            audioManager.abandonAudioFocus(onAudioFocusChangeListener);
         }
         lastPosition = -1;
-        //loss or release audio focus
-        audioManager.abandonAudioFocus(onAudioFocusChangeListener);
         recordIcon.setImageResource(R.drawable.right_play_record_icon);
     }
 
     // pause the record
     public void pauseRecord(ImageView recordIcon) {
-        mp.pause();
+        if (mp != null)
+            mp.pause();
         recordIcon.setImageResource(R.drawable.right_play_record_icon);
     }
 
@@ -263,9 +269,17 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
             mp = null;
         }
 
+        // check if user click new button record
+        // then change the icon of old one
+        if (!oldImageView.equals(recordIcon)) {
+            oldImageView.setImageResource(R.drawable.right_play_record_icon);
+            oldImageView = recordIcon;
+        }
+
         // check the audio request
         if (audioRequest == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            mp = MediaPlayer.create(context, recordRes); // create instance from media with specific resource
+            // create instance from media with specific resource
+            mp = MediaPlayer.create(context, recordRes);
             mp.start();
             recordIcon.setImageResource(R.drawable.right_pause_record_icon);
             lastPosition = currentPosition;
