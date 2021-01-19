@@ -23,8 +23,7 @@ public class ChatPageNormal extends AppCompatActivity {
     RelativeLayout chatView;
     @BindView(R.id.recycler_view_chat)
     RecyclerView recyclerViewChat;
-
-    private VideoView videoView;
+    NormalMessageAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,27 +35,33 @@ public class ChatPageNormal extends AppCompatActivity {
 
     }
 
-    public void testChat(){
+    public void testChat() {
         ArrayList<Chat> arrayList = new ArrayList<>();
 
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.long_test_record));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.long_test_record));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test1));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test1));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test1));
-        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM",R.raw.test1));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.long_test_record));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.long_test_record));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.test1));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.test1));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.test1));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.test1));
 
 
-        NormalMessageAdapter adapter=new NormalMessageAdapter(arrayList,this);
+        adapter = new NormalMessageAdapter(arrayList, this);
         recyclerViewChat.setAdapter(adapter);
         recyclerViewChat.setLayoutManager(new LinearLayoutManager(this));
     }
 
+
+    @Override
+    protected void onStop() {
+        adapter.stopAdapter();
+        super.onStop();
+    }
 
 }

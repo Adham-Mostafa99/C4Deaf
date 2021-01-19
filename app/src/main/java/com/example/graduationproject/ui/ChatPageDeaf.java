@@ -32,13 +32,14 @@ public class ChatPageDeaf extends AppCompatActivity {
     @BindView(R.id.recycler_view_chat_deaf)
     RecyclerView recyclerViewChatDeaf;
 
-    //private VideoView videoView;
+    DeafMessageAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_page_deaf);
         ButterKnife.bind(this);
+
         testChat();
 
     }
@@ -46,25 +47,28 @@ public class ChatPageDeaf extends AppCompatActivity {
     public void testChat() {
         ArrayList<Chat> arrayList = new ArrayList<>();
 
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
-//        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM"));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
+        arrayList.add(new Chat("per1", "per2", "hello", "10:25 PM", R.raw.vedio_test));
 
-        DeafMessageAdapter adapter = new DeafMessageAdapter(arrayList, this);
+
+
+        adapter = new DeafMessageAdapter(arrayList, this);
         recyclerViewChatDeaf.setAdapter(adapter);
         recyclerViewChatDeaf.setLayoutManager(new LinearLayoutManager(this));
     }
+
 
 }

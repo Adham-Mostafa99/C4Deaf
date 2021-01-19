@@ -5,14 +5,14 @@ public class Chat {
     private String receiver;
     private String message;
     private String time;
-    private int recordMsg;
+    private int mediaMsg;
 
     public Chat(String sender, String receiver, String message, String time, int recordMsg) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
         this.time = time;
-        this.recordMsg = recordMsg;
+        this.mediaMsg = recordMsg;
     }
 
     public String getSender() {
@@ -31,7 +31,7 @@ public class Chat {
         return time;
     }
 
-    public int getRecordMsg() {
-        return recordMsg;
+    public int getMediaMsg() {
+        return mediaMsg;
     }
 }
