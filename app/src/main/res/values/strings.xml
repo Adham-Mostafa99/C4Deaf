@@ -22,6 +22,7 @@
     <string name="type_a_message">type a message....</string>
 
 
+
     <string-array name="gender">
         <item>Select Gender</item>
         <item>male</item>

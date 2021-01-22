@@ -1,5 +1,6 @@
 package com.example.graduationproject.ui;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -22,7 +23,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.graduationproject.R;
 import com.example.graduationproject.models.User;
 import com.example.graduationproject.adapters.ChatListAdapter;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.ArrayList;
@@ -70,6 +73,10 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
                     case R.id.settings:
                         Toast.makeText(getApplicationContext(), "settings", Toast.LENGTH_SHORT).show();
                         break;
+                    case R.id.log_out:
+                        //Toast.makeText(getApplicationContext(), "log_out", Toast.LENGTH_SHORT).show();
+                        signOut();
+                        break;
                 }
                 return true;
             }
@@ -87,7 +94,6 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         newChatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
             }
         });
 
@@ -175,4 +181,14 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
 
         return users;
     }
+
+    //  auth_sign_out
+    public void signOut() {
+        FirebaseAuth.getInstance().signOut();
+        Intent intent=new Intent(getApplicationContext(),SignInActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+
 }
