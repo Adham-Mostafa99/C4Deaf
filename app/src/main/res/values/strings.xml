@@ -20,6 +20,9 @@
     <string name="last_message">last message....</string>
     <string name="time">11:08 PM</string>
     <string name="type_a_message">type a message....</string>
+    <string name="facebook_app_id">406927360406568</string>
+    <string name="fb_login_protocol_scheme">fb406927360406568</string>
+
 
 
 
