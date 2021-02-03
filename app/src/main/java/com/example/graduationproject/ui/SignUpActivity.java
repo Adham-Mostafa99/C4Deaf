@@ -198,6 +198,9 @@ public class SignUpActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "done", Toast.LENGTH_SHORT).show();
                     Log.v("SignUpActivity", message);
 
+
+
+
                     //confirming the uer email and phone number
                     confirmEmailAndPhone();
                 }
@@ -218,6 +221,29 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
+    public void init() {
+        //requestFocus to firstName
+        signUpEditFirstName.requestFocus();
+
+        //declare StringArrays for Spinner
+        gender = getResources().getStringArray(R.array.gender);
+        state = getResources().getStringArray(R.array.state);
+
+        //define default spinner
+        genderSelected = gender[0];
+        stateSelected = state[0];
+
+        //declare spinners
+        setSpinnerGender();
+        setSpinnerState();
+
+        //hide error message
+        errorNoDate.setVisibility(View.GONE);
+
+        //connect code to phone editView
+        signUpCountryCode.registerPhoneNumberTextView(signUpEditPhone);
+
+    }
 
     public void confirmEmailAndPhone() {
         //find the constrain in sign_up layout
@@ -257,30 +283,6 @@ public class SignUpActivity extends AppCompatActivity {
                 //handel click
             }
         });
-
-    }
-
-    public void init() {
-        //requestFocus to firstName
-        signUpEditFirstName.requestFocus();
-
-        //declare StringArrays for Spinner
-        gender = getResources().getStringArray(R.array.gender);
-        state = getResources().getStringArray(R.array.state);
-
-        //define default spinner
-        genderSelected = gender[0];
-        stateSelected = state[0];
-
-        //declare spinners
-        setSpinnerGender();
-        setSpinnerState();
-
-        //hide error message
-        errorNoDate.setVisibility(View.GONE);
-
-        //connect code to phone editView
-        signUpCountryCode.registerPhoneNumberTextView(signUpEditPhone);
 
     }
 
