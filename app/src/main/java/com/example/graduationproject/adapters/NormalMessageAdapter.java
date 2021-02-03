@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.graduationproject.R;
-import com.example.graduationproject.models.Chat;
+import com.example.graduationproject.models.NormalChat;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -30,7 +32,7 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
     public static final int NULL_VALUE = -1;
 
 
-    private ArrayList<Chat> chats;
+    private ArrayList<NormalChat> normalChats;
     private Context context;
     private MediaPlayer mp = null;
     private AudioManager audioManager;
@@ -41,8 +43,8 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
     private Handler handler;
 
 
-    public NormalMessageAdapter(ArrayList<Chat> chats, Context context) {
-        this.chats = chats;
+    public NormalMessageAdapter(ArrayList<NormalChat> normalChats, Context context) {
+        this.normalChats = normalChats;
         this.context = context;
         init();
     }
@@ -77,7 +79,7 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         // get instance from Chat class with current position
-        Chat msg = chats.get(position);
+        NormalChat msg = normalChats.get(position);
 
         // get the audio system service for
         // the audioManger instance
@@ -99,8 +101,9 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
         else if (holder.getClass() == SenderViewHolderRecord.class) {
             ((SenderViewHolderRecord) holder).senderTimeMessageRecord.setText(msg.getTime());
 
-            //set duration of full record
-            setRecordDuration(msg.getMediaMsg(), ((SenderViewHolderRecord) holder).senderRecordDuration);
+//            //set duration of full record
+//            setRecordDuration(msg.getMediaMsgPath(), ((SenderViewHolderRecord) holder).senderRecordDuration);
+            ((SenderViewHolderRecord) holder).senderRecordDuration.setText(msg.getMediaMsgTime());
 
             //change the record position by seekBar
             ((SenderViewHolderRecord) holder).senderSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -151,6 +154,7 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
                     // if last equal current then user click same record
                     // then should pause record or resume not stopping
 
+                    Log.v("check", oldRecord.getOldPosition() + "    " + position);
                     if (oldRecord.getOldPosition() == position) {
                         // if record is playing pause it
                         if (mp.isPlaying()) {
@@ -168,7 +172,7 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
                     // then user click new record
                     // stop old and play new one
                     else {
-                        playRecord(msg.getMediaMsg(), ((SenderViewHolderRecord) holder).senderPlayRecordIcon,
+                        playRecord(msg.getMediaMsgPath(), ((SenderViewHolderRecord) holder).senderPlayRecordIcon,
                                 ((SenderViewHolderRecord) holder).senderSeekBar,
                                 ((SenderViewHolderRecord) holder).senderRecordDuration,
                                 position,
@@ -196,8 +200,10 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
         else if (holder.getClass() == ReceiverViewHolderRecord.class) {
             ((ReceiverViewHolderRecord) holder).receiverTimeMessageRecord.setText(msg.getTime());
 
-            //set duration of full record
-            setRecordDuration(msg.getMediaMsg(), ((ReceiverViewHolderRecord) holder).receiverRecordDuration);
+//            //set duration of full record
+//            setRecordDuration(msg.getMediaMsgTime(), ((ReceiverViewHolderRecord) holder).receiverRecordDuration);
+
+            ((ReceiverViewHolderRecord) holder).receiverRecordDuration.setText(msg.getMediaMsgTime());
 
             //change the record position by seekBar
             ((ReceiverViewHolderRecord) holder).receiverSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -264,7 +270,7 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
                     // then user click new record
                     // stop old and play new one
                     else {
-                        playRecord(msg.getMediaMsg(),
+                        playRecord(msg.getMediaMsgPath(),
                                 ((ReceiverViewHolderRecord) holder).receiverPlayRecordIcon,
                                 ((ReceiverViewHolderRecord) holder).receiverSeekBar,
                                 ((ReceiverViewHolderRecord) holder).receiverRecordDuration,
@@ -289,20 +295,13 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemCount() {
-        return chats.size();
+        return normalChats.size();
     }
 
     @Override
     public int getItemViewType(int position) {
         //only for test view type
-        if (position == 0 || position == 3 || position == 6 || position == 9 || position == 12 || position == 15)
-            return MSG_TYPE_RECEIVER_RECORD;
-        else if (position == 1 || position == 4 || position == 7 || position == 10 || position == 13 || position == 16)
-            return MSG_TYPE_SENDER_RECORD;
-        else if (position == 2 || position == 5 || position == 8)
-            return MSG_TYPE_RECEIVER_TEXT;
-        else
-            return MSG_TYPE_SENDER_TEXT;
+        return normalChats.get(position).getMsgType();
     }
 
 
@@ -386,7 +385,7 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
      */
     // play record which new record will play
     // release any media and play new one
-    public void playRecord(int recordRes, ImageView recordIcon, SeekBar seekBar, TextView timeText, int currentRecordPosition, int type) {
+    public void playRecord(String recordRes, ImageView recordIcon, SeekBar seekBar, TextView timeText, int currentRecordPosition, int type) {
         if (mp != null) {
             mp.stop();
             mp.release();
@@ -399,15 +398,22 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
         // check the audio request
         if (audioRequest == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             // create instance from media with specific resource
-            mp = MediaPlayer.create(context, recordRes);
-            mp.start();
+            mp = new MediaPlayer();
+            try {
+                mp.setDataSource(recordRes);
+                mp.prepare();
+                mp.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             syncMediaWithSeekBar(seekBar, timeText);
             playRecordIcon(recordIcon, type);
 
-            // check if user click new button record
-            // then change the icon of old one
-            //shift seek bar to start for old record
-            if (!oldRecord.isEmpty)
+            //check if no old record then create one from current record
+            //else if there one release it from memory
+            if (oldRecord.isEmpty)
+                oldRecord = new OldRecord(recordIcon, seekBar, timeText, reformatTime(mp.getDuration()), currentRecordPosition, type);
+            else
                 releaseOldRecord(recordIcon, seekBar, timeText, reformatTime(mp.getDuration()), currentRecordPosition, type);
         }
     }
@@ -432,7 +438,7 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
         //return the value of position of old record to null value
         //which mean there no record in past
-        oldRecord.setOldPosition(NULL_VALUE);
+        oldRecord = new OldRecord(NULL_VALUE);
         //return the icon of record to default
         pauseRecordIcon(recordIcon, type);
     }
@@ -618,7 +624,7 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
         int min = sec / 60;
         sec = sec - (min * 60);
 
-        return String.format("%02d",min) + ":" + String.format("%02d",sec);
+        return String.format("%02d", min) + ":" + String.format("%02d", sec);
     }
 
     /**
@@ -630,6 +636,9 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
      * @param type        type of new record to replace old one
      */
     //clean old record (image, seek, duration)
+    // check if user click new button record
+    // then change the icon of old one
+    //shift seek bar to start for old record
     public void releaseOldRecord(ImageView newImage, SeekBar newSeekBar, TextView newTextView, String newDuration, int newPosition, int type) {
         pauseRecordIcon(oldRecord.getOldImage(), oldRecord.getOldType());
         oldRecord.getOldSeekBar().setProgress(0);
