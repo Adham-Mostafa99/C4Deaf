@@ -1,0 +1,4 @@
+#Wed Feb 03 01:32:31 EET 2021
+base.0=C\:\\Users\\adham\\OneDrive\\Desktop\\GraduationProject\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
