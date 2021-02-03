@@ -1,9 +1,9 @@
 package com.example.graduationproject.adapters;
 
 import android.content.Context;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.PopupWindow;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -20,7 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.graduationproject.R;
-import com.example.graduationproject.models.Chat;
+import com.example.graduationproject.models.DeafChat;
 
 import java.util.ArrayList;
 
@@ -32,12 +31,12 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public static final int MSG_TYPE_RECEIVER_VIDEO = 2;
     public static final int MSG_TYPE_SENDER_VIDEO = 3;
 
-    private ArrayList<Chat> chats;
+    private ArrayList<DeafChat> chats;
     private Context context;
     private VideoView videoView;
 
-    public DeafMessageAdapter(ArrayList<Chat> chats, Context context) {
-        this.chats = chats;
+    public DeafMessageAdapter(ArrayList<DeafChat> normalChats, Context context) {
+        this.chats = normalChats;
         this.context = context;
 
     }
@@ -65,7 +64,7 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         // get instance from Chat class with current position
-        Chat msg = chats.get(position);
+        DeafChat msg = chats.get(position);
 
         //message is text for sender
         if (holder.getClass() == SenderViewHolderText.class) {
@@ -84,9 +83,10 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             //display time of the message
             ((SenderViewHolderVideo) holder).senderTimeMessageVideo.setText(msg.getTime());
 
-            //set duration of full video
-            setRecordDuration(msg.getMediaMsg(), ((SenderViewHolderVideo) holder).senderVideoDuration);
+//            //set duration of full video
+//            setRecordDuration(msg.getMediaMsg(), ((SenderViewHolderVideo) holder).senderVideoDuration);
 
+            ((SenderViewHolderVideo) holder).senderVideoDuration.setText(msg.getMediaMsgTime());
 
             //playing Video
             ((SenderViewHolderVideo) holder).senderPlayVideoIcon.setOnClickListener(new View.OnClickListener() {
@@ -94,8 +94,9 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 public void onClick(View v) {
                     //open window to display video
                     PopupWindow popupWindow = openPopVideoView();
+
                     //play video
-                    playVideo(msg.getMediaMsg());
+                    playVideo(msg.getMediaMsgPath());
 
                     //after finishing the video
                     videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -115,9 +116,10 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             //display time of the message
             ((ReceiverViewHolderVideo) holder).receiverTimeMessageVideo.setText(msg.getTime());
 
-            //set duration of full video
-            setRecordDuration(msg.getMediaMsg(), ((ReceiverViewHolderVideo) holder).receiverVideoDuration);
+//            //set duration of full video
+//            setRecordDuration(msg.getMediaMsg(), ((ReceiverViewHolderVideo) holder).receiverVideoDuration);
 
+            ((ReceiverViewHolderVideo) holder).receiverVideoDuration.setText(msg.getMediaMsgTime());
 
             //playing Video
             ((ReceiverViewHolderVideo) holder).receiverPlayVideoIcon.setOnClickListener(new View.OnClickListener() {
@@ -126,7 +128,7 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     //open window to display video
                     PopupWindow popupWindow = openPopVideoView();
                     //play video
-                    playVideo(msg.getMediaMsg());
+                    playVideo(msg.getMediaMsgPath());
 
                     //after finishing the video
                     videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -150,14 +152,7 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public int getItemViewType(int position) {
         //only for test view type
-        if (position == 0 || position == 3 || position == 6 || position == 9 || position == 12 || position == 15)
-            return MSG_TYPE_RECEIVER_VIDEO;
-        else if (position == 1 || position == 4 || position == 7 || position == 10 || position == 13 || position == 16)
-            return MSG_TYPE_SENDER_VIDEO;
-        else if (position == 2 || position == 5 || position == 8)
-            return MSG_TYPE_SENDER_TEXT;
-        else
-            return MSG_TYPE_RECEIVER_TEXT;
+        return chats.get(position).getMsgType();
     }
 
 
@@ -269,7 +264,7 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         int min = sec / 60;
         sec = sec - (min * 60);
 
-        return String.format("%02d",min) + ":" + String.format("%02d",sec);
+        return String.format("%02d", min) + ":" + String.format("%02d", sec);
     }
 
 
@@ -305,8 +300,8 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      * @param popupWindow window which will close
      */
     //close the popWindow
-    public void closePopVideoView(MediaPlayer mp, PopupWindow popupWindow) {
-        mp.release();
+    public void closePopVideoView(@NonNull MediaPlayer mp, @NonNull PopupWindow popupWindow) {
+        mp.reset();
         popupWindow.dismiss();
     }
 
@@ -314,12 +309,12 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      * @param videoResource video recourse of any message
      */
     //playing specific video by it's id
-    public void playVideo(int videoResource) {
+    public void playVideo(String videoResource) {
         //create the path of video
-        String videoPath = "android.resource://" + context.getPackageName() + "/" + videoResource;
+//        String videoPath = "android.resource://" + context.getPackageName() + "/" + videoResource;
 
         //create uri with specific path
-        Uri uri = Uri.parse(videoPath);
+        Uri uri = Uri.parse(videoResource);
 
         //set path to the videoView
         videoView.setVideoURI(uri);
