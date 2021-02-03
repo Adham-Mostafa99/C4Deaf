@@ -16,7 +16,6 @@
         android:src="@drawable/photo" />
 
     <TextView
-        android:id="@+id/header_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_horizontal_value"
@@ -26,7 +25,6 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/header_user_phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_horizontal_value"

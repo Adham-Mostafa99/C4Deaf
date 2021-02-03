@@ -11,7 +11,6 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,11 +35,9 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'com.google.android.material:material:1.2.1'
-    implementation 'com.google.firebase:firebase-database:19.6.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation 'com.android.support:multidex:1.0.3'
 
     //circleImageView
     implementation 'de.hdodenhof:circleimageview:3.1.0'
@@ -75,26 +72,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.3.2'
     implementation 'androidx.navigation:navigation-ui:2.3.2'
 
-
-    // Also declare the dependency for the Google Play services library and specify its version
-    // Google Sign In SDK (only required for Google Sign In)
-    implementation 'com.google.android.gms:play-services-auth:19.0.0'
-    implementation 'com.google.firebase:firebase-auth:16.0.5'
-
-    // Import the Firebase BoM (see: https://firebase.google.com/docs/android/learn-more#bom)
-    implementation platform('com.google.firebase:firebase-bom:26.1.1')
-    // Firebase Authentication (Java)
-    implementation 'com.google.firebase:firebase-auth'
-    // When using the BoM, don't specify versions in Firebase dependencies
-    implementation 'com.google.firebase:firebase-analytics'
-
-    // Facebook Android SDK (only required for Facebook Login)
-    // Used in FacebookLoginActivity.
-    implementation 'com.facebook.android:facebook-login:4.42.0'
-    implementation 'androidx.browser:browser:1.0.0'
-    implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
-
-
+    //RecordView ==> 3llomi-RecordView
+    implementation 'com.devlomi.record-view:record-view:2.0.1'
 
 }
-apply plugin: 'com.google.gms.google-services'
