@@ -75,6 +75,8 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.3.2'
     implementation 'androidx.navigation:navigation-ui:2.3.2'
 
+    //RecordView ==> 3llomi-RecordView
+    implementation 'com.devlomi.record-view:record-view:2.0.1'
 
     // Also declare the dependency for the Google Play services library and specify its version
     // Google Sign In SDK (only required for Google Sign In)
