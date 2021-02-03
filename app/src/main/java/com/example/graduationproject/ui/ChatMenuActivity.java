@@ -1,12 +1,15 @@
 package com.example.graduationproject.ui;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,10 +22,15 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.graduationproject.R;
 import com.example.graduationproject.models.User;
 import com.example.graduationproject.adapters.ChatListAdapter;
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.ArrayList;
@@ -44,6 +52,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ChatListAdapter adapter;
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +61,10 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         ButterKnife.bind(this);
 
         init();
+
+        //Initialise Firebase
+        mAuth = FirebaseAuth.getInstance();
+        final FirebaseUser user = mAuth.getCurrentUser();
 
         //change image of header in navigation
         View headerView = navigationView.getHeaderView(0);
@@ -70,6 +83,10 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
                     case R.id.settings:
                         Toast.makeText(getApplicationContext(), "settings", Toast.LENGTH_SHORT).show();
                         break;
+                    case R.id.log_out:
+                        //Toast.makeText(getApplicationContext(), "log_out", Toast.LENGTH_SHORT).show();
+                        signOut();
+                        break;
                 }
                 return true;
             }
@@ -87,7 +104,6 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         newChatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
             }
         });
 
@@ -98,6 +114,21 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
 
             }
         });
+
+        if(user!=null){
+            String name = user.getDisplayName();
+            String photoURL = user.getPhotoUrl().toString();
+            String number =user.getEmail();
+            Glide.with(this).load(photoURL).into(menu);
+
+            // upload userName , photo and phon number in navigation_header
+            TextView userName = headerView.findViewById(R.id.header_user_name);
+            TextView userPhone = headerView.findViewById(R.id.header_user_phone);
+            Glide.with(this).load(photoURL).into(userPhoto);
+            userName.setText(name);
+            userPhone.setText(number);
+
+        }
 
     }
 
@@ -175,4 +206,17 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
 
         return users;
     }
+
+    //  auth_sign_out
+    public void signOut() {
+        mAuth.signOut();
+        LoginManager.getInstance().logOut();
+        Intent intent=new Intent(getApplicationContext(),SignInActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+
+
 }

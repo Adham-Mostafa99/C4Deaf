@@ -1,0 +1,215 @@
+[33mcommit 6d5fa02eea07efddcf0b4a9fe2a21c4bc9527af2[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Wed Feb 3 02:32:59 2021 +0200
+
+    edit
+
+[33mcommit 8f14c31298fc3159dedd5765ee2fadabac231451[m
+Merge: d1bc33b 51aaecb
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Wed Feb 3 02:19:05 2021 +0200
+
+    Merge branch 'main' of https://github.com/EngAdham/Graduation-Project into main
+
+[33mcommit d1bc33bc643bf0ef87c50f3f031da9e96d2b4f6f[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Wed Feb 3 02:16:19 2021 +0200
+
+    add video chat
+
+[33mcommit 51aaecb42cc2c9dcf5d72ff045dbd0c66460c4b4[m
+Author: Aya Hassan <70991772+AyaHassan33@users.noreply.github.com>
+Date:   Sat Jan 23 06:03:47 2021 +0200
+
+    add sign_in_by_facebook
+
+[33mcommit 4239a09b041c88ecbbf04084a9153c80274c366c[m
+Author: Aya Hassan <70991772+AyaHassan33@users.noreply.github.com>
+Date:   Fri Jan 22 07:27:21 2021 +0200
+
+    add sign_in_by_google
+
+[33mcommit d49e3afa490b7b4f3f585ab10827c0d8387b97fe[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Tue Jan 19 15:32:41 2021 +0200
+
+    add deaf chat
+
+[33mcommit 4c03fcde17fe79ab1837c9d40700d42da07cf055[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Sat Jan 16 18:20:08 2021 +0200
+
+    update button play-pause
+
+[33mcommit 1dc27fd442d858f914e1820a259542c48c11dbdd[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Fri Jan 15 21:05:45 2021 +0200
+
+    add audio focus
+
+[33mcommit dcf6202d83299d5add16a62bd6cbd015fe258464[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Wed Jan 13 19:19:11 2021 +0200
+
+    add deaf chat
+
+[33mcommit 346ff96ae93e13c86a25127e8962f109f63eb7f4[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Wed Jan 13 13:42:54 2021 +0200
+
+    add record
+
+[33mcommit 13bb300ae1d8d9827c696c233ebf9326bca37aa3[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Wed Jan 13 12:07:04 2021 +0200
+
+    add video view and edit normal chat
+
+[33mcommit 42febfe37a9c5cf54cefe7c126d6e33f81f0ecd0[m
+Merge: d1f75b9 8bb66ea
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Wed Jan 13 07:00:22 2021 +0200
+
+    Update activity_chat_page_deaf.xml
+
+[33mcommit d1f75b923cd3559c52865c91f47e5a60d46fd35b[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Wed Jan 13 06:59:38 2021 +0200
+
+    add normal
+
+[33mcommit 8bb66eae94e8f7b72c3a6415370b468aa74dc6d3[m
+Author: Aya Hassan <70991772+AyaHassan33@users.noreply.github.com>
+Date:   Mon Jan 11 04:47:54 2021 +0200
+
+    add chat_item_message
+
+[33mcommit ca809ee525a629c4031c3ca92318346bd331ca94[m
+Author: Aya Hassan <70991772+AyaHassan33@users.noreply.github.com>
+Date:   Mon Jan 11 02:00:40 2021 +0200
+
+    add chatPageNormal and deaf
+
+[33mcommit d7145c17872775a0e4a8b7b47c7041402e5cded8[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Fri Jan 8 17:50:32 2021 +0200
+
+    4.0.2
+
+[33mcommit 0cf390325c0cc088557e09809bddad42867270db[m
+Author: Aya Hassan <70991772+AyaHassan33@users.noreply.github.com>
+Date:   Fri Jan 8 13:48:08 2021 +0200
+
+    add chat_page
+
+[33mcommit ebd45fd337bdbd31039d647c5f54606353faf586[m
+Merge: e1c616f 271b636
+Author: Aya Hassan <70991772+AyaHassan33@users.noreply.github.com>
+Date:   Fri Jan 8 13:45:09 2021 +0200
+
+    Merge remote-tracking branch 'origin/main' into main
+    
+    # Conflicts:
+    #       app/src/main/AndroidManifest.xml
+
+[33mcommit e1c616f9a47561956c15d58a1e6f7fc1d8cdc303[m
+Author: Aya Hassan <70991772+AyaHassan33@users.noreply.github.com>
+Date:   Fri Jan 8 13:43:31 2021 +0200
+
+    add chat_page_activity
+
+[33mcommit 271b63642e12b4b1bee30e74dfa2ff6485cbc273[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Fri Jan 8 09:13:51 2021 +0200
+
+    add pop up confirm window
+
+[33mcommit 1d780b5901bc06d06fca2987e6e451e5da7cb7d4[m
+Author: Aya Hassan <70991772+AyaHassan33@users.noreply.github.com>
+Date:   Thu Jan 7 22:54:18 2021 +0200
+
+    add chat_page_activity
+
+[33mcommit dd9a1482e62a3fe0ff72cf3a8a8e0fceeadd764d[m
+Author: Aya Hassan <70991772+AyaHassan33@users.noreply.github.com>
+Date:   Thu Jan 7 22:37:55 2021 +0200
+
+    add chat_page_activity
+
+[33mcommit 3c2d78a3520c193ff717c2dc842a5ee3b9bb8301[m
+Merge: 9e7e2f2 a207b9d
+Author: Aya Hassan <70991772+AyaHassan33@users.noreply.github.com>
+Date:   Thu Jan 7 15:38:40 2021 +0200
+
+    Merge remote-tracking branch 'origin/main' into main
+    
+    # Conflicts:
+    #       app/build.gradle
+    #       app/src/main/AndroidManifest.xml
+    #       app/src/main/java/com/example/graduationproject/ui/SignInActivity.java
+
+[33mcommit a207b9d180840da27b2b4fa954d2f4fa3ced9cfe[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Thu Jan 7 13:18:51 2021 +0200
+
+    add navigation drawer #adham
+
+[33mcommit 9e7e2f2ea822b43ae8d0c7ee5a5a2925fa7b850a[m
+Author: Aya Hassan <70991772+AyaHassan33@users.noreply.github.com>
+Date:   Wed Jan 6 23:21:21 2021 +0200
+
+    add method signInByGoogle
+
+[33mcommit 22dc97cbc7639114629f0f5a1c539535276a894c[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Sun Jan 3 09:11:20 2021 +0200
+
+    add chat menu
+
+[33mcommit fd3d989878b4c254d7fe954954e8d86eb4cff538[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Sun Jan 3 04:58:47 2021 +0200
+
+    have account
+
+[33mcommit b3e64b08839ed4e72968311b1859677c5fbffe63[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Sun Jan 3 04:51:17 2021 +0200
+
+    update sign up activity
+
+[33mcommit cce4461482e7f769b430d67aaf24e3a754993e20[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Sat Jan 2 22:13:32 2021 +0200
+
+    update
+
+[33mcommit 6fe2bc8fdeb8442f040c9796eb5c02442f05abab[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Sat Jan 2 21:01:47 2021 +0200
+
+    update
+
+[33mcommit 7500e99d5ba68a587ed01424528754f3630f5e9d[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Sat Jan 2 05:12:30 2021 +0200
+
+    sign_up code
+
+[33mcommit ef752149848093e569ed31b6a6919772e3f670c6[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Sat Jan 2 01:57:52 2021 +0200
+
+    adham-update_signup
+
+[33mcommit c476ab1d22774b82db3669b77e8b0d35cb637e2d[m
+Author: EngAdham <adham.dawey@gmail.com>
+Date:   Fri Jan 1 03:58:10 2021 +0200
+
+    add project
+
+[33mcommit ca4d3cf4427a3a4fcdb24400dc4c1f64fc392c7d[m
+Author: Adham Mostafa <37470831+EngAdham@users.noreply.github.com>
+Date:   Fri Jan 1 03:55:17 2021 +0200
+
+    Initial commit
