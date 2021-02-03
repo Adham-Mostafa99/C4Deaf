@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/rectangle_splash"
+    tools:context=".activity_splash_screen">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/App_logo"
+        android:layout_width="270dp"
+        android:layout_height="270dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/photo"
+        android:layout_marginTop="175dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/application_name"
+        android:textSize="40sp"
+        android:textAllCaps="false"
+        android:layout_marginTop="115dp"
+        android:textColor="@color/white"
+        android:fontFamily="@font/cambo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/App_logo"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
