@@ -21,7 +21,7 @@
             android:layout_gravity="center_vertical"
             android:background="@drawable/upper_background">
 
-            <de.hdodenhof.circleimageview.CircleImageView
+            <ImageView
                 android:id="@+id/menu"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
@@ -35,8 +35,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
                 android:fontFamily="@font/cambo"
                 android:text="@string/application_name"
                 android:textColor="@android:color/white"
