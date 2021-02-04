@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "756253348390",
+    "project_id": "deaf-chat-75d2f",
+    "storage_bucket": "deaf-chat-75d2f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:756253348390:android:a722a9b8b03c032c9ccce7",
+        "android_client_info": {
+          "package_name": "com.example.graduationproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "756253348390-trbc5dkergfi0n4d1cqi1tn5s5gtc215.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.graduationproject",
+            "certificate_hash": "61ed7eda7213dd5b5b7cf26487231280f618a32b"
+          }
+        },
+        {
+          "client_id": "756253348390-2gd62r5s84nlrf5jvu9gmh5s07bhloh4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0-1qMupYtLB-wlNt1Lm40Gbfo9jQ4r8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "756253348390-2gd62r5s84nlrf5jvu9gmh5s07bhloh4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
