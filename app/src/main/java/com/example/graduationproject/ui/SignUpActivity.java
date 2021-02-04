@@ -1,3 +1,4 @@
+
 package com.example.graduationproject.ui;
 
 import android.Manifest;
@@ -29,6 +30,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -37,11 +39,22 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.graduationproject.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.rilixtech.widget.countrycodepicker.CountryCodePicker;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.Inflater;
 
 import butterknife.BindView;
@@ -81,10 +94,16 @@ public class SignUpActivity extends AppCompatActivity {
     @BindView(R.id.sign_up_have_account)
     TextView signUpHaveAccount;
 
+    private static final String TAG = "SignUpActivity";
+
     private String[] gender, state;
     private String userChosenPhoto;
     private static List<Integer> dateTime = new ArrayList<>();
     private String genderSelected, stateSelected;
+
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+    private FirebaseFirestore db;
 
 
     @Override
@@ -94,6 +113,7 @@ public class SignUpActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         init();
+        initializeFirebase();
 
         setPermissions();
 
@@ -145,7 +165,7 @@ public class SignUpActivity extends AppCompatActivity {
 
             }
         });
-        
+
         //sign up to create new account
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,48 +181,81 @@ public class SignUpActivity extends AppCompatActivity {
                 String currentState = stateSelected;
 
 
-                //check validate of input user information
-                if (firstName.isEmpty()) {
-                    signUpEditFirstName.setError("Enter your first name");
-                    signUpEditFirstName.requestFocus();
-                } else if (lastName.isEmpty()) {
-                    signUpEditLastName.setError("Enter your last name");
-                    signUpEditLastName.requestFocus();
-                } else if (email.isEmpty()) {
-                    signUpEditEmail.setError("Enter your email");
-                    signUpEditEmail.requestFocus();
-                } else if (pass.isEmpty()) {
-                    signUpEditPass.setError("Enter your password");
-                    signUpEditPass.requestFocus();
-                } else if (phone.isEmpty()) {
-                    signUpEditPhone.setError("Enter your phone");
-                    signUpEditPhone.requestFocus();
-                } else if (dateTime.isEmpty()) {
-                    //show error message
-                    errorNoDate.setVisibility(View.VISIBLE);
-                } else if (currentGender.equals(gender[0])) {
-                    Toast.makeText(getApplicationContext(), "Please select Gender", Toast.LENGTH_SHORT).show();
-                } else if (currentState.equals(state[0])) {
-                    Toast.makeText(getApplicationContext(), "Please select State", Toast.LENGTH_SHORT).show();
-                } else if (!signUpCheckAcceptedRules.isChecked()) {
-                    Toast.makeText(getApplicationContext(), "Please Agree Rules", Toast.LENGTH_SHORT).show();
-                } else {
-                    String message = "first name: " + firstName +
-                            "\nlast name: " + lastName +
-                            "\nemail: " + email +
-                            "\npass: " + pass +
-                            "\nphone: " + fullPhone +
-                            "\ndate: " + date +
-                            "\ngender: " + currentGender +
-                            "\nstate: " + currentState;
-                    Toast.makeText(getApplicationContext(), "done", Toast.LENGTH_SHORT).show();
-                    Log.v("SignUpActivity", message);
+//                //check validate of input user information
+//                if (firstName.isEmpty()) {
+//                    signUpEditFirstName.setError("Enter your first name");
+//                    signUpEditFirstName.requestFocus();
+//                } else if (lastName.isEmpty()) {
+//                    signUpEditLastName.setError("Enter your last name");
+//                    signUpEditLastName.requestFocus();
+//                } else if (email.isEmpty()) {
+//                    signUpEditEmail.setError("Enter your email");
+//                    signUpEditEmail.requestFocus();
+//                } else if (pass.isEmpty()) {
+//                    signUpEditPass.setError("Enter your password");
+//                    signUpEditPass.requestFocus();
+//                } else if (phone.isEmpty()) {
+//                    signUpEditPhone.setError("Enter your phone");
+//                    signUpEditPhone.requestFocus();
+//                } else if (dateTime.isEmpty()) {
+//                    //show error message
+//                    errorNoDate.setVisibility(View.VISIBLE);
+//                } else if (currentGender.equals(gender[0])) {
+//                    Toast.makeText(getApplicationContext(), "Please select Gender", Toast.LENGTH_SHORT).show();
+//                } else if (currentState.equals(state[0])) {
+//                    Toast.makeText(getApplicationContext(), "Please select State", Toast.LENGTH_SHORT).show();
+//                } else if (!signUpCheckAcceptedRules.isChecked()) {
+//                    Toast.makeText(getApplicationContext(), "Please Agree Rules", Toast.LENGTH_SHORT).show();
+//                } else {
 
-                    //confirming the uer email and phone number
-                    confirmEmailAndPhone();
-                }
 
+                //add user
+                Map<String, Object> user = new HashMap<>();
+                user.put("first name", firstName);
+                user.put("last name", lastName);
+                user.put("email", email);
+                user.put("password", pass);
+                user.put("phone", fullPhone);
+                user.put("birth date", date);
+                user.put("gender", currentGender);
+                user.put("state", currentState);
+
+                mAuth.createUserWithEmailAndPassword("email@gma.com", "15161351087jlm")
+                        .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "createUserWithEmail:success");
+                                    currentUser = mAuth.getCurrentUser();
+                                    db.collection("users")
+                                            .add(user)
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                @Override
+                                                public void onSuccess(DocumentReference documentReference) {
+                                                    Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.w(TAG, "Error adding document", e);
+                                                }
+                                            });
+
+                                } else {
+                                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                    Log.e(TAG, "onComplete: Failed=" + task.getException().getMessage());
+                                    Toast.makeText(SignUpActivity.this, "Authentication failed.",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+                //confirming the uer email and phone number
+//                    confirmEmailAndPhone();
             }
+
+//            }
         });
 
         /**
@@ -218,6 +271,34 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
+    public void init() {
+        //requestFocus to firstName
+        signUpEditFirstName.requestFocus();
+
+        //declare StringArrays for Spinner
+        gender = getResources().getStringArray(R.array.gender);
+        state = getResources().getStringArray(R.array.state);
+
+        //define default spinner
+        genderSelected = gender[0];
+        stateSelected = state[0];
+
+        //declare spinners
+        setSpinnerGender();
+        setSpinnerState();
+
+        //hide error message
+        errorNoDate.setVisibility(View.GONE);
+
+        //connect code to phone editView
+        signUpCountryCode.registerPhoneNumberTextView(signUpEditPhone);
+
+    }
+
+    public void initializeFirebase() {
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+    }
 
     public void confirmEmailAndPhone() {
         //find the constrain in sign_up layout
@@ -257,30 +338,6 @@ public class SignUpActivity extends AppCompatActivity {
                 //handel click
             }
         });
-
-    }
-
-    public void init() {
-        //requestFocus to firstName
-        signUpEditFirstName.requestFocus();
-
-        //declare StringArrays for Spinner
-        gender = getResources().getStringArray(R.array.gender);
-        state = getResources().getStringArray(R.array.state);
-
-        //define default spinner
-        genderSelected = gender[0];
-        stateSelected = state[0];
-
-        //declare spinners
-        setSpinnerGender();
-        setSpinnerState();
-
-        //hide error message
-        errorNoDate.setVisibility(View.GONE);
-
-        //connect code to phone editView
-        signUpCountryCode.registerPhoneNumberTextView(signUpEditPhone);
 
     }
 
@@ -396,6 +453,3 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 }
-
-
-
