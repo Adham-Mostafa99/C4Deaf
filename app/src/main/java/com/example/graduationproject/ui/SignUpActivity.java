@@ -13,8 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,8 +21,6 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,11 +28,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.graduationproject.ConfirmEmail;
+import com.example.graduationproject.DatePickerFragment;
 import com.example.graduationproject.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -45,22 +42,23 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.rilixtech.widget.countrycodepicker.CountryCodePicker;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Inflater;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SignUpActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity implements DatePickerFragment.OnFinish {
 
     @BindView(R.id.sign_up_profile_image)
     CircleImageView signUpProfileImage;
@@ -94,16 +92,16 @@ public class SignUpActivity extends AppCompatActivity {
     TextView signUpHaveAccount;
 
     private static final String TAG = "SignUpActivity";
+    @BindView(R.id.user_date)
+    TextView userDate;
 
     private String[] gender, state;
     private String userChosenPhoto;
-    private static List<Integer> dateTime = new ArrayList<>();
+    private List<Integer> dateTime = new ArrayList<>();
     private String genderSelected, stateSelected;
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    private FirebaseFirestore db;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,12 +112,11 @@ public class SignUpActivity extends AppCompatActivity {
         init();
         initializeFirebase();
 
-        setPermissions();
-
         //upload photo form camera or gallery button
         signUpUploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setCameraPermission();
                 uploadProfileImage();
             }
         });
@@ -128,10 +125,8 @@ public class SignUpActivity extends AppCompatActivity {
         signUpDateOfBirthDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogFragment newFragment = new DatePickerFragment();
+                DatePickerFragment newFragment = new DatePickerFragment();
                 newFragment.show(getSupportFragmentManager(), "datePicker");
-                //hide error message
-                errorNoDate.setVisibility(View.GONE);
             }
         });
 
@@ -181,90 +176,60 @@ public class SignUpActivity extends AppCompatActivity {
 
 
                 //check validate of input user information
-                if (firstName.isEmpty()) {
-                    signUpEditFirstName.setError("Enter your first name");
-                    signUpEditFirstName.requestFocus();
-                } else if (lastName.isEmpty()) {
-                    signUpEditLastName.setError("Enter your last name");
-                    signUpEditLastName.requestFocus();
-                } else if (email.isEmpty()) {
-                    signUpEditEmail.setError("Enter your email");
-                    signUpEditEmail.requestFocus();
-                } else if (pass.isEmpty()) {
-                    signUpEditPass.setError("Enter your password");
-                    signUpEditPass.requestFocus();
-                } else if (phone.isEmpty()) {
-                    signUpEditPhone.setError("Enter your phone");
-                    signUpEditPhone.requestFocus();
-                } else if (dateTime.isEmpty()) {
-                    //show error message
-                    errorNoDate.setVisibility(View.VISIBLE);
-                } else if (currentGender.equals(gender[0])) {
-                    Toast.makeText(getApplicationContext(), "Please select Gender", Toast.LENGTH_SHORT).show();
-                } else if (currentState.equals(state[0])) {
-                    Toast.makeText(getApplicationContext(), "Please select State", Toast.LENGTH_SHORT).show();
-                } else if (!signUpCheckAcceptedRules.isChecked()) {
-                    Toast.makeText(getApplicationContext(), "Please Agree Rules", Toast.LENGTH_SHORT).show();
-                } else {
+                if (isInputValid(firstName, lastName, email, pass, phone, currentGender, currentState)) {
+                    //creating instance of user
+                    Map<String, Object> user = createUserWithInput(
+                            firstName,
+                            lastName,
+                            email,
+                            pass,
+                            fullPhone,
+                            date,
+                            currentGender,
+                            currentState);
 
+                    //creating account for user using his mail and password
+                    mAuth.createUserWithEmailAndPassword(email, pass)
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "createUserWithEmail:success");
+                                        currentUser = mAuth.getCurrentUser();
 
-                //add user
-                Map<String, Object> user = new HashMap<>();
-                user.put("first name", firstName);
-                user.put("last name", lastName);
-                user.put("email", email);
-                user.put("password", pass);
-                user.put("phone", fullPhone);
-                user.put("birth date", date);
-                user.put("gender", currentGender);
-                user.put("state", currentState);
+                                        //create instance of UserProfileChangeRequest
+                                        //holding display name and photoUrl
+                                        UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest
+                                                .Builder()
+                                                .setDisplayName(firstName).build();
 
-                mAuth.createUserWithEmailAndPassword(email, pass)
-                        .addOnCompleteListener( new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    Log.d(TAG, "createUserWithEmail:success");
-                                    currentUser = mAuth.getCurrentUser();
-                                    db.collection("users")
-                                            .add(user)
-                                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                                @Override
-                                                public void onSuccess(DocumentReference documentReference) {
-                                                    Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Log.w(TAG, "Error adding document", e);
-                                                }
-                                            });
+                                        //set UserProfileChangeRequest to current user
+                                        currentUser.updateProfile(userProfileChangeRequest)
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if (task.isSuccessful())
+                                                            Log.d(TAG, "UpdateUserName:success");
+                                                    }
+                                                });
 
-                                } else {
-                                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                    Log.e(TAG, "onComplete: Failed=" + task.getException().getMessage());
-                                    Toast.makeText(SignUpActivity.this, "Authentication failed.",
-                                            Toast.LENGTH_SHORT).show();
+                                        //confirming the uer email and phone number
+                                        confirmEmailAndPhone(user);
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-                            }
-                        });
-
-                //confirming the uer email and phone number
-//                    confirmEmailAndPhone();
-            }
-
+                            });
+                }
             }
         });
 
-        /**
-         * already have account
-         * so sign in instead
-         */
+        //already have account
+        //so sign in instead
         signUpHaveAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startActivity(new Intent(getApplicationContext(), SignInActivity.class));
             }
         });
 
@@ -286,70 +251,112 @@ public class SignUpActivity extends AppCompatActivity {
         setSpinnerGender();
         setSpinnerState();
 
-        //hide error message
-        errorNoDate.setVisibility(View.GONE);
-
         //connect code to phone editView
         signUpCountryCode.registerPhoneNumberTextView(signUpEditPhone);
 
     }
 
+    //initialize firebase objects
     public void initializeFirebase() {
         mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        currentUser = null;
     }
 
-    public void confirmEmailAndPhone() {
-        //find the constrain in sign_up layout
-        // to be the parent o the popup Window
-        ConstraintLayout constraintLayout = findViewById(R.id.sign_up_layout);
+    /**
+     * check validate of input user information
+     *
+     * @param firstName     user first name
+     * @param lastName      user last name
+     * @param email         user email
+     * @param pass          user password
+     * @param phone         user phone number without country code
+     * @param currentGender user gender [male / female]
+     * @param currentState  user state [normal / deaf]
+     * @return true if data is valid and false otherwise
+     */
+    public boolean isInputValid(@NonNull String firstName, String lastName, String email, String pass, String phone, String currentGender, String currentState) {
+        if (firstName.isEmpty()) {
+            signUpEditFirstName.setError("Enter your first name");
+            signUpEditFirstName.requestFocus();
+        } else if (lastName.isEmpty()) {
+            signUpEditLastName.setError("Enter your last name");
+            signUpEditLastName.requestFocus();
+        } else if (email.isEmpty()) {
+            signUpEditEmail.setError("Enter your email");
+            signUpEditEmail.requestFocus();
+        } else if (pass.isEmpty() || pass.length() < 6) {
+            signUpEditPass.setError("Enter your password and larger 6 char");
+            signUpEditPass.requestFocus();
+        } else if (phone.isEmpty()) {
+            signUpEditPhone.setError("Enter your phone");
+            signUpEditPhone.requestFocus();
+        } else if (dateTime.isEmpty()) {
+            //show error message
+            showErrorMsg();
+        } else if (currentGender.equals(gender[0])) {
+            Toast.makeText(getApplicationContext(), "Please select Gender", Toast.LENGTH_SHORT).show();
+        } else if (currentState.equals(state[0])) {
+            Toast.makeText(getApplicationContext(), "Please select State", Toast.LENGTH_SHORT).show();
+        } else if (!signUpCheckAcceptedRules.isChecked()) {
+            Toast.makeText(getApplicationContext(), "Please Agree Rules", Toast.LENGTH_SHORT).show();
+        } else {
+            //hide error message of date if it showing
+            removeErrorMsg();
+            return true;
+        }
+        return false;
+    }
 
-        //make the width and height for the pop Window
-        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+    /**
+     * @param firstName     user first name
+     * @param lastName      user last name
+     * @param email         user email
+     * @param pass          user password
+     * @param fullPhone     user phone number with country code
+     * @param date          user birthday
+     * @param currentGender user gender [male / female]
+     * @param currentState  user state [normal / deaf]
+     * @return Map object contain user information to store them in database
+     */
+    public Map<String, Object> createUserWithInput(String firstName, String lastName, String email, String pass, String fullPhone, String date, String currentGender, String currentState) {
+        //add user
+        Map<String, Object> user = new HashMap<>();
+        user.put("first_name", firstName);
+        user.put("last_name", lastName);
+        user.put("email", email);
+        user.put("password", pass);
+        user.put("phone", fullPhone);
+        user.put("birth_date", date);
+        user.put("gender", currentGender);
+        user.put("state", currentState);
+        return user;
+    }
 
-        // lets taps outside the popup also dismiss it
-        boolean focusable = false;
-
-        //inflate new layout with specific layout(pop_layout) for the pop window
-        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popLayout = layoutInflater.inflate(R.layout.pop_layout, null);
-
-        //create instance of popupWindow by specific view, width, and height
-        PopupWindow popupWindow = new PopupWindow(popLayout, width, height, focusable);
-
-        //show the created instance in specific location
-        popupWindow.showAtLocation(constraintLayout, Gravity.CENTER, 0, 0);
-
-        //declare the cancel button in popWindow
-        Button cancelButton = popLayout.findViewById(R.id.cancel_button);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupWindow.dismiss();
-            }
-        });
-
-        Button okButton = popLayout.findViewById(R.id.ok_button);
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //handel click
-            }
-        });
+    //confirm user email address
+    public void confirmEmailAndPhone(Map<String, Object> user) {
+        //send email verify
+        currentUser.sendEmailVerification();
+        //go to confirm activity
+        Intent intent = new Intent(this, ConfirmEmail.class);
+        intent.putExtra("user", (Serializable) user);
+        startActivity(intent);
 
     }
 
-    public void setPermissions() {
+    //get Permission from user to use the camera
+    public void setCameraPermission() {
         //set camera permission
         if (ContextCompat.checkSelfPermission(SignUpActivity.this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(SignUpActivity.this,
                     new String[]{Manifest.permission.CAMERA},
                     100);
+        } else {
+            finish();
         }
     }
 
+    //set state array to spinner to show it
     public void setSpinnerState() {
         ArrayAdapter<String> adapter_state = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, state);
         //to specify the design of menu with items
@@ -357,6 +364,7 @@ public class SignUpActivity extends AppCompatActivity {
         signUpSpinnerState.setAdapter(adapter_state);
     }
 
+    //set gender array to spinner to show it
     public void setSpinnerGender() {
         ArrayAdapter<String> adapter_gender = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, gender);
         //to specify the design of menu with items
@@ -364,6 +372,7 @@ public class SignUpActivity extends AppCompatActivity {
         signUpSpinnerGender.setAdapter(adapter_gender);
     }
 
+    //upload image from camera or gallery
     public void uploadProfileImage() {
         final String[] items = {"Take Photo", "Choose From Gallery", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
@@ -398,6 +407,27 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     @Override
+    public void finish(List<Integer> dateTime) {
+        //get BirthDate from DatePickerFragment
+        this.dateTime = dateTime;
+
+        //remove error msg and show the date
+        removeErrorMsg();
+    }
+
+
+    public void removeErrorMsg() {
+        errorNoDate.setVisibility(View.GONE);
+        userDate.setVisibility(View.VISIBLE);
+        userDate.setText(dateTime.toString());
+    }
+
+    public void showErrorMsg() {
+        userDate.setVisibility(View.GONE);
+        errorNoDate.setVisibility(View.VISIBLE);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (userChosenPhoto) {
@@ -420,35 +450,10 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    public static class DatePickerFragment extends DialogFragment
-            implements DatePickerDialog.OnDateSetListener {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            if (dateTime.size() == 0) {
-                // Use the current date as the default date in the picker
-                final Calendar c = Calendar.getInstance();
-                int year = c.get(Calendar.YEAR);
-                int month = c.get(Calendar.MONTH);
-                int day = c.get(Calendar.DAY_OF_MONTH);
-                return new DatePickerDialog(getActivity(), this, year, month, day);
-            }
-            // Create a new instance of DatePickerDialog and return it
-            return new DatePickerDialog(getActivity(), this, dateTime.get(2), dateTime.get(1), dateTime.get(0));
-        }
-
-        public void onDateSet(DatePicker view, int year, int month, int day) {
-            // Do something with the date chosen by the user
-            if (dateTime.size() == 0) {
-                dateTime.add(0, day);
-                dateTime.add(1, month);
-                dateTime.add(2, year);
-            } else {
-                dateTime.set(0, day);
-                dateTime.set(1, month);
-                dateTime.set(2, year);
-            }
-        }
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }
+//create DatePicker to get user birth date
+

@@ -280,7 +280,7 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         // lets taps outside the popup also dismiss it
         boolean focusable = true;
 
-        //inflate new layout with specific layout(pop_layout) for the pop window
+        //inflate new layout with specific layout(confirm_email) for the pop window
         View popLayout = LayoutInflater.from(context).inflate(R.layout.vedio_message, null);
 
         //create instance of popupWindow by specific view, width, and height

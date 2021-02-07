@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/rectangle_splash"
-    tools:context=".activity_splash_screen">
+    tools:context=".ui.SplashScreenActivity">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/App_logo"

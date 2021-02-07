@@ -1,4 +1,4 @@
-package com.example.graduationproject;
+package com.example.graduationproject.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.example.graduationproject.ui.SignInActivity;
+import com.example.graduationproject.R;
 
-public class activity_splash_screen extends AppCompatActivity {
+public class SplashScreenActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,7 +16,7 @@ public class activity_splash_screen extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screen);
 
         new Handler().postDelayed(() -> {
-            startActivity(new Intent(activity_splash_screen.this, SignInActivity.class));
+            startActivity(new Intent(SplashScreenActivity.this, SignInActivity.class));
             finish();
         }, 3000);
 

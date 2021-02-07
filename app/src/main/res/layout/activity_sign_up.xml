@@ -200,8 +200,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
+                android:visibility="gone"
                 android:text="@string/enter_your_birth_day"
                 android:textColor="@android:color/holo_red_dark"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/user_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:visibility="visible"
+                android:text="@string/enter_your_birth_day"
+                android:textColor="@android:color/black"
                 android:textSize="14sp" />
         </LinearLayout>
 

@@ -25,6 +25,7 @@ import com.example.graduationproject.adapters.ChatListAdapter;
 import com.google.android.material.navigation.NavigationView;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -109,8 +110,9 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(Gravity.LEFT))
             drawerLayout.closeDrawer(Gravity.LEFT);
-        else
-            super.onBackPressed();
+        else {
+            //some thing like close app
+        }
     }
 
     //initialize resources
@@ -175,4 +177,5 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
 
         return users;
     }
+
 }
