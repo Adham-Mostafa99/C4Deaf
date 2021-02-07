@@ -1,37 +1,21 @@
 package com.example.graduationproject.ui;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import com.example.graduationproject.OpenRecordVideo;
 import com.example.graduationproject.R;
 import com.example.graduationproject.VideoMsg;
 import com.example.graduationproject.adapters.DeafMessageAdapter;
 import com.example.graduationproject.models.DeafChat;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -92,7 +76,7 @@ public class ChatPageDeaf extends AppCompatActivity {
                 fileName += "/videorecord"+COUNTER+".mp4";
 
                 // go to video recoding activity
-                Intent intent = new Intent(getApplicationContext(), OpenRecordVideo.class);
+                Intent intent = new Intent(getApplicationContext(), OpenRecordVideoActivity.class);
                 intent.putExtra("file name", fileName);
                 startActivityForResult(intent, OPEN_RECORD_VIDEO_REQUEST_CODE);
 

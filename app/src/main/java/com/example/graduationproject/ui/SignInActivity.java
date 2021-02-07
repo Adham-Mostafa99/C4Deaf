@@ -7,10 +7,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.graduationproject.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,12 +44,16 @@ public class SignInActivity extends AppCompatActivity {
     @BindView(R.id.sign_in_create_account)
     TextView signInCreateAccount;
 
+    FirebaseAuth mAuth;
+    FirebaseUser currentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
         ButterKnife.bind(this);
 
+        initializeFirebase();
 
         //sign in by email and password
         signIn.setOnClickListener(new View.OnClickListener() {
@@ -52,20 +63,36 @@ public class SignInActivity extends AppCompatActivity {
                 String pass = signInPassword.getText().toString().trim();
 
                 //check validate of email and password
-                if (email.isEmpty()) {
-                    signInEmail.setError("Enter your Email");
-                    signInEmail.requestFocus();
-                } else if (pass.isEmpty()) {
-                    signInPassword.setError("Enter your Password");
-                    signInPassword.requestFocus();
-                } else {
-                    startActivity(
-                            new Intent(getApplicationContext(), SignUpActivity.class));
-                }
+                if (isInputValid(email, pass)) {
+                    mAuth.signInWithEmailAndPassword(email, pass)
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(getApplicationContext(), "Sign in success", Toast.LENGTH_SHORT).show();
 
+                                        //get instance from current user
+                                        currentUser = mAuth.getCurrentUser();
+                                        if (currentUser != null) {
+                                            finish();
+                                            startActivity(new Intent(getApplicationContext(), ChatMenuActivity.class));
+                                        }
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                }
             }
         });
 
+        //forgetting password
+        signInForgotPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), RestUserPasswordActivity.class));
+            }
+        });
 
         //sign in by google account
         signInByGoogleButton.setOnClickListener(new View.OnClickListener() {
@@ -85,9 +112,44 @@ public class SignInActivity extends AppCompatActivity {
         signInCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), SignUpActivity.class));
             }
         });
     }
 
+    //initialize Firebase objects
+    public void initializeFirebase() {
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+    }
 
+    /**
+     * check validate of email and password
+     *
+     * @param email user email address to sign in
+     * @param pass  user password to sign in
+     * @return true if data is valid and false otherwise
+     */
+    public boolean isInputValid(@NonNull String email, String pass) {
+        if (email.isEmpty()) {
+            signInEmail.setError("Enter your Email");
+            signInEmail.requestFocus();
+        } else if (pass.isEmpty()) {
+            signInPassword.setError("Enter your Password");
+            signInPassword.requestFocus();
+        } else {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            finish();
+            startActivity(new Intent(this, ChatMenuActivity.class));
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package com.example.graduationproject;
+package com.example.graduationproject.ui;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.graduationproject.R;
 import com.example.graduationproject.ui.ChatMenuActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,7 +28,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ConfirmEmail extends AppCompatActivity {
+public class ConfirmEmailActivity extends AppCompatActivity {
     @BindView(R.id.change_button)
     Button changeButton;
     @BindView(R.id.resend_button)

@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:paddingHorizontal="30dp"
     android:paddingVertical="40dp"
-    tools:context=".ConfirmEmail">
+    tools:context=".ui.ConfirmEmailActivity">
 
 
     <TextView

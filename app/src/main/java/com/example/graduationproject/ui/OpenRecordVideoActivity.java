@@ -1,4 +1,4 @@
-package com.example.graduationproject;
+package com.example.graduationproject.ui;
 
 import android.Manifest;
 import android.content.Context;
@@ -22,6 +22,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.example.graduationproject.R;
+import com.example.graduationproject.VideoMsg;
 import com.example.graduationproject.ui.ChatPageDeaf;
 
 import java.io.IOException;
@@ -33,7 +35,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class OpenRecordVideo extends AppCompatActivity implements SurfaceHolder.Callback, MediaRecorder.OnInfoListener {
+public class OpenRecordVideoActivity extends AppCompatActivity implements SurfaceHolder.Callback, MediaRecorder.OnInfoListener {
     private static final int PORTRAIT_CAMERA_ORIENTATION = 90;
     private static final int PORTRAIT_RECORD_BACK_ORIENTATION = 90;
     private static final int PORTRAIT_RECORD_FRONT_ORIENTATION = 270;
