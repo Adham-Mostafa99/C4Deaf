@@ -18,7 +18,7 @@
         android:src="@drawable/user_photo" />
 
     <LinearLayout
-        android:id="@+id/user"
+        android:id="@+id/userMenuChat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -55,7 +55,7 @@
         android:id="@+id/message_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/user"
+        android:layout_alignTop="@id/userMenuChat"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginHorizontal="8dp"

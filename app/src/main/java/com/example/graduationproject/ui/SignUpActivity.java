@@ -2,9 +2,11 @@ package com.example.graduationproject.ui;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,23 +27,27 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.example.graduationproject.DatePickerFragment;
 import com.example.graduationproject.R;
+import com.example.graduationproject.models.UserPrivateInfo;
+import com.example.graduationproject.models.UserPublicInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.rilixtech.widget.countrycodepicker.CountryCodePicker;
 
-import java.io.Serializable;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -79,18 +85,28 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
     TextView errorNoDate;
     @BindView(R.id.sign_up_have_account)
     TextView signUpHaveAccount;
-
-    private static final String TAG = "SignUpActivity";
     @BindView(R.id.user_date)
     TextView userDate;
+
+    private static final String TAG = "SignUpActivity";
+    private static final int REQUEST_CAMERA_PERMISSION = 101;
+    private static final int WRITE_TO_STORAGE_PERMISSION_REQUEST_CODE = 102;
+    private static final int READ_FROM_STORAGE_PERMISSION_REQUEST_CODE = 103;
+    public static final String USER_PRIVATE_INFO_INTENT_EXTRA = "userPrivateInfo";
+    public static final String USER_PUBLIC_INFO_INTENT_EXTRA = "userPublicInfo";
+    @BindView(R.id.sign_up_edit_display_name)
+    EditText signUpEditDisplayName;
 
     private String[] gender, state;
     private String userChosenPhoto;
     private List<Integer> dateTime = new ArrayList<>();
     private String genderSelected, stateSelected;
 
+    private String userPhotoPath;
+
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,21 +118,15 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         initializeFirebase();
 
         //upload photo form camera or gallery button
-        signUpUploadImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setCameraPermission();
-                uploadProfileImage();
-            }
+        signUpUploadImage.setOnClickListener(v -> {
+            setCameraPermission();
+            uploadProfileImage();
         });
 
         //define user birthDate
-        signUpDateOfBirthDay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DatePickerFragment newFragment = new DatePickerFragment();
-                newFragment.show(getSupportFragmentManager(), "datePicker");
-            }
+        signUpDateOfBirthDay.setOnClickListener(v -> {
+            DatePickerFragment newFragment = new DatePickerFragment();
+            newFragment.show(getSupportFragmentManager(), "datePicker");
         });
 
         //choose user gender
@@ -150,68 +160,53 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         });
 
         //sign up to create new account
-        signUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String firstName = signUpEditFirstName.getText().toString().trim();
-                String lastName = signUpEditLastName.getText().toString().trim();
-                String email = signUpEditEmail.getText().toString().trim();
-                String pass = signUpEditPass.getText().toString().trim();
-                String phone = signUpEditPhone.getText().toString().trim();
-                String fullPhone = signUpCountryCode.getFullNumberWithPlus().trim();
-                String date = dateTime.toString().trim();
-                String currentGender = genderSelected;
-                String currentState = stateSelected;
+        signUpButton.setOnClickListener(v -> {
+            String firstName = signUpEditFirstName.getText().toString().trim();
+            String lastName = signUpEditLastName.getText().toString().trim();
+            String displayName = signUpEditDisplayName.getText().toString().trim();
+            String email = signUpEditEmail.getText().toString().trim();
+            String pass = signUpEditPass.getText().toString().trim();
+            String phone = signUpEditPhone.getText().toString().trim();
+            String fullPhone = signUpCountryCode.getFullNumberWithPlus().trim();
+            String date = dateTime.toString().trim();
+            String currentGender = genderSelected;
+            String currentState = stateSelected;
 
 
-                //check validate of input user information
-                if (isInputValid(firstName, lastName, email, pass, phone, currentGender, currentState)) {
-                    //creating instance of user
-                    Map<String, Object> user = createUserWithInput(
-                            firstName,
-                            lastName,
-                            email,
-                            pass,
-                            fullPhone,
-                            date,
-                            currentGender,
-                            currentState);
+            //check validate of input user information
+            if (isInputValid(userPhotoPath, firstName, lastName, displayName, email, pass, phone, currentGender, currentState)) {
 
-                    //creating account for user using his mail and password
-                    mAuth.createUserWithEmailAndPassword(email, pass)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        Log.d(TAG, "createUserWithEmail:success");
-                                        currentUser = mAuth.getCurrentUser();
+                //creating account for user using his mail and password
+                mAuth.createUserWithEmailAndPassword(email, pass)
+                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "createUserWithEmail:success");
+                                    currentUser = mAuth.getCurrentUser();
 
-                                        //create instance of UserProfileChangeRequest
-                                        //holding display name and photoUrl
-                                        UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest
-                                                .Builder()
-                                                .setDisplayName(firstName).build();
+                                    UserPrivateInfo userPrivateInfo = new
+                                            UserPrivateInfo(email, pass, fullPhone, date);
+                                    UserPublicInfo userPublicInfo = new
+                                            UserPublicInfo(currentUser.getUid()
+                                            , firstName
+                                            , lastName
+                                            , displayName
+                                            , currentState
+                                            , currentGender
+                                            , userPhotoPath);
 
-                                        //set UserProfileChangeRequest to current user
-                                        currentUser.updateProfile(userProfileChangeRequest)
-                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        if (task.isSuccessful())
-                                                            Log.d(TAG, "UpdateUserName:success");
-                                                    }
-                                                });
+                                    //confirming the uer email and phone number
+                                    confirmEmailAndPhone(userPrivateInfo, userPublicInfo);
 
-                                        //confirming the uer email and phone number
-                                        confirmEmailAndPhone(user);
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
+                                } else {
+                                    Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                 }
-                            });
-                }
+                            }
+                        });
             }
         });
+
 
         //already have account
         //so sign in instead
@@ -249,13 +244,17 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
     public void initializeFirebase() {
         mAuth = FirebaseAuth.getInstance();
         currentUser = null;
+
+
     }
 
     /**
      * check validate of input user information
      *
+     * @param userPhotoPath  user photo passing in uri
      * @param firstName     user first name
      * @param lastName      user last name
+     * @param displayName   user display name
      * @param email         user email
      * @param pass          user password
      * @param phone         user phone number without country code
@@ -263,13 +262,18 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
      * @param currentState  user state [normal / deaf]
      * @return true if data is valid and false otherwise
      */
-    public boolean isInputValid(@NonNull String firstName, String lastName, String email, String pass, String phone, String currentGender, String currentState) {
-        if (firstName.isEmpty()) {
+    public boolean isInputValid(@NonNull String userPhotoPath, String firstName, String displayName, String lastName, String email, String pass, String phone, String currentGender, String currentState) {
+        if (userPhotoPath == null) {
+            Toast.makeText(this, "please choose your photo", Toast.LENGTH_SHORT).show();
+        } else if (firstName.isEmpty()) {
             signUpEditFirstName.setError("Enter your first name");
             signUpEditFirstName.requestFocus();
         } else if (lastName.isEmpty()) {
             signUpEditLastName.setError("Enter your last name");
             signUpEditLastName.requestFocus();
+        } else if (displayName.isEmpty()) {
+            signUpEditDisplayName.setError("Enter your Display name");
+            signUpEditDisplayName.requestFocus();
         } else if (email.isEmpty()) {
             signUpEditEmail.setError("Enter your email");
             signUpEditEmail.requestFocus();
@@ -296,54 +300,19 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         return false;
     }
 
-    /**
-     * @param firstName     user first name
-     * @param lastName      user last name
-     * @param email         user email
-     * @param pass          user password
-     * @param fullPhone     user phone number with country code
-     * @param date          user birthday
-     * @param currentGender user gender [male / female]
-     * @param currentState  user state [normal / deaf]
-     * @return Map object contain user information to store them in database
-     */
-    public Map<String, Object> createUserWithInput(String firstName, String lastName, String email, String pass, String fullPhone, String date, String currentGender, String currentState) {
-        //add user
-        Map<String, Object> user = new HashMap<>();
-        user.put("first_name", firstName);
-        user.put("last_name", lastName);
-        user.put("email", email);
-        user.put("password", pass);
-        user.put("phone", fullPhone);
-        user.put("birth_date", date);
-        user.put("gender", currentGender);
-        user.put("state", currentState);
-        return user;
-    }
-
     //confirm user email address
-    public void confirmEmailAndPhone(Map<String, Object> user) {
+    public void confirmEmailAndPhone(UserPrivateInfo userPrivateInfo, UserPublicInfo userPublicInfo) {
         //send email verify
         currentUser.sendEmailVerification();
         //go to confirm activity
         Intent intent = new Intent(this, ConfirmEmailActivity.class);
-        intent.putExtra("user", (Serializable) user);
+
+        intent.putExtra(USER_PRIVATE_INFO_INTENT_EXTRA, userPrivateInfo);
+        intent.putExtra(USER_PUBLIC_INFO_INTENT_EXTRA, userPublicInfo);
         startActivity(intent);
 
     }
 
-    //get Permission from user to use the camera
-    public void setCameraPermission() {
-        //set camera permission
-        if (ContextCompat.checkSelfPermission(SignUpActivity.this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(SignUpActivity.this,
-                    new String[]{Manifest.permission.CAMERA},
-                    100);
-        } else {
-            finish();
-        }
-    }
 
     //set state array to spinner to show it
     public void setSpinnerState() {
@@ -391,8 +360,6 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
             }
         });
         builder.create().show();
-
-
     }
 
     @Override
@@ -424,6 +391,9 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
                 if (requestCode == 100 && resultCode == RESULT_OK) {
                     // get capture Image
                     Bitmap captureImage = (Bitmap) data.getExtras().get("data");
+                    //set user photo uri
+                    Uri captureImageUri = getImageUri(this, captureImage);
+                    userPhotoPath = getRealPathFromURI(captureImageUri);
                     // set capture Image to ImageView
                     signUpProfileImage.setImageBitmap(captureImage);
                 }
@@ -432,6 +402,8 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
                 if (requestCode == 100 && resultCode == RESULT_OK) {
                     // get capture Image
                     Uri uri = data.getData();
+                    //set user photo uri
+                    userPhotoPath = getRealPathFromURI(uri);
                     // set capture Image to profileImage
                     signUpProfileImage.setImageURI(uri);
                 }
@@ -439,10 +411,88 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         }
     }
 
+    //get uri from bitmap image
+    public Uri getImageUri(@NonNull Context inContext, Bitmap inImage) {
+        Bitmap OutImage = Bitmap.createScaledBitmap(inImage, 1000, 1000, true);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), OutImage, "CapturedImage", null);
+        return Uri.parse(path);
+    }
+
+    //get full path from uri
+    public String getRealPathFromURI(Uri uri) {
+        String result = null;
+        String[] proj = {MediaStore.Images.Media.DATA};
+        Cursor cursor = this.getContentResolver().query(uri, proj, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int column_index = cursor.getColumnIndexOrThrow(proj[0]);
+                result = cursor.getString(column_index);
+            }
+            cursor.close();
+        }
+        if (result == null) {
+            result = "Not found";
+        }
+        return result;
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        boolean permissionToCamera = false;
+        boolean permissionToWrite = false;
+
+        switch (requestCode) {
+            case REQUEST_CAMERA_PERMISSION:
+                Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
+                permissionToCamera = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                if (permissionToCamera)
+                    setReadStoragePermission();
+                else
+                    finish();
+                break;
+            case READ_FROM_STORAGE_PERMISSION_REQUEST_CODE:
+                Toast.makeText(this, "Read permission granted", Toast.LENGTH_LONG).show();
+                permissionToWrite = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                if (permissionToWrite)
+                    setWriteStoragePermission();
+                else
+                    finish();
+            case WRITE_TO_STORAGE_PERMISSION_REQUEST_CODE:
+                Toast.makeText(this, "Write permission granted", Toast.LENGTH_LONG).show();
+                permissionToWrite = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                if (!permissionToWrite)
+                    finish();
+        }
+    }
+
+    //get Permission from user to use the camera
+    public void setCameraPermission() {
+        //set camera permission
+        ActivityCompat.requestPermissions(SignUpActivity.this,
+                new String[]{Manifest.permission.CAMERA},
+                REQUEST_CAMERA_PERMISSION);
+    }
+
+    //get Permission from user to use the write Image
+    public void setReadStoragePermission() {
+        //set write permission
+        ActivityCompat.requestPermissions(SignUpActivity.this,
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                READ_FROM_STORAGE_PERMISSION_REQUEST_CODE);
+    }
+
+    //get Permission from user to use the write Image
+    public void setWriteStoragePermission() {
+        //set write permission
+        ActivityCompat.requestPermissions(SignUpActivity.this,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                WRITE_TO_STORAGE_PERMISSION_REQUEST_CODE);
+    }
 }
-//create DatePicker to get user birth date
 

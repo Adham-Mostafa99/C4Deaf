@@ -160,8 +160,10 @@ public class ChatPageNormal extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         adapter.stopAdapter();
-        recorder.release();
-        recorder = null;
+        if (recorder != null) {
+            recorder.release();
+            recorder = null;
+        }
     }
 
 

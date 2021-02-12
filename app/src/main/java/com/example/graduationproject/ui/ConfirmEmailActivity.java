@@ -1,28 +1,22 @@
 package com.example.graduationproject.ui;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.graduationproject.R;
-import com.example.graduationproject.ui.ChatMenuActivity;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.example.graduationproject.models.UserPrivateInfo;
+import com.example.graduationproject.models.UserPublicInfo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -36,13 +30,16 @@ public class ConfirmEmailActivity extends AppCompatActivity {
     @BindView(R.id.email_verify)
     TextView emailVerify;
 
+    public static final String USER_PRIVATE_INFO_INTENT_EXTRA = "userPrivateInfo";
+    public static final String USER_PUBLIC_INFO_INTENT_EXTRA = "userPublicInfo";
     private static final String TAG = "ConfirmEmail";
 
     private FirebaseUser currentUser;
-    private FirebaseFirestore db;
     private boolean isChangeButtonClick = false;
     private Thread thread;
-    Map<String, Object> user;
+
+    private UserPublicInfo userPublicInfo;
+    private UserPrivateInfo userPrivateInfo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,12 +47,9 @@ public class ConfirmEmailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_confrim_email);
         ButterKnife.bind(this);
 
+        initFirebase();
+        init();
 
-        //get user information
-        user = (HashMap<String, Object>) getIntent().getSerializableExtra("user");
-
-        //create instance of user from FirebaseAuth
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         //handling Resend Button
         //resend Verification
@@ -82,7 +76,16 @@ public class ConfirmEmailActivity extends AppCompatActivity {
             }
         });
 
+    }
 
+    public void init() {
+        userPublicInfo = getIntent().getParcelableExtra(SignUpActivity.USER_PUBLIC_INFO_INTENT_EXTRA);
+        userPrivateInfo = getIntent().getParcelableExtra(SignUpActivity.USER_PRIVATE_INFO_INTENT_EXTRA);
+    }
+
+    public void initFirebase() {
+        //create instance of user from FirebaseAuth
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     public void refreshEmailVerify(int millSec) {
@@ -97,27 +100,7 @@ public class ConfirmEmailActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                //create instance of user from FirebaseAuth
-                                currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
-                                if (currentUser != null) {
-                                    //refresh user information
-                                    currentUser.reload();
-
-                                    if (currentUser.isEmailVerified()) {
-                                        emailVerify.setText("Verify");
-                                        Toast.makeText(getApplicationContext(), " verify", Toast.LENGTH_SHORT).show();
-
-                                        //store user in database
-                                        insertUserToDatabase(user);
-
-                                        //end the current thread from running
-                                        endThread(thread);
-
-                                        //go to chat menu activity
-                                        startActivity(new Intent(getApplicationContext(), ChatMenuActivity.class));
-                                    }
-                                }
+                                checkVerify();
                             }
                         });
                     }
@@ -135,25 +118,25 @@ public class ConfirmEmailActivity extends AppCompatActivity {
             thread.interrupt();
     }
 
-    /**
-     * @param user map object which contain user information
-     */
-    public void insertUserToDatabase(Map<String, Object> user) {
-        db = FirebaseFirestore.getInstance();
-        db.collection("users")
-                .add(user)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                    }
-                });
+    public void checkVerify() {
+        if (currentUser != null) {
+            //refresh user information
+            currentUser.reload();
+
+            if (currentUser.isEmailVerified()) {
+                emailVerify.setText("Verify");
+                Toast.makeText(getApplicationContext(), " verify", Toast.LENGTH_SHORT).show();
+
+                //end the current thread from running
+                endThread(thread);
+
+                //go to chat menu activity
+                finish();
+                startActivity(new Intent(getApplicationContext(), WelcomeDeafChatActivity.class)
+                        .putExtra(SignUpActivity.USER_PRIVATE_INFO_INTENT_EXTRA, userPrivateInfo)
+                        .putExtra(SignUpActivity.USER_PUBLIC_INFO_INTENT_EXTRA, userPublicInfo));
+            }
+        }
     }
 
     @Override

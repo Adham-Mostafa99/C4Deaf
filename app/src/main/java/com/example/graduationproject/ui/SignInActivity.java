@@ -69,14 +69,9 @@ public class SignInActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        Toast.makeText(getApplicationContext(), "Sign in success", Toast.LENGTH_SHORT).show();
-
                                         //get instance from current user
                                         currentUser = mAuth.getCurrentUser();
-                                        if (currentUser != null) {
-                                            finish();
-                                            startActivity(new Intent(getApplicationContext(), ChatMenuActivity.class));
-                                        }
+                                        signInToChat(currentUser);
                                     } else {
                                         Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                     }
@@ -147,9 +142,20 @@ public class SignInActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        signInToChat(currentUser);
+    }
+
+    public void signInToChat(FirebaseUser currentUser) {
         if (currentUser != null) {
-            finish();
-            startActivity(new Intent(this, ChatMenuActivity.class));
+            currentUser.reload();
+            if (currentUser.isEmailVerified()) {
+                Toast.makeText(getApplicationContext(), "Sign in success", Toast.LENGTH_SHORT).show();
+                finish();
+                startActivity(new Intent(getApplicationContext(), ChatMenuActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
+            } else {
+                Toast.makeText(getApplicationContext(), "please verify your email", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

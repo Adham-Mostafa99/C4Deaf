@@ -61,7 +61,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/margin_horizontal_value"
-            android:layout_marginTop="48dp"
             android:layout_marginBottom="8dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toTopOf="@id/sign_up_edit_email"
@@ -97,6 +96,20 @@
 
         </LinearLayout>
 
+        <EditText
+            android:id="@+id/sign_up_edit_display_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_horizontal_value"
+            android:layout_marginVertical="@dimen/margin_vertical_value"
+            android:background="@drawable/email_edit"
+            android:hint="Enter Your Display Name"
+            android:inputType="textEmailAddress"
+            android:paddingHorizontal="@dimen/padding_horizontal_value"
+            app:layout_constraintBottom_toTopOf="@id/sign_up_edit_email"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/name" />
 
         <EditText
             android:id="@+id/sign_up_edit_email"
@@ -110,7 +123,7 @@
             app:layout_constraintBottom_toTopOf="@id/sign_up_edit_pass"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/name" />
+            app:layout_constraintTop_toBottomOf="@id/sign_up_edit_display_name" />
 
         <EditText
             android:id="@+id/sign_up_edit_pass"
@@ -200,20 +213,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
-                android:visibility="gone"
                 android:text="@string/enter_your_birth_day"
                 android:textColor="@android:color/holo_red_dark"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/user_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
-                android:visibility="visible"
                 android:text="@string/enter_your_birth_day"
                 android:textColor="@android:color/black"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="visible" />
         </LinearLayout>
 
         <Spinner
@@ -287,10 +301,10 @@
                 android:text="@string/already_have_account" />
 
             <TextView
+                android:id="@+id/sign_up_have_account"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/signin"
-                android:id="@+id/sign_up_have_account"
                 android:textAllCaps="false"
                 android:textColor="@android:color/black"
                 android:textStyle="bold" />
