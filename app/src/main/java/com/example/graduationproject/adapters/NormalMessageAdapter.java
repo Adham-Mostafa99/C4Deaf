@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.graduationproject.R;
 import com.example.graduationproject.models.NormalChat;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
     private OldRecord oldRecord;
     private Runnable runnable;
     private Handler handler;
+    private FirebaseUser currentUser;
 
 
     public NormalMessageAdapter(ArrayList<NormalChat> normalChats, Context context) {
@@ -50,6 +53,7 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     public void init() {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         //initialize the Handler
         handler = new Handler();
         //initialize the old Record
@@ -300,8 +304,14 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemViewType(int position) {
-        //only for test view type
-        return normalChats.get(position).getMsgType();
+        if (normalChats.get(position).getMsgType() == NormalChat.MSG_TEXT_TYPE) {
+
+            if (normalChats.get(position).getSender().equals(currentUser.getUid())) {
+                return MSG_TYPE_SENDER_TEXT;
+            } else
+                return MSG_TYPE_RECEIVER_TEXT;
+        }
+        return 1;
     }
 
 

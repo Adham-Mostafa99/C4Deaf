@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,11 +24,21 @@ import com.devlomi.record_view.RecordView;
 import com.example.graduationproject.R;
 import com.example.graduationproject.adapters.NormalMessageAdapter;
 import com.example.graduationproject.models.NormalChat;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -35,6 +46,7 @@ import butterknife.ButterKnife;
 
 public class ChatPageNormal extends AppCompatActivity {
     private static final String LOG_TAG = "AudioRecordTest";
+    private static final String TAG = "ChatPageNormal";
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200; //200 for microphone
 
     private NormalMessageAdapter adapter;
@@ -47,6 +59,12 @@ public class ChatPageNormal extends AppCompatActivity {
     private MediaRecorder recorder = null;
     private String fileName = null;
     private int recordCounter = 1; //for test
+
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
+    private FirebaseUser currentUser;
+
+    private String friendId;
 
 
     @BindView(R.id.chat_view)
@@ -81,6 +99,14 @@ public class ChatPageNormal extends AppCompatActivity {
 
         //sync recordButton with recordView
         normalRecordButton.setRecordView(normalRecordView);
+
+        friendId = getIntent().getStringExtra(ChatMenuActivity.FRIEND_ID_INTENT_EXTRA);
+    }
+
+    public void initFirebase() {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("users");
     }
 
     @Override
@@ -91,6 +117,8 @@ public class ChatPageNormal extends AppCompatActivity {
 
         //initialize objects
         init();
+        initFirebase();
+        readMsg();
 
         normalRecordView.setOnRecordListener(new OnRecordListener() {
             @Override
@@ -123,7 +151,7 @@ public class ChatPageNormal extends AppCompatActivity {
                 String time = reformatTime((int) recordTime);
 
                 //add record to chat
-                insertItemToAdapter(new NormalChat("per1", "per2", fileName, time, getTimeNow()));
+                insertItemToAdapter(new NormalChat("per1", fileName, time, getTimeNow()));
                 Log.d("RecordView", "onFinish");
                 Log.d("RecordTime", time);
             }
@@ -149,7 +177,7 @@ public class ChatPageNormal extends AppCompatActivity {
                 String msgText = textSend.getText().toString().trim();
                 textSend.setText("");
                 if (!msgText.isEmpty())
-                    insertItemToAdapter(new NormalChat("per1", "per2", msgText, getTimeNow()));
+                    sendTextMsg(friendId, msgText, getTimeNow());
             }
         });
 
@@ -247,7 +275,7 @@ public class ChatPageNormal extends AppCompatActivity {
      * @param linearLayout layout which contain the editText view that will be hidden
      */
     //hide inputText for record
-    public void hideInputText(LinearLayout linearLayout) {
+    public void hideInputText(@NonNull LinearLayout linearLayout) {
         linearLayout.setVisibility(View.INVISIBLE);
     }
 
@@ -255,7 +283,7 @@ public class ChatPageNormal extends AppCompatActivity {
      * @param linearLayout layout which contain the editText view that will be show
      */
     //show inputText when record end
-    public void showInputText(LinearLayout linearLayout) {
+    public void showInputText(@NonNull LinearLayout linearLayout) {
         linearLayout.setVisibility(View.VISIBLE);
     }
 
@@ -273,6 +301,100 @@ public class ChatPageNormal extends AppCompatActivity {
         adapter.notifyItemInserted(msg.size() - 1);
         adapter.notifyDataSetChanged();
         recyclerViewChat.getLayoutManager().scrollToPosition(msg.size() - 1);
+    }
+
+    public void sendTextMsg(String receiverId, String msg, String msgTime) {
+        String senderId = currentUser.getUid();
+
+        HashMap<String, Object> textMsg = new HashMap<>();
+        textMsg.put("sender", senderId);
+        textMsg.put("msg", msg);
+        textMsg.put("msgTime", msgTime);
+        textMsg.put("msgType", "text");
+
+        //add current user msg
+        //path  currentUserId/msg/receiverId/msgNumber/Msg
+        String senderPath = currentUser.getUid() + "/" + "chat-msg" + "/" + receiverId;
+        myRef
+                .child(senderPath)
+                .push()
+                .setValue(textMsg)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+//                        insertItemToAdapter(new NormalChat(senderId, msg, msgTime));
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Write failed
+                        Log.w(TAG, "Error adding sender msg", e);
+                    }
+                });
+
+        //add other user msg
+        String receiverPath = receiverId + "/" + "chat-msg" + "/" + currentUser.getUid();
+        myRef
+                .child(receiverPath)
+                .push()
+                .setValue(textMsg)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Write failed
+                        Log.w(TAG, "Error adding receiver msg", e);
+                    }
+                });
+    }
+
+    public void readMsg() {
+        //path  currentUserId/msg/receiverId/msgNumber/Msg
+        String path = currentUser.getUid() + "/" + "chat-msg" + "/" + friendId;
+        myRef.child(path)
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                        HashMap<String, Object> currentMsg = (HashMap<String, Object>) snapshot.getValue();
+                        if (currentMsg != null) {
+                            Log.v(TAG, currentMsg.toString());
+                            String sender = (String) currentMsg.get("sender");
+                            String msg = (String) currentMsg.get("msg");
+                            String msgTime = (String) currentMsg.get("msgTime");
+                            String msgType = (String) currentMsg.get("msgType");
+                            if (msgType != null && msgType.equals("text")) {
+                                insertItemToAdapter(new NormalChat(sender, msg, msgTime));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
     }
 
 

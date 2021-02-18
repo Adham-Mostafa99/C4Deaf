@@ -3,29 +3,29 @@ package com.example.graduationproject.models;
 import com.example.graduationproject.adapters.NormalMessageAdapter;
 
 public class NormalChat {
+    public static final int MSG_TEXT_TYPE = 10;
+    public static final int MSG_RECORD_TYPE = 20;
+
     private String sender;
-    private String receiver;
     private String message;
     private String time;
     private String mediaMsgPath;
     private String mediaMsgTime;
     private int msgType;
 
-    public NormalChat(String sender, String receiver, String message, String time) {
+    public NormalChat(String sender, String message, String time) {
         this.sender = sender;
-        this.receiver = receiver;
         this.message = message;
         this.time = time;
-        this.msgType = NormalMessageAdapter.MSG_TYPE_SENDER_TEXT;
+        this.msgType = MSG_TEXT_TYPE;
     }
 
-    public NormalChat(String sender, String receiver, String mediaMsgPath, String mediaMsgTime, String time) {
+    public NormalChat(String sender, String mediaMsgPath, String mediaMsgTime, String time) {
         this.sender = sender;
-        this.receiver = receiver;
         this.time = time;
         this.mediaMsgPath = mediaMsgPath;
         this.mediaMsgTime = mediaMsgTime;
-        this.msgType = NormalMessageAdapter.MSG_TYPE_SENDER_RECORD;
+        this.msgType = MSG_RECORD_TYPE;
     }
 
     public String getMediaMsgTime() {
@@ -38,10 +38,6 @@ public class NormalChat {
 
     public String getSender() {
         return sender;
-    }
-
-    public String getReceiver() {
-        return receiver;
     }
 
     public String getMessage() {
