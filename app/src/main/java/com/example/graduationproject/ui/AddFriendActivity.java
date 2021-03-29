@@ -1,39 +1,39 @@
 package com.example.graduationproject.ui;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.graduationproject.Converter;
+import com.bumptech.glide.Glide;
 import com.example.graduationproject.R;
-import com.example.graduationproject.adapters.UserFriendsAdapter;
+import com.example.graduationproject.adapters.AddFriendAdapter;
+import com.example.graduationproject.models.DatabaseQueries;
 import com.example.graduationproject.models.UserPublicInfo;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.auth.FirebaseAuth;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
-public class AddFriendActivity extends AppCompatActivity implements UserFriendsAdapter.OnItemClick {
+public class AddFriendActivity extends AppCompatActivity implements AddFriendAdapter.OnItemClick
+        , DatabaseQueries.GetFriendByDisplayName, AddFriendAdapter.AddFriend, DatabaseQueries.SendAddRequest {
 
     @BindView(R.id.display_name_search)
     EditText displayNameSearch;
@@ -44,11 +44,15 @@ public class AddFriendActivity extends AppCompatActivity implements UserFriendsA
 
     public static final String ADDED_FRIEND_INTENT_EXTRA = "addedFriend";
     private static final String TAG = "AddFriendActivity";
+    private static final int DB_GET_FRIEND_BY_DISPLAY_NAME_ID = 1;
+    private static final int DB_SEND_ADD_REQUEST_ID = 2;
 
 
     private ArrayList<UserPublicInfo> friendsArrayList;
-    private UserFriendsAdapter adapter;
-    private FirebaseFirestore db;
+    private AddFriendAdapter adapter;
+    private DatabaseQueries.GetFriendByDisplayName getFriendByDisplayName = this;
+    private DatabaseQueries.SendAddRequest sendAddRequest = this;
+    private PopupWindow popupWindow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +60,6 @@ public class AddFriendActivity extends AppCompatActivity implements UserFriendsA
         setContentView(R.layout.activity_add_friend);
         ButterKnife.bind(this);
 
-        initFirebase();
         init();
         initAdapter();
 
@@ -65,7 +68,8 @@ public class AddFriendActivity extends AppCompatActivity implements UserFriendsA
             @Override
             public void onClick(View v) {
                 clearAdapter();
-                getSearchedFriends(displayNameSearch.getText().toString().trim());
+                String displayName = displayNameSearch.getText().toString().trim();
+                DatabaseQueries.getFriendByDisplayName(getFriendByDisplayName, DB_GET_FRIEND_BY_DISPLAY_NAME_ID, displayName);
             }
         });
     }
@@ -74,12 +78,9 @@ public class AddFriendActivity extends AppCompatActivity implements UserFriendsA
         friendsArrayList = new ArrayList<>();
     }
 
-    public void initFirebase() {
-        db = FirebaseFirestore.getInstance();
-    }
 
     public void initAdapter() {
-        adapter = new UserFriendsAdapter(this, friendsArrayList, this);
+        adapter = new AddFriendAdapter(this, friendsArrayList, this, this);
         searchedFriendRecycler.setLayoutManager(new LinearLayoutManager(this));
         searchedFriendRecycler.addItemDecoration(
                 new HorizontalDividerItemDecoration.Builder(this)
@@ -102,38 +103,94 @@ public class AddFriendActivity extends AppCompatActivity implements UserFriendsA
 
     @Override
     public void onItemClick(int position) {
-        setResult(RESULT_OK
-                , new Intent()
-                        .putExtra(ADDED_FRIEND_INTENT_EXTRA, friendsArrayList.get(position)));
-        finish();
+        String friendDisplayName = friendsArrayList.get(position).getUserDisplayName();
+        DatabaseQueries.getFriendByDisplayName(new DatabaseQueries.GetFriendByDisplayName() {
+            @Override
+            public void afterGetFriendByDisplayName(UserPublicInfo friendInfo, int id) {
+                popWindowCreation(friendInfo);
+            }
+        }, 0, friendDisplayName);
+
+
     }
 
-    public void getSearchedFriends(String displayName) {
-        //path of users Collection
-        //like: "users"
-        String pathOfFriendOfUserCollection = "users";
-        db.collection(pathOfFriendOfUserCollection)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            //get Map(public-info) from every user
-                            @SuppressWarnings("unchecked")
-                            Map<String, Object> currentUser = (HashMap<String, Object>) document.get("public-info");
+    @Override
+    public void afterGetFriendByDisplayName(UserPublicInfo friendInfo, int id) {
+        switch (id) {
+            case DB_GET_FRIEND_BY_DISPLAY_NAME_ID:
+                insertToAdapter(friendInfo);
+                break;
+            default:
+                break;
+        }
+    }
 
-                            //convert map to UserPublicInfo
-                            UserPublicInfo userPublicInfo = Converter.ConvertMapToUserPublicInfo(currentUser);
+    @Override
+    public void onAddFriend(int position) {
+        UserPublicInfo clickedFriend = friendsArrayList.get(position);
 
-                            //check if matched display name
-                            if (userPublicInfo.getUserDisplayName().equals(displayName)) {
-                                insertToAdapter(userPublicInfo);
-                            }
-                        }
+        if (clickedFriend.getUserId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+            Toast.makeText(getApplicationContext(), "can't add your self", Toast.LENGTH_SHORT).show();
+        } else {
+            //check if he is in friends list
+            DatabaseQueries.checkClickedUserInFriendList(new DatabaseQueries.IsUserInFriendList() {
+                @Override
+                public void isUserInFriendList(boolean isFound) {
+                    if (isFound)
+                        Toast.makeText(getApplication(), "already friend", Toast.LENGTH_SHORT).show();
+                    else {
+                        DatabaseQueries.sendAddRequest(sendAddRequest, clickedFriend, DB_SEND_ADD_REQUEST_ID);
                     }
-                });
+                }
+            }, clickedFriend);
+        }
+    }
 
+    @Override
+    public void afterSendAddRequest(boolean isSuccess, int id) {
+        switch (id) {
+            case DB_SEND_ADD_REQUEST_ID:
+                if (isSuccess)
+                    Toast.makeText(getApplication(), "sent Added request", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getApplication(), "you already send request", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                break;
+        }
 
     }
 
+    public void popWindowCreation(@NonNull UserPublicInfo friendInfo) {
+        View popupView = LayoutInflater.from(this).inflate(R.layout.friend_info_pop_up, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+        CircleImageView friendPhoto = popupView.findViewById(R.id.friend_pop_photo);
+        TextView friendDisplayName = popupView.findViewById(R.id.friend_pop_display_name);
+        TextView friendFullName = popupView.findViewById(R.id.friend_pop_full_name);
+        TextView friendGender = popupView.findViewById(R.id.friend_pop_gender);
+        TextView friendState = popupView.findViewById(R.id.friend_pop_state);
+
+        Glide
+                .with(this)
+                .load(friendInfo.getUserPhotoPath())
+                .centerCrop()
+                .placeholder(R.drawable.user_photo)
+                .into(friendPhoto);
+
+        friendDisplayName.setText(friendInfo.getUserDisplayName());
+        friendFullName.setText(friendInfo.getUserFirstName() + " " + friendInfo.getUserLastName());
+        friendGender.setText(friendInfo.getUserGender());
+        friendState.setText(friendInfo.getUserState());
+
+    }
 }

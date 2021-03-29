@@ -138,13 +138,13 @@ public class SignInActivity extends AppCompatActivity {
         return false;
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        signInToChat(currentUser);
-    }
-
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+//        signInToChat(currentUser);
+//    }
+//
     public void signInToChat(FirebaseUser currentUser) {
         if (currentUser != null) {
             currentUser.reload();

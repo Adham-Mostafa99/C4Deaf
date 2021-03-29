@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,12 +19,17 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
 import com.example.graduationproject.R;
 import com.example.graduationproject.adapters.NormalMessageAdapter;
+import com.example.graduationproject.models.DatabasePaths;
+import com.example.graduationproject.models.DatabaseQueries;
 import com.example.graduationproject.models.NormalChat;
+import com.example.graduationproject.models.UserMenuChat;
+import com.example.graduationproject.models.UserPublicInfo;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +39,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -44,10 +52,24 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ChatPageNormal extends AppCompatActivity {
+public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries.CreateNewChat
+        , DatabaseQueries.GetFriendInfo, DatabaseQueries.SendMsgText, DatabaseQueries.ReadMsg {
     private static final String LOG_TAG = "AudioRecordTest";
     private static final String TAG = "ChatPageNormal";
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200; //200 for microphone
+    private static final int DB_CREATE_NEW_CHAT_ID = 1;
+    private static final int DB_SEND_TEXT_MSG_USER_ID = 2;
+    private static final int DB_SEND_TEXT_MSG_FRIEND_ID = 3;
+    private static final int DB_GET_FRIEND_INFO_ID = 4;
+    private static final int DB_READ_MSG_ID = 5;
+
+
+    @BindView(R.id.user_image)
+    ImageView userImage;
+    @BindView(R.id.user_name)
+    TextView userName;
+    @BindView(R.id.arrow_back)
+    ImageView arrowBack;
 
     private NormalMessageAdapter adapter;
     private ArrayList<NormalChat> msg;
@@ -60,11 +82,14 @@ public class ChatPageNormal extends AppCompatActivity {
     private String fileName = null;
     private int recordCounter = 1; //for test
 
-    private FirebaseDatabase database;
-    private DatabaseReference myRef;
     private FirebaseUser currentUser;
 
     private String friendId;
+    private UserPublicInfo friendInfo;
+
+    private DatabaseQueries.CreateNewChat createNewChat = this;
+
+    private boolean isFriendInfoUpdated = false;
 
 
     @BindView(R.id.chat_view)
@@ -84,31 +109,6 @@ public class ChatPageNormal extends AppCompatActivity {
     @BindView(R.id.text_send)
     EditText textSend;
 
-    //initialize the view
-    public void init() {
-        msg = new ArrayList<>();
-        adapter = new NormalMessageAdapter(msg, this);
-        recyclerViewChat.setAdapter(adapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setStackFromEnd(true);
-        recyclerViewChat.setLayoutManager(linearLayoutManager);
-
-        // Record to the external cache directory for visibility
-        fileName = getExternalCacheDir().getAbsolutePath();
-        fileName += "/audiorecord" + recordCounter + ".3gp";
-
-        //sync recordButton with recordView
-        normalRecordButton.setRecordView(normalRecordView);
-
-        friendId = getIntent().getStringExtra(ChatMenuActivity.FRIEND_ID_INTENT_EXTRA);
-    }
-
-    public void initFirebase() {
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("users");
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,9 +116,16 @@ public class ChatPageNormal extends AppCompatActivity {
         ButterKnife.bind(this);
 
         //initialize objects
-        init();
         initFirebase();
-        readMsg();
+        init();
+        DatabaseQueries.readMsg(this, DB_READ_MSG_ID, friendId);
+
+        arrowBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         normalRecordView.setOnRecordListener(new OnRecordListener() {
             @Override
@@ -176,11 +183,36 @@ public class ChatPageNormal extends AppCompatActivity {
             public void onClick(View v) {
                 String msgText = textSend.getText().toString().trim();
                 textSend.setText("");
-                if (!msgText.isEmpty())
-                    sendTextMsg(friendId, msgText, getTimeNow());
+                if (!msgText.isEmpty() && isFriendInfoUpdated)
+                    sendTextMsg(msgText, getTimeNow());
             }
         });
 
+    }
+
+
+    //initialize the view
+    public void init() {
+        msg = new ArrayList<>();
+        adapter = new NormalMessageAdapter(msg, this);
+        recyclerViewChat.setAdapter(adapter);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerViewChat.setLayoutManager(linearLayoutManager);
+
+        // Record to the external cache directory for visibility
+        fileName = getExternalCacheDir().getAbsolutePath();
+        fileName += "/audiorecord" + recordCounter + ".3gp";
+
+        //sync recordButton with recordView
+        normalRecordButton.setRecordView(normalRecordView);
+
+        friendId = getIntent().getStringExtra(ChatMenuActivity.FRIEND_ID_INTENT_EXTRA);
+        DatabaseQueries.getFriendInfo(this, DB_GET_FRIEND_INFO_ID, friendId);
+    }
+
+    public void initFirebase() {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
 
@@ -292,6 +324,7 @@ public class ChatPageNormal extends AppCompatActivity {
     this part to control the adapter when [insert-delete] item
      */
 
+
     /**
      * @param newChat new msg that will be insert and showing in chat
      */
@@ -303,7 +336,7 @@ public class ChatPageNormal extends AppCompatActivity {
         recyclerViewChat.getLayoutManager().scrollToPosition(msg.size() - 1);
     }
 
-    public void sendTextMsg(String receiverId, String msg, String msgTime) {
+    public void sendTextMsg(String msg, String msgTime) {
         String senderId = currentUser.getUid();
 
         HashMap<String, Object> textMsg = new HashMap<>();
@@ -313,94 +346,91 @@ public class ChatPageNormal extends AppCompatActivity {
         textMsg.put("msgType", "text");
 
         //add current user msg
-        //path  currentUserId/msg/receiverId/msgNumber/Msg
-        String senderPath = currentUser.getUid() + "/" + "chat-msg" + "/" + receiverId;
-        myRef
-                .child(senderPath)
-                .push()
-                .setValue(textMsg)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-//                        insertItemToAdapter(new NormalChat(senderId, msg, msgTime));
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Write failed
-                        Log.w(TAG, "Error adding sender msg", e);
-                    }
-                });
+        DatabaseQueries.sendMsgText(this, DB_SEND_TEXT_MSG_USER_ID, textMsg, currentUser.getUid(), friendId);
 
-        //add other user msg
-        String receiverPath = receiverId + "/" + "chat-msg" + "/" + currentUser.getUid();
-        myRef
-                .child(receiverPath)
-                .push()
-                .setValue(textMsg)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Write failed
-                        Log.w(TAG, "Error adding receiver msg", e);
-                    }
-                });
-    }
-
-    public void readMsg() {
-        //path  currentUserId/msg/receiverId/msgNumber/Msg
-        String path = currentUser.getUid() + "/" + "chat-msg" + "/" + friendId;
-        myRef.child(path)
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-                        HashMap<String, Object> currentMsg = (HashMap<String, Object>) snapshot.getValue();
-                        if (currentMsg != null) {
-                            Log.v(TAG, currentMsg.toString());
-                            String sender = (String) currentMsg.get("sender");
-                            String msg = (String) currentMsg.get("msg");
-                            String msgTime = (String) currentMsg.get("msgTime");
-                            String msgType = (String) currentMsg.get("msgType");
-                            if (msgType != null && msgType.equals("text")) {
-                                insertItemToAdapter(new NormalChat(sender, msg, msgTime));
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+        //add the msg in other user
+        DatabaseQueries.sendMsgText(this, DB_SEND_TEXT_MSG_FRIEND_ID, textMsg, friendId, currentUser.getUid());
 
     }
 
+    public void updateUi(@NonNull UserPublicInfo friendInfo) {
+        Glide
+                .with(this)
+                .load(friendInfo.getUserPhotoPath())
+                .centerCrop()
+                .placeholder(R.drawable.user_photo)
+                .into(userImage);
+        userName.setText(friendInfo.getUserDisplayName());
+    }
 
     //get current time for the message
     public String getTimeNow() {
         return new SimpleDateFormat("h:mm a", Locale.getDefault()).format(new Date());
     }
 
+    @Override
+    public void afterCreateNewChat(int id) {
+        //something here
+    }
+
+    @Override
+    public void afterSendMsgText(boolean isSent, int id, HashMap<String, Object> textMsg) {
+        switch (id) {
+            case DB_SEND_TEXT_MSG_USER_ID:
+                if (isSent) {
+                    DatabaseQueries.createNewChat(createNewChat, DB_CREATE_NEW_CHAT_ID, currentUser.getUid()
+                            , new UserMenuChat(friendId
+                                    , friendInfo.getUserDisplayName()
+                                    , textMsg.get("msg").toString()
+                                    , friendInfo.getUserPhotoPath()
+                                    , textMsg.get("msgTime").toString()));
+                }
+                break;
+            case DB_SEND_TEXT_MSG_FRIEND_ID:
+                if (isSent) {
+                    DatabaseQueries.createNewChat(createNewChat, DB_CREATE_NEW_CHAT_ID, friendId
+                            , new UserMenuChat(currentUser.getUid()
+                                    , currentUser.getDisplayName()
+                                    , textMsg.get("msg").toString()
+                                    , currentUser.getPhotoUrl().toString()
+                                    , textMsg.get("msgTime").toString()));
+
+                }
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void afterGetFriendInfo(UserPublicInfo friendInfo, int id) {
+        switch (id) {
+            case DB_GET_FRIEND_INFO_ID:
+                this.friendInfo = friendInfo;
+                updateUi(friendInfo);
+                isFriendInfoUpdated = true;
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void afterReadMsg(HashMap<String, Object> currentMsg, int id) {
+        switch (id) {
+            case DB_READ_MSG_ID:
+                if (currentMsg != null) {
+                    Log.v(TAG, currentMsg.toString());
+                    String sender = (String) currentMsg.get("sender");
+                    String msg = (String) currentMsg.get("msg");
+                    String msgTime = (String) currentMsg.get("msgTime");
+                    String msgType = (String) currentMsg.get("msgType");
+                    if (msgType != null && msgType.equals("text")) {
+                        insertItemToAdapter(new NormalChat(sender, msg, msgTime));
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
 }

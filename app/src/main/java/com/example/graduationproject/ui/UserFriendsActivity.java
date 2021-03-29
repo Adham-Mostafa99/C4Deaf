@@ -5,8 +5,13 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,28 +21,26 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.Glide;
 import com.example.graduationproject.R;
 import com.example.graduationproject.adapters.UserFriendsAdapter;
-import com.example.graduationproject.models.UserMenuChat;
+import com.example.graduationproject.models.DatabaseQueries;
 import com.example.graduationproject.models.UserPublicInfo;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
-public class UserFriendsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, UserFriendsAdapter.OnItemClick {
+public class UserFriendsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener
+        , UserFriendsAdapter.OnItemClick, DatabaseQueries.GetUserFriends, DatabaseQueries.InsertNewFriend {
 
     @BindView(R.id.recycler_view_user_friends)
     RecyclerView recyclerViewUserFriends;
@@ -47,13 +50,19 @@ public class UserFriendsActivity extends AppCompatActivity implements SwipeRefre
     private static final String TAG = "UserFriendsActivity";
     public static final String FRIEND_ID_INTENT = "friendId";
     public static final int ADD_FRIEND_REQUEST_CODE = 200;
+    public static final int DB_GET_FRIENDS_ID = 1;
+    public static final int DB_INSERT_FRIENDS_ID = 2;
+
     @BindView(R.id.add_friend_button)
     Button addFriendButton;
 
     private FirebaseUser currentUser;
-    private FirebaseFirestore db;
     private ArrayList<UserPublicInfo> userFriends;
     private UserFriendsAdapter adapter;
+    private DatabaseQueries.GetUserFriends getUserFriends = this;
+    private DatabaseQueries.InsertNewFriend insertNewFriend = this;
+
+    private PopupWindow popupWindow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +73,7 @@ public class UserFriendsActivity extends AppCompatActivity implements SwipeRefre
         initializeFirebase();
         initializeAdapter();
         try {
-            getUserFriends();
+            DatabaseQueries.getUserFriends(getUserFriends, DB_GET_FRIENDS_ID);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -73,8 +82,7 @@ public class UserFriendsActivity extends AppCompatActivity implements SwipeRefre
         addFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(getApplicationContext(), AddFriendActivity.class)
-                        , ADD_FRIEND_REQUEST_CODE);
+                startActivity(new Intent(getApplicationContext(), AddFriendActivity.class));
             }
         });
 
@@ -87,7 +95,6 @@ public class UserFriendsActivity extends AppCompatActivity implements SwipeRefre
 
     public void initializeFirebase() {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        db = FirebaseFirestore.getInstance();
     }
 
     public void initializeAdapter() {
@@ -114,49 +121,6 @@ public class UserFriendsActivity extends AppCompatActivity implements SwipeRefre
         recyclerViewUserFriends.smoothScrollToPosition(firstItemInList);
     }
 
-    public void insertFriendToDatabase(@NonNull UserPublicInfo userPublicInfo) {
-        //path of friend document
-        //like: "users/ID/Friends/friendID"
-        String pathOfFriendOfUserCollection = "users" + "/" + currentUser.getUid() + "/" + "Friends" + "/" + userPublicInfo.getUserId();
-        db.document(pathOfFriendOfUserCollection)
-                .set(userPublicInfo)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        insertFriendToAdapter(userPublicInfo);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                    }
-                });
-    }
-
-    public void getUserFriends() {
-        //path of Friends Collection
-        //like: "users/ID/Friends"
-        String pathOfFriendOfUserCollection = "users" + "/" + currentUser.getUid() + "/" + "Friends";
-
-        ArrayList<UserPublicInfo> friends = new ArrayList<>();
-
-        db.collection(pathOfFriendOfUserCollection)
-                .get().
-                addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot documents : task.getResult())
-                                friends.add(documents.toObject(UserPublicInfo.class));
-                            refreshAdapter(friends);
-                            userFriendsRefreshSwipe.setRefreshing(false);
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-    }
 
     @Override
     public void onRefresh() {
@@ -165,7 +129,7 @@ public class UserFriendsActivity extends AppCompatActivity implements SwipeRefre
             public void run() {
                 if (currentUser != null)
                     currentUser.reload();
-                getUserFriends();
+                DatabaseQueries.getUserFriends(getUserFriends, DB_GET_FRIENDS_ID);
             }
         }, 1000);
     }
@@ -173,20 +137,69 @@ public class UserFriendsActivity extends AppCompatActivity implements SwipeRefre
     @Override
     public void onItemClick(int position) {
         //open user
-        String friendId = userFriends.get(position).getUserId();
-        Toast.makeText(this, friendId, Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(this, ChatPageNormal.class)
-                .putExtra(FRIEND_ID_INTENT, friendId));
+        String friendDisplayName = userFriends.get(position).getUserDisplayName();
+        DatabaseQueries.getFriendByDisplayName(new DatabaseQueries.GetFriendByDisplayName() {
+            @Override
+            public void afterGetFriendByDisplayName(UserPublicInfo friendInfo, int id) {
+                popWindowCreation(friendInfo);
+            }
+        }, 0, friendDisplayName);
+
+    }
+
+
+    @Override
+    public void afterGetUserFriends(ArrayList<UserPublicInfo> friends, int id) {
+        switch (id) {
+            case DB_GET_FRIENDS_ID:
+                refreshAdapter(friends);
+                userFriendsRefreshSwipe.setRefreshing(false);
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ADD_FRIEND_REQUEST_CODE && resultCode == RESULT_OK) {
-            if (data != null) {
-                Log.v(TAG, data.getParcelableExtra(AddFriendActivity.ADDED_FRIEND_INTENT_EXTRA).toString());
-                insertFriendToDatabase(data.getParcelableExtra(AddFriendActivity.ADDED_FRIEND_INTENT_EXTRA));
-            }
+    public void afterInsertNewFriend(boolean isSuccess, UserPublicInfo newFriendInfo, int id) {
+        switch (id) {
+            case DB_INSERT_FRIENDS_ID:
+                if (isSuccess)
+                    insertFriendToAdapter(newFriendInfo);
         }
+
+    }
+
+    public void popWindowCreation(@NonNull UserPublicInfo friendInfo) {
+        View popupView = LayoutInflater.from(this).inflate(R.layout.friend_info_pop_up, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+        CircleImageView friendPhoto = popupView.findViewById(R.id.friend_pop_photo);
+        TextView friendDisplayName = popupView.findViewById(R.id.friend_pop_display_name);
+        TextView friendFullName = popupView.findViewById(R.id.friend_pop_full_name);
+        TextView friendGender = popupView.findViewById(R.id.friend_pop_gender);
+        TextView friendState = popupView.findViewById(R.id.friend_pop_state);
+
+        Glide
+                .with(this)
+                .load(friendInfo.getUserPhotoPath())
+                .centerCrop()
+                .placeholder(R.drawable.user_photo)
+                .into(friendPhoto);
+
+        friendDisplayName.setText(friendInfo.getUserDisplayName());
+        friendFullName.setText(friendInfo.getUserFirstName() + " " + friendInfo.getUserLastName());
+        friendGender.setText(friendInfo.getUserGender());
+        friendState.setText(friendInfo.getUserState());
+
     }
 }
