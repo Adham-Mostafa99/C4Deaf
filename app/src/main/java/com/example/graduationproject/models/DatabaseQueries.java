@@ -1,11 +1,14 @@
 package com.example.graduationproject.models;
 
+import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.graduationproject.Converter;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -22,14 +25,27 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.ml.modeldownloader.CustomModel;
+import com.google.firebase.ml.modeldownloader.CustomModelDownloadConditions;
+import com.google.firebase.ml.modeldownloader.DownloadType;
+import com.google.firebase.ml.modeldownloader.FirebaseModelDownloader;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+
+import org.tensorflow.lite.Interpreter;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 import static android.content.ContentValues.TAG;
-import static com.example.graduationproject.models.DatabasePaths.REALTIME_ACCEPTED_REQUEST_LIST;
 import static com.example.graduationproject.models.DatabasePaths.REALTIME_ADD_FRIEND_REQUEST_LIST;
 import static com.example.graduationproject.models.DatabasePaths.REALTIME_FRIEND_REQUEST_LIST;
 
@@ -42,7 +58,6 @@ public class DatabaseQueries {
     // private static FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
-
 
     public static void getUserFriends(GetUserFriends getUserFriends, int id) {
         ArrayList<UserPublicInfo> friends = new ArrayList<>();
@@ -127,18 +142,18 @@ public class DatabaseQueries {
                 });
     }
 
-    public static void sendMsgText(SendMsgText sendMsgText, int id, HashMap<String, Object> textMsg, String userId, String friendId) {
+    public static void sendMsg(SendMsg sendMsg, int id, HashMap<String, Object> msg, String userId, String friendId) {
         //path  currentUserId/msg/receiverId/msgNumber/Msg
         DatabaseReference myRefMsgChatSend = FirebaseDatabase.getInstance()
                 .getReference("users/" + userId + "/" + "chat-msg");
         myRefMsgChatSend
                 .child(friendId)
                 .push()
-                .setValue(textMsg)
+                .setValue(msg)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        sendMsgText.afterSendMsgText(true, id, textMsg);
+                        sendMsg.afterSendMsg(true, id, msg);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -146,7 +161,7 @@ public class DatabaseQueries {
                     public void onFailure(@NonNull Exception e) {
                         // Write failed
                         Log.w(TAG, "Error adding sender msg", e);
-                        sendMsgText.afterSendMsgText(false, id, textMsg);
+                        sendMsg.afterSendMsg(false, id, msg);
                     }
                 });
     }
@@ -413,7 +428,6 @@ public class DatabaseQueries {
 
     }
 
-
     private static void deleteFriendRequestFromCurrentUser(DeleteFriendRequestFromCurrentUser deleteFriendRequestFromCurrentUser, @NonNull UserPublicInfo deletedFriendInfo) {
         //delete  user [sent request list][current user here is yourFriend]
         DatabaseReference myRefUser = FirebaseDatabase.getInstance()
@@ -518,6 +532,186 @@ public class DatabaseQueries {
         }, ignoredFriend);
     }
 
+    public static void insertPhotoToStorage(InsertPhotoToStorage insertPhotoToStorage, String photoUri) {
+        StorageReference mStorageRef = FirebaseStorage.getInstance()
+                .getReference("users_images" + "/" + currentUser().getUid() + "/" + "profile_photo.jpg");
+
+        Uri fileUri = Uri.fromFile(new File(photoUri));
+        mStorageRef
+                .putFile(fileUri)
+                .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw Objects.requireNonNull(task.getException());
+                        }
+
+                        // Continue with the task to get the download URL
+                        return mStorageRef.getDownloadUrl();
+                    }
+                })
+                .addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            //get userPhoto Uri from FirebaseStorage
+                            Uri imageUri = task.getResult();
+                            assert imageUri != null;
+                            //upload user data
+                            insertPhotoToStorage.afterInsertPhotoToStorage(imageUri.toString());
+                        } else {
+                            // Handle failures
+                            // ...
+                        }
+                    }
+                });
+    }
+
+    public static void insertRecordAudioToStorage(InsertRecordAudioToStorage insertRecordAudioToStorage, String recordAudioPath) {
+        StorageReference mStorageRef = FirebaseStorage.getInstance()
+                .getReference("users_record_audio" + "/" + currentUser().getUid());
+
+        String uniqueID = UUID.randomUUID().toString();
+
+        Uri fileUri = Uri.fromFile(new File(recordAudioPath));
+
+        mStorageRef.child(uniqueID)
+                .putFile(fileUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Log.v("File Upload: ", "OK");
+
+                        mStorageRef.child(uniqueID)
+                                .getDownloadUrl()
+                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri recordAudioUri) {
+
+
+                                        Log.v("File Download: ", "OK");
+                                        Log.v("File Download: ", recordAudioUri.toString());
+
+                                        insertRecordAudioToStorage.afterInsertRecordAudioToStorage(uniqueID, recordAudioUri.toString());
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.v("File Download: ", "fall");
+                                    }
+                                });
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.v("File Upload: ", "fall");
+                    }
+                });
+    }
+
+    public static void insertRecordVideoToStorage(InsertRecordVideoToStorage insertRecordVideoToStorage, String recordVideoPath) {
+        StorageReference mStorageRef = FirebaseStorage.getInstance()
+                .getReference("users_record_video" + "/" + currentUser().getUid());
+
+        String uniqueID = UUID.randomUUID().toString();
+
+        Uri fileUri = Uri.fromFile(new File(recordVideoPath));
+
+        mStorageRef.child(uniqueID)
+                .putFile(fileUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Log.v("File Upload: ", "OK");
+
+                        mStorageRef.child(uniqueID)
+                                .getDownloadUrl()
+                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri recordAudioUri) {
+
+
+                                        Log.v("File Download: ", "OK");
+                                        Log.v("File Download: ", recordAudioUri.toString());
+
+                                        insertRecordVideoToStorage.afterInsertRecordVideoToStorage(uniqueID, recordAudioUri.toString());
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.v("File Download: ", "fall");
+                                    }
+                                });
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.v("File Upload: ", "fall");
+                    }
+                });
+    }
+
+    public static void downloadRecordFromUrl(DownloadRecordFromUrl downloadRecordFromUrl, String recordUrl, String uniqueID) {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(recordUrl);
+        File rootPath = new File(Environment.getExternalStorageDirectory() + "/" + "Deaf Chat", "records");
+        // Create directory if not exists
+        if (!rootPath.exists()) {
+            rootPath.mkdirs();
+        }
+        File localFile = new File(rootPath, uniqueID + ".mp3");
+
+        if (localFile.exists()) {
+            Log.v("File Download To Local:", "is Exist");
+            downloadRecordFromUrl.afterDownloadRecordFromUrl(localFile.getPath());
+        } else {
+            storageReference.getFile(localFile)
+                    .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            Log.v("File Download To Local:", "OK");
+                            downloadRecordFromUrl.afterDownloadRecordFromUrl(localFile.getPath());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.v("File Download To Local:", "fall");
+                        }
+                    });
+        }
+    }
+
+    public static void convertRecordToText() {
+        CustomModelDownloadConditions conditions = new CustomModelDownloadConditions.Builder()
+                .requireWifi()  // Also possible: .requireCharging() and .requireDeviceIdle()
+                .build();
+        FirebaseModelDownloader.getInstance()
+                .getModel("ConverTextToSpeek", DownloadType.LOCAL_MODEL_UPDATE_IN_BACKGROUND, conditions)
+                .addOnSuccessListener(new OnSuccessListener<CustomModel>() {
+                    @Override
+                    public void onSuccess(CustomModel model) {
+                        // Download complete. Depending on your app, you could enable the ML
+                        // feature, or switch from the local model to the remote model, etc.
+
+                        // The CustomModel object contains the local path of the model file,
+                        // which you can use to instantiate a TensorFlow Lite interpreter.
+                        File modelFile = model.getFile();
+                        if (modelFile != null) {
+
+                            Interpreter interpreter = new Interpreter(modelFile);
+                            Log.v("interpreter", interpreter.toString());
+
+                        }
+                    }
+                });
+    }
+
     public interface GetUserFriends {
         void afterGetUserFriends(ArrayList<UserPublicInfo> friends, int id);
     }
@@ -534,8 +728,8 @@ public class DatabaseQueries {
         void afterCreateNewChat(int id);
     }
 
-    public interface SendMsgText {
-        void afterSendMsgText(boolean isSent, int id, HashMap<String, Object> textMsg);
+    public interface SendMsg {
+        void afterSendMsg(boolean isSent, int id, HashMap<String, Object> msg);
     }
 
     public interface GetFriendInfo {
@@ -574,7 +768,6 @@ public class DatabaseQueries {
         void afterCheckIfFriendRequestIsInRequestList(boolean isFound);
     }
 
-
     private interface DeleteFriendRequestFromCurrentUser {
         void afterDeleteFriendRequestFromCurrentUser(boolean isDeleted);
     }
@@ -593,5 +786,21 @@ public class DatabaseQueries {
 
     public interface GetFriendRequestList {
         void afterGetFriendRequestList(ArrayList<UserPublicInfo> friendsList, int id);
+    }
+
+    public interface InsertPhotoToStorage {
+        void afterInsertPhotoToStorage(String downloadPhotoPath);
+    }
+
+    public interface InsertRecordAudioToStorage {
+        void afterInsertRecordAudioToStorage(String recordName, String downloadRecordAudioUrl);
+    }
+
+    public interface InsertRecordVideoToStorage {
+        void afterInsertRecordVideoToStorage(String recordName, String downloadRecordVideoUrl);
+    }
+
+    public interface DownloadRecordFromUrl {
+        void afterDownloadRecordFromUrl(String recordPath);
     }
 }

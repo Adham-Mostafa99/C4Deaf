@@ -93,6 +93,8 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     FirebaseDatabase database;
     DatabaseReference myRef;
 
+    private UserPublicInfo currentUserInfo;
+
     private DatabaseQueries.GetUserMenuChat getUserMenuChat = this;
     @BindView(R.id.no_chat_items)
     TextView noChatItems;
@@ -105,6 +107,13 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         init();
         initializeAdapter();
         initializeFirebase();
+
+        DatabaseQueries.getCurrentUserInfo(new DatabaseQueries.GetCurrentUserInfo() {
+            @Override
+            public void afterGetCurrentUserInfo(UserPublicInfo userInfo, int id) {
+                currentUserInfo = userInfo;
+            }
+        }, currentUser.getUid(), 0);
 
         try {
             DatabaseQueries.getUserMenuChat(this, DB_GET_MENU_CHAT_ID);
@@ -285,9 +294,12 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     @Override
     public void onClickItem(int position) {
         String friendId = userFriends.get(position).getUserId();
-        Toast.makeText(this, friendId, Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(this, ChatPageNormal.class)
-                .putExtra(FRIEND_ID_INTENT_EXTRA, friendId));
+        if (currentUserInfo.getUserState().equals("Normal"))
+            startActivity(new Intent(this, ChatPageNormal.class)
+                    .putExtra(FRIEND_ID_INTENT, friendId));
+        else
+            startActivity(new Intent(this, ChatPageDeaf.class)
+                    .putExtra(FRIEND_ID_INTENT, friendId));
     }
 
     @Override
@@ -344,9 +356,12 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     public void onItemClick(int position) {
         //open user
         String friendId = newMsgFriends.get(position).getUserId();
-        Toast.makeText(this, friendId, Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(this, ChatPageNormal.class)
-                .putExtra(FRIEND_ID_INTENT, friendId));
+        if (currentUserInfo.getUserState().equals("Normal"))
+            startActivity(new Intent(this, ChatPageNormal.class)
+                    .putExtra(FRIEND_ID_INTENT, friendId));
+        else
+            startActivity(new Intent(this, ChatPageDeaf.class)
+                    .putExtra(FRIEND_ID_INTENT, friendId));
         popupWindow.dismiss();
 
     }

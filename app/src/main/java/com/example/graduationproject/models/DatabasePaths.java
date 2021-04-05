@@ -10,7 +10,6 @@ public class DatabasePaths {
     public static final String REALTIME_MSG_SENDER = "sender";
     public static final String REALTIME_ADD_FRIEND_REQUEST_LIST = "add-friend-request-list";
     public static final String REALTIME_FRIEND_REQUEST_LIST = "friend-request-list";
-    public static final String REALTIME_ACCEPTED_REQUEST_LIST = "accepted-request-list";
     public static final String STORAGE_USERS = "users_images";
 
 }

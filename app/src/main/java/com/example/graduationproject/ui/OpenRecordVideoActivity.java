@@ -280,9 +280,6 @@ public class OpenRecordVideoActivity extends AppCompatActivity implements Surfac
         VideoMsg videoMsg = new VideoMsg();
         String msg = videoMsg.setVideoData("per1", "per2", recordOutPutPath, videoDuration, getTimeNow());
 
-        //for file name
-        ChatPageDeaf.COUNTER++;
-
         //go back to chatActivity
         //result=Video msg
         Intent intent = new Intent();

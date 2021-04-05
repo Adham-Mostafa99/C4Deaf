@@ -28,7 +28,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         new Handler().postDelayed(() -> {
             signInToChat(currentUser);
-        }, 2000);
+        }, 1000);
 
     }
 

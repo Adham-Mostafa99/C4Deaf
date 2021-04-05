@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -11,9 +12,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,22 +26,12 @@ import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
 import com.example.graduationproject.R;
 import com.example.graduationproject.adapters.NormalMessageAdapter;
-import com.example.graduationproject.models.DatabasePaths;
 import com.example.graduationproject.models.DatabaseQueries;
 import com.example.graduationproject.models.NormalChat;
 import com.example.graduationproject.models.UserMenuChat;
 import com.example.graduationproject.models.UserPublicInfo;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -48,20 +39,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries.CreateNewChat
-        , DatabaseQueries.GetFriendInfo, DatabaseQueries.SendMsgText, DatabaseQueries.ReadMsg {
+        , DatabaseQueries.GetFriendInfo, DatabaseQueries.SendMsg, DatabaseQueries.ReadMsg {
     private static final String LOG_TAG = "AudioRecordTest";
     private static final String TAG = "ChatPageNormal";
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200; //200 for microphone
     private static final int DB_CREATE_NEW_CHAT_ID = 1;
     private static final int DB_SEND_TEXT_MSG_USER_ID = 2;
     private static final int DB_SEND_TEXT_MSG_FRIEND_ID = 3;
-    private static final int DB_GET_FRIEND_INFO_ID = 4;
-    private static final int DB_READ_MSG_ID = 5;
+    private static final int DB_SEND_RECORD_AUDIO_MSG_USER_ID = 4;
+    private static final int DB_SEND_RECORD_AUDIO_MSG_FRIEND_ID = 5;
+    private static final int DB_GET_FRIEND_INFO_ID = 10;
+    private static final int DB_READ_MSG_ID = 20;
 
 
     @BindView(R.id.user_image)
@@ -88,6 +82,7 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
     private UserPublicInfo friendInfo;
 
     private DatabaseQueries.CreateNewChat createNewChat = this;
+    private DatabaseQueries.SendMsg sendMsg = this;
 
     private boolean isFriendInfoUpdated = false;
 
@@ -137,7 +132,7 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
 
                 // Record to the external cache directory for visibility
                 fileName = getExternalCacheDir().getAbsolutePath();
-                fileName += "/audiorecord" + recordCounter + ".3gp";
+                fileName += "/" + UUID.randomUUID().toString() + ".mp3";
                 startRecording(fileName);
                 hideInputText(editTextSend);
                 Log.d("RecordView", "onStart");
@@ -158,9 +153,16 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
                 String time = reformatTime((int) recordTime);
 
                 //add record to chat
-                insertItemToAdapter(new NormalChat("per1", fileName, time, getTimeNow()));
                 Log.d("RecordView", "onFinish");
                 Log.d("RecordTime", time);
+
+                if (friendInfo.getUserState().equals("Normal"))
+                    sendRecordAudio(fileName, time);
+                else {
+                    //convert record to video
+                    Toast.makeText(getApplicationContext(),"will be converted",Toast.LENGTH_SHORT).show();
+                }
+
             }
 
             @Override
@@ -201,7 +203,7 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
         recyclerViewChat.setLayoutManager(linearLayoutManager);
 
         // Record to the external cache directory for visibility
-        fileName = getExternalCacheDir().getAbsolutePath();
+        fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
         fileName += "/audiorecord" + recordCounter + ".3gp";
 
         //sync recordButton with recordView
@@ -252,9 +254,9 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
     public void startRecording(String fileName) {
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         recorder.setOutputFile(fileName);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         try {
             recorder.prepare();
         } catch (IOException e) {
@@ -262,9 +264,6 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
         }
 
         recorder.start();
-
-        Log.v("vounter", recordCounter + "");
-        recordCounter++;
     }
 
     //strop record and release Media record from memory
@@ -346,11 +345,37 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
         textMsg.put("msgType", "text");
 
         //add current user msg
-        DatabaseQueries.sendMsgText(this, DB_SEND_TEXT_MSG_USER_ID, textMsg, currentUser.getUid(), friendId);
+        DatabaseQueries.sendMsg(this, DB_SEND_TEXT_MSG_USER_ID, textMsg, currentUser.getUid(), friendId);
 
         //add the msg in other user
-        DatabaseQueries.sendMsgText(this, DB_SEND_TEXT_MSG_FRIEND_ID, textMsg, friendId, currentUser.getUid());
+        DatabaseQueries.sendMsg(this, DB_SEND_TEXT_MSG_FRIEND_ID, textMsg, friendId, currentUser.getUid());
 
+    }
+
+    public void sendRecordAudio(String filePath, String time) {
+        DatabaseQueries.insertRecordAudioToStorage(new DatabaseQueries.InsertRecordAudioToStorage() {
+            @Override
+            public void afterInsertRecordAudioToStorage(String recordName, String downloadRecordAudioPathUrl) {
+
+                String senderId = currentUser.getUid();
+
+                HashMap<String, Object> textMsg = new HashMap<>();
+                textMsg.put("sender", senderId);
+                textMsg.put("recordName", recordName);
+                textMsg.put("msg", downloadRecordAudioPathUrl);
+                textMsg.put("msgDuration", time);
+                textMsg.put("msgTime", getTimeNow());
+                textMsg.put("msgType", "record_audio");
+
+
+                //add current user msg
+                DatabaseQueries.sendMsg(sendMsg, DB_SEND_RECORD_AUDIO_MSG_USER_ID, textMsg, currentUser.getUid(), friendId);
+
+                //add the msg in other user
+                DatabaseQueries.sendMsg(sendMsg, DB_SEND_RECORD_AUDIO_MSG_FRIEND_ID, textMsg, friendId, currentUser.getUid());
+
+            }
+        }, fileName);
     }
 
     public void updateUi(@NonNull UserPublicInfo friendInfo) {
@@ -374,16 +399,16 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
     }
 
     @Override
-    public void afterSendMsgText(boolean isSent, int id, HashMap<String, Object> textMsg) {
+    public void afterSendMsg(boolean isSent, int id, HashMap<String, Object> msg) {
         switch (id) {
             case DB_SEND_TEXT_MSG_USER_ID:
                 if (isSent) {
                     DatabaseQueries.createNewChat(createNewChat, DB_CREATE_NEW_CHAT_ID, currentUser.getUid()
                             , new UserMenuChat(friendId
                                     , friendInfo.getUserDisplayName()
-                                    , textMsg.get("msg").toString()
+                                    , msg.get("msg").toString()
                                     , friendInfo.getUserPhotoPath()
-                                    , textMsg.get("msgTime").toString()));
+                                    , msg.get("msgTime").toString()));
                 }
                 break;
             case DB_SEND_TEXT_MSG_FRIEND_ID:
@@ -391,11 +416,33 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
                     DatabaseQueries.createNewChat(createNewChat, DB_CREATE_NEW_CHAT_ID, friendId
                             , new UserMenuChat(currentUser.getUid()
                                     , currentUser.getDisplayName()
-                                    , textMsg.get("msg").toString()
+                                    , msg.get("msg").toString()
                                     , currentUser.getPhotoUrl().toString()
-                                    , textMsg.get("msgTime").toString()));
+                                    , msg.get("msgTime").toString()));
 
                 }
+                break;
+            case DB_SEND_RECORD_AUDIO_MSG_USER_ID:
+                if (isSent) {
+                    DatabaseQueries.createNewChat(createNewChat, DB_CREATE_NEW_CHAT_ID, currentUser.getUid()
+                            , new UserMenuChat(friendId
+                                    , friendInfo.getUserDisplayName()
+                                    , "record...."
+                                    , friendInfo.getUserPhotoPath()
+                                    , msg.get("msgTime").toString()));
+                }
+                break;
+            case DB_SEND_RECORD_AUDIO_MSG_FRIEND_ID:
+                if (isSent) {
+                    DatabaseQueries.createNewChat(createNewChat, DB_CREATE_NEW_CHAT_ID, friendId
+                            , new UserMenuChat(currentUser.getUid()
+                                    , currentUser.getDisplayName()
+                                    , "record...."
+                                    , currentUser.getPhotoUrl().toString()
+                                    , msg.get("msgTime").toString()));
+
+                }
+                break;
             default:
                 break;
         }
@@ -424,8 +471,18 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
                     String msg = (String) currentMsg.get("msg");
                     String msgTime = (String) currentMsg.get("msgTime");
                     String msgType = (String) currentMsg.get("msgType");
+
                     if (msgType != null && msgType.equals("text")) {
                         insertItemToAdapter(new NormalChat(sender, msg, msgTime));
+                    } else if (msgType != null && msgType.equals("record_audio")) {
+                        String msgDuration = (String) currentMsg.get("msgDuration");
+                        String recordName = (String) currentMsg.get("recordName");
+                        DatabaseQueries.downloadRecordFromUrl(new DatabaseQueries.DownloadRecordFromUrl() {
+                            @Override
+                            public void afterDownloadRecordFromUrl(String recordPath) {
+                                insertItemToAdapter(new NormalChat(sender, recordPath, msgDuration, msgTime));
+                            }
+                        }, msg, recordName);
                     }
                 }
                 break;

@@ -310,6 +310,11 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
                 return MSG_TYPE_SENDER_TEXT;
             } else
                 return MSG_TYPE_RECEIVER_TEXT;
+        } else if (normalChats.get(position).getMsgType() == NormalChat.MSG_RECORD_TYPE) {
+            if (normalChats.get(position).getSender().equals(currentUser.getUid())) {
+                return MSG_TYPE_SENDER_RECORD;
+            } else
+                return MSG_TYPE_RECEIVER_RECORD;
         }
         return 1;
     }

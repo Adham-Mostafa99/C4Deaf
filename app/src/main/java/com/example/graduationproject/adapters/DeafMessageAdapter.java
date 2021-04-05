@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.graduationproject.R;
 import com.example.graduationproject.models.DeafChat;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
@@ -34,11 +36,12 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private ArrayList<DeafChat> chats;
     private Context context;
     private VideoView videoView;
+    private FirebaseUser currentUser;
 
-    public DeafMessageAdapter(ArrayList<DeafChat> normalChats, Context context) {
-        this.chats = normalChats;
+    public DeafMessageAdapter(ArrayList<DeafChat> deafChats, Context context) {
+        this.chats = deafChats;
         this.context = context;
-
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     @NonNull
@@ -151,8 +154,18 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemViewType(int position) {
-        //only for test view type
-        return chats.get(position).getMsgType();
+        if (chats.get(position).getMsgType() == DeafChat.MSG_TEXT_TYPE) {
+            if (chats.get(position).getSender().equals(currentUser.getUid())) {
+                return MSG_TYPE_SENDER_TEXT;
+            } else
+                return MSG_TYPE_RECEIVER_TEXT;
+        } else if (chats.get(position).getMsgType() == DeafChat.MSG_RECORD_TYPE) {
+            if (chats.get(position).getSender().equals(currentUser.getUid())) {
+                return MSG_TYPE_SENDER_VIDEO;
+            } else
+                return MSG_TYPE_RECEIVER_VIDEO;
+        }
+        return 1;
     }
 
 

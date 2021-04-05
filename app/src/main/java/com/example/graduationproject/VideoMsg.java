@@ -35,7 +35,6 @@ public class VideoMsg {
 
                 return new DeafChat(
                         jsonObject.getString("sender"),
-                        jsonObject.getString("receiver"),
                         jsonObject.getString("path"),
                         jsonObject.getString("videoDuration"),
                         jsonObject.getString("msgTime")

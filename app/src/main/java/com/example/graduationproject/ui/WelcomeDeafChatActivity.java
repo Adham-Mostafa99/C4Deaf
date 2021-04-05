@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.graduationproject.R;
+import com.example.graduationproject.models.DatabaseQueries;
 import com.example.graduationproject.models.UserMenuChat;
 import com.example.graduationproject.models.UserPrivateInfo;
 import com.example.graduationproject.models.UserPublicInfo;
@@ -57,8 +58,8 @@ public class WelcomeDeafChatActivity extends AppCompatActivity {
 
     private boolean isPublicUserStored = false;
     private boolean isPrivateUserStored = false;
-    private boolean isFriendsStored = false;
-    private boolean isMenuChatStored = false;
+//    private boolean isFriendsStored = false;
+//    private boolean isMenuChatStored = false;
     private boolean isUpdateUserProfile = false;
 
     private UserPublicInfo userPublicInfo;
@@ -77,7 +78,12 @@ public class WelcomeDeafChatActivity extends AppCompatActivity {
 
 
         try {
-            insertUserProfileImageToDatabaseStorage(userPublicInfo.getUserPhotoPath());
+            DatabaseQueries.insertPhotoToStorage(new DatabaseQueries.InsertPhotoToStorage() {
+                @Override
+                public void afterInsertPhotoToStorage(String downloadPhotoPath) {
+                    uploadUserDataToDatabase(downloadPhotoPath);
+                }
+            }, userPublicInfo.getUserPhotoPath());
             insertUserPrivateInfoToDatabase(userPrivateInfo);
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,7 +91,7 @@ public class WelcomeDeafChatActivity extends AppCompatActivity {
 
         startChat.setOnClickListener(v -> {
 
-            if (isUpdateUserProfile && isPublicUserStored && isPrivateUserStored && isFriendsStored && isMenuChatStored) {
+            if (isUpdateUserProfile && isPublicUserStored && isPrivateUserStored ) {
                 finish();
                 startActivity(new Intent(getApplicationContext(), ChatMenuActivity.class));
             }
@@ -190,105 +196,73 @@ public class WelcomeDeafChatActivity extends AppCompatActivity {
     /**
      * @param userPublicInfo which contain public user information
      */
-    public void insertUserDefaultFriendToDatabase(@NonNull UserPublicInfo userPublicInfo) {
-        //path of user document
-        //like: "users/ID"
-        String pathOfFriendOfUserDocument = USERS_PATH + "/" + currentUser.getUid() + "/" + "Friends" + "/" + userPublicInfo.getUserId();
-
-        //store user default friend (self)
-        db.document(pathOfFriendOfUserDocument)
-                .set(userPublicInfo)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully written!");
-                        isFriendsStored = true;
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
-                    }
-                });
-    }
+//    public void insertUserDefaultFriendToDatabase(@NonNull UserPublicInfo userPublicInfo) {
+//        //path of user document
+//        //like: "users/ID"
+//        String pathOfFriendOfUserDocument = USERS_PATH + "/" + currentUser.getUid() + "/" + "Friends" + "/" + userPublicInfo.getUserId();
+//
+//        //store user default friend (self)
+//        db.document(pathOfFriendOfUserDocument)
+//                .set(userPublicInfo)
+//                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        Log.d(TAG, "DocumentSnapshot successfully written!");
+//                        isFriendsStored = true;
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.w(TAG, "Error writing document", e);
+//                    }
+//                });
+//    }
 
     /**
-     * @param userPublicInfo which contain public user information
+//     * @param userPublicInfo which contain public user information
      */
-    public void insertUserDefaultMenuChatToDatabase(@NonNull UserPublicInfo userPublicInfo) {
-
-        //create instance of default chat
-        //which will be [self]
-        UserMenuChat userDefaultMenuChat = new UserMenuChat(
-                userPublicInfo.getUserId()
-                , userPublicInfo.getUserFirstName() + " " + userPublicInfo.getUserLastName()
-                , "hello"
-                , userPublicInfo.getUserPhotoPath()
-                , getTimeNow());
-
-        //store instance of default chat in database
-        //which myRef path :"users/userID/menu-chat"
-        myRef
-                .child(userPublicInfo.getUserId())
-                .setValue(userDefaultMenuChat)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Write was successful!
-                        isMenuChatStored = true;
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Write failed
-                        Log.w(TAG, "Error adding document", e);
-                    }
-                });
-    }
+//    public void insertUserDefaultMenuChatToDatabase(@NonNull UserPublicInfo userPublicInfo) {
+//
+//        //create instance of default chat
+//        //which will be [self]
+//        UserMenuChat userDefaultMenuChat = new UserMenuChat(
+//                userPublicInfo.getUserId()
+//                , userPublicInfo.getUserFirstName() + " " + userPublicInfo.getUserLastName()
+//                , "hello"
+//                , userPublicInfo.getUserPhotoPath()
+//                , getTimeNow());
+//
+//        //store instance of default chat in database
+//        //which myRef path :"users/userID/menu-chat"
+//        myRef
+//                .child(userPublicInfo.getUserId())
+//                .setValue(userDefaultMenuChat)
+//                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        // Write was successful!
+//                        isMenuChatStored = true;
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        // Write failed
+//                        Log.w(TAG, "Error adding document", e);
+//                    }
+//                });
+//    }
 
     //upload users data
     public void uploadUserDataToDatabase(String imagePath) {
         userPublicInfo.setUserPhotoPath(imagePath);
         updateUserProfile(userPublicInfo);
         insertUserPublicInfoToDatabase(userPublicInfo);
-        insertUserDefaultFriendToDatabase(userPublicInfo);
-        insertUserDefaultMenuChatToDatabase(userPublicInfo);
+//        insertUserDefaultFriendToDatabase(userPublicInfo);
+//        insertUserDefaultMenuChatToDatabase(userPublicInfo);
     }
 
-    public void insertUserProfileImageToDatabaseStorage(String userPhotoPath) {
-        Uri fileUri = Uri.fromFile(new File(userPhotoPath));
-        mStorageRef.putFile(fileUri)
-                .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                    @Override
-                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                        if (!task.isSuccessful()) {
-                            throw Objects.requireNonNull(task.getException());
-                        }
-
-                        // Continue with the task to get the download URL
-                        return mStorageRef.getDownloadUrl();
-                    }
-                })
-                .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        if (task.isSuccessful()) {
-                            //get userPhoto Uri from FirebaseStorage
-                            Uri imageUri = task.getResult();
-                            assert imageUri != null;
-                            Log.v(TAG, "path:" + imageUri.toString());
-                            //upload user data
-                            uploadUserDataToDatabase(imageUri.toString());
-                        } else {
-                            // Handle failures
-                            // ...
-                        }
-                    }
-                });
-
-    }
 
     //get current time for the message
     public String getTimeNow() {
