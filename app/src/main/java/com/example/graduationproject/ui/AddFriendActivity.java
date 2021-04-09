@@ -2,7 +2,6 @@ package com.example.graduationproject.ui;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,8 +36,8 @@ public class AddFriendActivity extends AppCompatActivity implements AddFriendAda
 
     @BindView(R.id.display_name_search)
     EditText displayNameSearch;
-    @BindView(R.id.add_friend)
-    Button addFriend;
+    @BindView(R.id.search_friends)
+    Button searchFriends;
     @BindView(R.id.searched_friend_recycler)
     RecyclerView searchedFriendRecycler;
 
@@ -64,7 +63,7 @@ public class AddFriendActivity extends AppCompatActivity implements AddFriendAda
         initAdapter();
 
 
-        addFriend.setOnClickListener(new View.OnClickListener() {
+        searchFriends.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clearAdapter();
@@ -103,14 +102,8 @@ public class AddFriendActivity extends AppCompatActivity implements AddFriendAda
 
     @Override
     public void onItemClick(int position) {
-        String friendDisplayName = friendsArrayList.get(position).getUserDisplayName();
-        DatabaseQueries.getFriendByDisplayName(new DatabaseQueries.GetFriendByDisplayName() {
-            @Override
-            public void afterGetFriendByDisplayName(UserPublicInfo friendInfo, int id) {
-                popWindowCreation(friendInfo);
-            }
-        }, 0, friendDisplayName);
-
+        UserPublicInfo friendInfo = friendsArrayList.get(position);
+        popWindowCreation(friendInfo);
 
     }
 
@@ -127,9 +120,9 @@ public class AddFriendActivity extends AppCompatActivity implements AddFriendAda
 
     @Override
     public void onAddFriend(int position) {
-        UserPublicInfo clickedFriend = friendsArrayList.get(position);
+        String clickedFriendId = friendsArrayList.get(position).getUserId();
 
-        if (clickedFriend.getUserId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+        if (clickedFriendId.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
             Toast.makeText(getApplicationContext(), "can't add your self", Toast.LENGTH_SHORT).show();
         } else {
             //check if he is in friends list
@@ -139,10 +132,10 @@ public class AddFriendActivity extends AppCompatActivity implements AddFriendAda
                     if (isFound)
                         Toast.makeText(getApplication(), "already friend", Toast.LENGTH_SHORT).show();
                     else {
-                        DatabaseQueries.sendAddRequest(sendAddRequest, clickedFriend, DB_SEND_ADD_REQUEST_ID);
+                        DatabaseQueries.sendAddRequest(sendAddRequest, clickedFriendId, DB_SEND_ADD_REQUEST_ID);
                     }
                 }
-            }, clickedFriend);
+            }, clickedFriendId);
         }
     }
 

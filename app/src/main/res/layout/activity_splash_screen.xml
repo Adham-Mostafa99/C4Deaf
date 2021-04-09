@@ -4,16 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/rectangle_splash"
+    android:background="@drawable/splash_screen"
+    android:fitsSystemWindows="false"
     tools:context=".ui.SplashScreenActivity">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/App_logo"
+    <ImageView
+        android:id="@+id/splash_logo"
         android:layout_width="270dp"
         android:layout_height="270dp"
-        android:layout_marginTop="175dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/photo"
+        android:layout_marginTop="207dp"
+        android:background="@drawable/splash_logo_background"
+        android:src="@drawable/splash_logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,15 +23,30 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="115dp"
-        android:fontFamily="@font/cambo"
-        android:text="@string/application_name"
+        android:layout_marginTop="70dp"
+        android:fontFamily="@font/constantia"
+        android:text="DAN Chatting"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="40sp"
+        android:textStyle="italic"
+        android:id="@+id/splash_logo_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/App_logo" />
+        app:layout_constraintTop_toBottomOf="@id/splash_logo" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/constantia"
+        android:text="Deaf and Normal chatting "
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/splash_logo_name" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

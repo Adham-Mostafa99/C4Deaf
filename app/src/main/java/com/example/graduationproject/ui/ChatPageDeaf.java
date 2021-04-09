@@ -1,11 +1,13 @@
 package com.example.graduationproject.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,12 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.graduationproject.sign_language.ConvertIconToText;
+import com.example.graduationproject.sign_language.KeyboardManager;
 import com.example.graduationproject.R;
 import com.example.graduationproject.VideoMsg;
 import com.example.graduationproject.adapters.DeafMessageAdapter;
 import com.example.graduationproject.models.DatabaseQueries;
 import com.example.graduationproject.models.DeafChat;
-import com.example.graduationproject.models.NormalChat;
 import com.example.graduationproject.models.UserMenuChat;
 import com.example.graduationproject.models.UserPublicInfo;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,7 +42,7 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.SendMsg, DatabaseQueries.GetFriendInfo
-        , DatabaseQueries.CreateNewChat, DatabaseQueries.ReadMsg {
+        , DatabaseQueries.CreateNewChat, DatabaseQueries.ReadMsg, ConvertIconToText.OnPressKey {
 
 
     @BindView(R.id.recycler_view_chat_deaf)
@@ -63,6 +66,66 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
     private static final int DB_SEND_TEXT_MSG_FRIEND_ID = 5;
     private static final int DB_GET_FRIEND_INFO_ID = 10;
     private static final int DB_READ_MSG_ID = 20;
+    @BindView(R.id.btn_keyboard)
+    ImageView btnKeyboard;
+    @BindView(R.id.keyboard)
+    LinearLayout keyboard;
+    @BindView(R.id.key_q)
+    ImageView keyQ;
+    @BindView(R.id.key_w)
+    ImageView keyW;
+    @BindView(R.id.key_e)
+    ImageView keyE;
+    @BindView(R.id.key_r)
+    ImageView keyR;
+    @BindView(R.id.key_t)
+    ImageView keyT;
+    @BindView(R.id.key_y)
+    ImageView keyY;
+    @BindView(R.id.key_u)
+    ImageView keyU;
+    @BindView(R.id.key_i)
+    ImageView keyI;
+    @BindView(R.id.key_a)
+    ImageView keyA;
+    @BindView(R.id.key_s)
+    ImageView keyS;
+    @BindView(R.id.key_d)
+    ImageView keyD;
+    @BindView(R.id.key_f)
+    ImageView keyF;
+    @BindView(R.id.key_g)
+    ImageView keyG;
+    @BindView(R.id.key_h)
+    ImageView keyH;
+    @BindView(R.id.key_j)
+    ImageView keyJ;
+    @BindView(R.id.key_k)
+    ImageView keyK;
+    @BindView(R.id.key_z)
+    ImageView keyZ;
+    @BindView(R.id.key_x)
+    ImageView keyX;
+    @BindView(R.id.key_c)
+    ImageView keyC;
+    @BindView(R.id.key_v)
+    ImageView keyV;
+    @BindView(R.id.key_b)
+    ImageView keyB;
+    @BindView(R.id.key_n)
+    ImageView keyN;
+    @BindView(R.id.key_m)
+    ImageView keyM;
+    @BindView(R.id.key_o)
+    ImageView keyO;
+    @BindView(R.id.key_p)
+    ImageView keyP;
+    @BindView(R.id.key_l)
+    ImageView keyL;
+    @BindView(R.id.key_space)
+    ImageView keySpace;
+    @BindView(R.id.key_backspace)
+    ImageView keyBackspace;
 
     private boolean isFriendInfoUpdated = false;
 
@@ -85,6 +148,10 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
 
     private DatabaseQueries.SendMsg sendMsg = this;
     private DatabaseQueries.CreateNewChat createNewChat = this;
+    private ConvertIconToText.OnPressKey onPressKey = this;
+    private Activity activity = this;
+
+    private KeyboardManager keyboardManager;
 
     public void init() {
         msg = new ArrayList<>();
@@ -94,6 +161,8 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
         recyclerViewChatDeaf.setLayoutManager(linearLayoutManager);
+
+        keyboardManager = new KeyboardManager(getApplicationContext(), activity, textSend, keyboard);
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -106,6 +175,7 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_page_deaf);
         ButterKnife.bind(this);
+
 
         //initialize objects
         init();
@@ -132,6 +202,22 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
             @Override
             public void onClick(View v) {
 
+            }
+        });
+
+        btnKeyboard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                keyboardManager.changeKeyboard(new KeyboardManager.OnHidePrimaryKeyboard() {
+                    @Override
+                    public void afterHidePrimaryKeyboard() {
+                        ConvertIconToText convertIconToText = new ConvertIconToText(getApplicationContext(), onPressKey,
+                                keyA, keyB, keyC, keyD, keyE, keyF, keyG, keyH, keyI, keyJ, keyK, keyL, keyM, keyN
+                                , keyO, keyP, keyQ, keyR, keyS, keyT, keyU, keyV, keyW, keyX, keyY, keyZ, keySpace, keyBackspace);
+                        convertIconToText.initWithClick();
+                    }
+                });
             }
         });
 
@@ -224,7 +310,7 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
                         sendRecordVideo(deafChat);
                     else {
                         //convert video to text
-                        Toast.makeText(getApplicationContext(),"will be converted",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "will be converted", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -378,7 +464,7 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
 
                     if (msgType != null && msgType.equals("text")) {
                         insertItemToAdapter(new DeafChat(sender, msg, msgTime));
-                    } else if (msgType != null && msgType.equals("record_audio")) {
+                    } else if (msgType != null && msgType.equals("record_video")) {
                         String msgDuration = (String) currentMsg.get("msgDuration");
                         String recordName = (String) currentMsg.get("recordName");
                         DatabaseQueries.downloadRecordFromUrl(new DatabaseQueries.DownloadRecordFromUrl() {
@@ -386,13 +472,38 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
                             public void afterDownloadRecordFromUrl(String recordPath) {
                                 insertItemToAdapter(new DeafChat(sender, recordPath, msgDuration, msgTime));
                             }
-                        }, msg, recordName);
+                        }, "video", msg, recordName);
                     }
                 }
                 break;
             default:
                 break;
         }
+    }
+
+    @Override
+    public void pressKey(int id) {
+        switch (id) {
+            case R.id.key_a:
+                textSend.append("a");
+                break;
+            case R.id.key_b:
+                textSend.append("b");
+                break;
+            case R.id.key_space:
+                textSend.append(" ");
+                break;
+            case R.id.key_backspace:
+                Log.v(TAG, "back space");
+                int length = textSend.getText().length();
+                if (length > 0) {
+                    textSend.getText().delete(length - 1, length);
+                }
+                break;
+            default:
+                break;
+        }
+
     }
 }
 

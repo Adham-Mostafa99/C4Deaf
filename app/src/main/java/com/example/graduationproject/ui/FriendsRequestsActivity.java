@@ -74,10 +74,13 @@ public class FriendsRequestsActivity extends AppCompatActivity implements Friend
         friendsRequestsList.setAdapter(adapter);
     }
 
-    public void refreshAdapter(ArrayList<UserPublicInfo> friendsList) {
-        friendsRequestsArrayList.clear();
-        friendsRequestsArrayList.addAll(friendsList);
-        adapter.notifyDataSetChanged();
+
+    public void insertFriendToAdapter(UserPublicInfo userPublicInfo) {
+        Log.v("friend", userPublicInfo.toString());
+        int firstItemInList = 0;
+        friendsRequestsArrayList.add(firstItemInList, userPublicInfo);
+        adapter.notifyItemInserted(firstItemInList);
+        friendsRequestsList.smoothScrollToPosition(firstItemInList);
     }
 
     @Override
@@ -93,7 +96,7 @@ public class FriendsRequestsActivity extends AppCompatActivity implements Friend
 
     @Override
     public void onAcceptFriend(int position) {
-        UserPublicInfo acceptedRequest = friendsRequestsArrayList.get(position);
+        String acceptedRequestId = friendsRequestsArrayList.get(position).getUserId();
         DatabaseQueries.acceptFriendRequest(new DatabaseQueries.AcceptFriendRequest() {
             @Override
             public void afterAcceptFriendRequest(int id) {
@@ -101,12 +104,12 @@ public class FriendsRequestsActivity extends AppCompatActivity implements Friend
                 adapter.notifyDataSetChanged();
                 Toast.makeText(getApplicationContext(), " accepted", Toast.LENGTH_SHORT).show();
             }
-        }, acceptedRequest, DB_ACCEPTED_FRIEND);
+        }, acceptedRequestId, DB_ACCEPTED_FRIEND);
     }
 
     @Override
     public void onIgnoreFriend(int position) {
-        UserPublicInfo ignoredRequest = friendsRequestsArrayList.get(position);
+        String ignoredRequestId = friendsRequestsArrayList.get(position).getUserId();
         DatabaseQueries.ignoreFriendRequest(new DatabaseQueries.IgnoreFriendRequest() {
             @Override
             public void afterIgnoreFriendRequest(int id) {
@@ -114,15 +117,24 @@ public class FriendsRequestsActivity extends AppCompatActivity implements Friend
                 adapter.notifyDataSetChanged();
                 Toast.makeText(getApplicationContext(), " ignored", Toast.LENGTH_SHORT).show();
             }
-        }, ignoredRequest, DB_IGNORED_FRIEND);
+        }, ignoredRequestId, DB_IGNORED_FRIEND);
     }
 
+
     @Override
-    public void afterGetFriendRequestList(ArrayList<UserPublicInfo> friendsList, int id) {
+    public void afterGetFriendRequestList(ArrayList<String> friendsListId, int id) {
         switch (id) {
             case DB_GetFriendRequestList:
-                if (friendsList != null) {
-                    refreshAdapter(friendsList);
+                if (friendsListId != null) {
+                    for (String friendId : friendsListId) {
+                        DatabaseQueries.getFriendInfo(new DatabaseQueries.GetFriendInfo() {
+                            @Override
+                            public void afterGetFriendInfo(UserPublicInfo friendInfo, int id) {
+                                insertFriendToAdapter(friendInfo);
+                            }
+                        }, 0, friendId);
+                    }
+
                 }
                 requestFriendsRefreshSwipe.setRefreshing(false);
 

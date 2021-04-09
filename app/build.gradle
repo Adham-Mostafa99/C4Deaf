@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.graduationproject"
-        minSdkVersion 16
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -29,6 +29,9 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+//    packagingOptions {
+//        pickFirst 'protobuf.meta'
+//    }
 }
 
 dependencies {
@@ -39,6 +42,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    //Splash Screen
+    implementation "androidx.core:core-ktx:1.6.0-alpha01"
 
 
     //circleImageView
@@ -101,6 +107,9 @@ dependencies {
     // Also declare the dependency for the TensorFlow Lite library and specify its version
     implementation 'org.tensorflow:tensorflow-lite:2.3.0'
 
+//    //Speech-to-Text Client Libraries
+//    implementation platform('com.google.cloud:libraries-bom:19.2.1')
+//    implementation 'com.google.cloud:google-cloud-speech'
 
 
     //Jackson objectmapper
@@ -110,5 +119,19 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.10.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.1'
 
+
+    //KeyboardVisibilityEvent
+    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:1.0.1'
+
+    //IBM speech to text
+    implementation 'com.ibm.watson:ibm-watson:8.6.0'
+    implementation 'com.arthenica:mobile-ffmpeg-full:4.4'
+//    implementation 'com.writingminds:FFmpegAndroid:0.3.2'
+
+//    //AndroidAudioConverter
+//    implementation 'com.github.adrielcafe:AndroidAudioConverter:0.0.8'
+//
+//    //Microsoft Speech API: Android Speech-to-Text Client
+//    implementation 'com.microsoft.projectoxford:speechrecognition:1.2.2'
 
 }

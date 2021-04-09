@@ -31,6 +31,7 @@ import com.google.firebase.ml.modeldownloader.DownloadType;
 import com.google.firebase.ml.modeldownloader.FirebaseModelDownloader;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -55,42 +56,53 @@ public class DatabaseQueries {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
-    // private static FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public static void getUserFriends(GetUserFriends getUserFriends, int id) {
-        ArrayList<UserPublicInfo> friends = new ArrayList<>();
+        ArrayList<String> friendsId = new ArrayList<>();
         String pathOfFriendOfUser =
-                "users" + "/" + currentUser().getUid() + "/" + "Friends";
-        db.collection(pathOfFriendOfUser)
-                .get().
-                addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot documents : task.getResult())
-                                friends.add(documents.toObject(UserPublicInfo.class));
-                            getUserFriends.afterGetUserFriends(friends, id);
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
+                "users" + "/" + currentUser().getUid() + "/" + "friends";
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(pathOfFriendOfUser);
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    if (((HashMap<String, Object>) dataSnapshot.getValue()).get("id").toString() != null) {
+                        String friendId = ((HashMap<String, Object>) dataSnapshot.getValue()).get("id").toString();
+                        friendsId.add(friendId);
                     }
-                });
+                }
+                getUserFriends.afterGetUserFriends(friendsId, id);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
-    public static void insertFriendToDatabase(InsertNewFriend insertNewFriend, @NonNull UserPublicInfo currentUserInfo, @NonNull UserPublicInfo newFriendInfo, int id) {
+    public static void insertFriendToDatabase(InsertNewFriend insertNewFriend, String currentUserId, @NonNull String friendId, int id) {
         //path of new friend document
         //like: "users/ID/Friends/friendID"
 
-        String pathOfNewFriend = "users" + "/" + currentUserInfo.getUserId() + "/" + "Friends" + "/" + newFriendInfo.getUserId();
+        String friendsPath = "users" + "/" + currentUserId + "/" + "friends";
 
-        db.document(pathOfNewFriend)
-                .set(newFriendInfo)
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(friendsPath);
+
+        Map<String, Object> friendMap = new HashMap<>();
+        friendMap.put("id", friendId);
+
+        databaseReference
+                .child(friendId)
+                .setValue(friendMap)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        insertNewFriend.afterInsertNewFriend(true, newFriendInfo, id);
+                        insertNewFriend.afterInsertNewFriend(true, friendId, id);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -106,6 +118,9 @@ public class DatabaseQueries {
         DatabaseReference myRefMenuChat =
                 FirebaseDatabase.getInstance().
                         getReference("users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/menu-chat");
+
+        myRefMenuChat.keepSynced(true);
+
         myRefMenuChat.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -142,14 +157,18 @@ public class DatabaseQueries {
                 });
     }
 
-    public static void sendMsg(SendMsg sendMsg, int id, HashMap<String, Object> msg, String userId, String friendId) {
+    public static void sendMsg(SendMsg sendMsg, int id, HashMap<String, Object> msg, @NonNull String userId, String friendId) {
+        Date date = new Date();
         //path  currentUserId/msg/receiverId/msgNumber/Msg
         DatabaseReference myRefMsgChatSend = FirebaseDatabase.getInstance()
                 .getReference("users/" + userId + "/" + "chat-msg");
+        //store send msg for my database only
+        if (userId.equals(currentUser().getUid()))
+            myRefMsgChatSend.keepSynced(true);
         myRefMsgChatSend
                 .child(friendId)
                 .push()
-                .setValue(msg)
+                .setValue(msg,-date.getTime())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -167,13 +186,15 @@ public class DatabaseQueries {
     }
 
     public static void getFriendInfo(GetFriendInfo getFriendInfo, int id, String friendId) {
-        String friendPath = "users" + "/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/" + "Friends" + "/" + friendId;
+        String friendPath = "users" + "/" + friendId;
         db.document(friendPath)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        UserPublicInfo friendInfo = documentSnapshot.toObject(UserPublicInfo.class);
+
+                        HashMap<String, Object> currentFriendInfo = (HashMap<String, Object>) documentSnapshot.get("public-info");
+                        UserPublicInfo friendInfo = Converter.ConvertMapToUserPublicInfo(currentFriendInfo);
                         getFriendInfo.afterGetFriendInfo(friendInfo, id);
                     }
                 })
@@ -190,6 +211,9 @@ public class DatabaseQueries {
         DatabaseReference myRefMsgChat =
                 FirebaseDatabase.getInstance()
                         .getReference("users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/chat-msg");
+
+        myRefMsgChat.keepSynced(true);
+
         myRefMsgChat.child(friendId)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
@@ -247,12 +271,12 @@ public class DatabaseQueries {
                 });
     }
 
-    public static void checkClickedUserInFriendList(IsUserInFriendList isUserInFriendList, UserPublicInfo searchedUser) {
+    public static void checkClickedUserInFriendList(IsUserInFriendList isUserInFriendList, String searchedUserId) {
         DatabaseQueries.getUserFriends(new GetUserFriends() {
             @Override
-            public void afterGetUserFriends(ArrayList<UserPublicInfo> friends, int id) {
-                for (UserPublicInfo currentFriend : friends) {
-                    if (currentFriend.getUserId().equals(searchedUser.getUserId())) {
+            public void afterGetUserFriends(ArrayList<String> friendsId, int id) {
+                for (String currentFriendId : friendsId) {
+                    if (currentFriendId.equals(searchedUserId)) {
                         isUserInFriendList.isUserInFriendList(true);
                         return;
                     }
@@ -262,14 +286,17 @@ public class DatabaseQueries {
         }, 0);
     }
 
-    private static void insertFriendToSentRequestList(InsertFriendToSentRequestList insertFriendToSentRequestList, @NonNull UserPublicInfo friendInfo) {
+    private static void insertFriendToSentRequestList(InsertFriendToSentRequestList insertFriendToSentRequestList, @NonNull String friendId) {
         //insert in user [sent request list]
         DatabaseReference myRefUser = FirebaseDatabase.getInstance()
                 .getReference("users/" + currentUser().getUid() + "/" + REALTIME_ADD_FRIEND_REQUEST_LIST);
 
+        Map<String, Object> friendMap = new HashMap<>();
+        friendMap.put("id", friendId);
+
         myRefUser
-                .child(friendInfo.getUserId())
-                .setValue(friendInfo)
+                .child(friendId)
+                .setValue(friendMap)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -286,15 +313,17 @@ public class DatabaseQueries {
 
     }
 
-    private static void insertFriendToRequestList(InsertFriendToRequestList insertFriendToRequestList, UserPublicInfo currentUserInfo, String friendId) {
+    private static void insertFriendToRequestList(InsertFriendToRequestList insertFriendToRequestList, String friendId) {
         //insert in friend [request list]
         DatabaseReference myRefUser = FirebaseDatabase.getInstance()
                 .getReference("users/" + friendId + "/" + REALTIME_FRIEND_REQUEST_LIST);
 
+        Map<String, Object> friendMap = new HashMap<>();
+        friendMap.put("id", currentUser().getUid());
 
         myRefUser
                 .child(currentUser().getUid())
-                .setValue(currentUserInfo)
+                .setValue(friendMap)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -311,7 +340,7 @@ public class DatabaseQueries {
 
     }
 
-    public static void sendAddRequest(SendAddRequest sendAddRequest, @NonNull UserPublicInfo friendInfo, int id) {
+    public static void sendAddRequest(SendAddRequest sendAddRequest, @NonNull String friendId, int id) {
         DatabaseQueries.checkIfFriendRequestIsInRequestList(new CheckIfFriendRequestIsInRequestList() {
             @Override
             public void afterCheckIfFriendRequestIsInRequestList(boolean isFound) {
@@ -319,29 +348,24 @@ public class DatabaseQueries {
                     sendAddRequest.afterSendAddRequest(false, id);
                     //you sent already request
                 } else {
-                    DatabaseQueries.getCurrentUserInfo(new GetCurrentUserInfo() {
+                    DatabaseQueries.insertFriendToSentRequestList(new InsertFriendToSentRequestList() {
                         @Override
-                        public void afterGetCurrentUserInfo(UserPublicInfo currentUserInfo, int afterGetCurrentUserInfoID) {
-                            DatabaseQueries.insertFriendToSentRequestList(new InsertFriendToSentRequestList() {
-                                @Override
-                                public void afterInsertFriendToSentRequestList(boolean isSentRequest) {
-                                    if (isSentRequest) {
-                                        DatabaseQueries.insertFriendToRequestList(new InsertFriendToRequestList() {
-                                            @Override
-                                            public void afterInsertFriendToRequestList(boolean isAddToRequest) {
-                                                if (isAddToRequest) {
-                                                    sendAddRequest.afterSendAddRequest(true, id);
-                                                }
-                                            }
-                                        }, currentUserInfo, friendInfo.getUserId());
+                        public void afterInsertFriendToSentRequestList(boolean isSentRequest) {
+                            if (isSentRequest) {
+                                DatabaseQueries.insertFriendToRequestList(new InsertFriendToRequestList() {
+                                    @Override
+                                    public void afterInsertFriendToRequestList(boolean isAddToRequest) {
+                                        if (isAddToRequest) {
+                                            sendAddRequest.afterSendAddRequest(true, id);
+                                        }
                                     }
-                                }
-                            }, friendInfo);
+                                }, friendId);
+                            }
                         }
-                    }, currentUser().getUid(), 0);
+                    }, friendId);
                 }
             }
-        }, friendInfo.getUserId());
+        }, friendId);
 
     }
 
@@ -356,7 +380,7 @@ public class DatabaseQueries {
                     @Override
                     public void onSuccess(DataSnapshot dataSnapshot) {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            if (snapshot.getValue(UserPublicInfo.class).getUserId().equals(friendId)) {
+                            if (((HashMap<String, Object>) snapshot.getValue()).get("id").equals(friendId)) {
                                 check.afterCheckIfFriendRequestIsInRequestList(true);
                                 return;
                             }
@@ -373,7 +397,7 @@ public class DatabaseQueries {
     }
 
     public static void getFriendRequestList(GetFriendRequestList friendRequestList, int id) {
-        ArrayList<UserPublicInfo> requestList = new ArrayList<>();
+        ArrayList<String> requestListIds = new ArrayList<>();
         Log.v(TAG, currentUser().getUid());
         DatabaseReference myRefUser = FirebaseDatabase.getInstance()
                 .getReference("users/" + currentUser().getUid() + "/" + REALTIME_FRIEND_REQUEST_LIST);
@@ -383,11 +407,11 @@ public class DatabaseQueries {
                     @Override
                     public void onSuccess(DataSnapshot dataSnapshot) {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            UserPublicInfo currentRequest = snapshot.getValue(UserPublicInfo.class);
-                            requestList.add(currentRequest);
+                            String currentRequestId = ((HashMap<String, Object>) snapshot.getValue()).get("id").toString();
+                            requestListIds.add(currentRequestId);
                         }
-                        if (!requestList.isEmpty())
-                            friendRequestList.afterGetFriendRequestList(requestList, id);
+                        if (!requestListIds.isEmpty())
+                            friendRequestList.afterGetFriendRequestList(requestListIds, id);
                         else
                             friendRequestList.afterGetFriendRequestList(null, id);
                     }
@@ -428,13 +452,13 @@ public class DatabaseQueries {
 
     }
 
-    private static void deleteFriendRequestFromCurrentUser(DeleteFriendRequestFromCurrentUser deleteFriendRequestFromCurrentUser, @NonNull UserPublicInfo deletedFriendInfo) {
+    private static void deleteFriendRequestFromCurrentUser(DeleteFriendRequestFromCurrentUser deleteFriendRequestFromCurrentUser, @NonNull String friendId) {
         //delete  user [sent request list][current user here is yourFriend]
         DatabaseReference myRefUser = FirebaseDatabase.getInstance()
                 .getReference("users/" + currentUser().getUid() + "/" + REALTIME_FRIEND_REQUEST_LIST);
 
         myRefUser
-                .child(deletedFriendInfo.getUserId())
+                .child(friendId)
                 .removeValue()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -475,47 +499,41 @@ public class DatabaseQueries {
 
     }
 
-    public static void acceptFriendRequest(AcceptFriendRequest acceptedFriendRequest, UserPublicInfo acceptedFriend, int id) {
+    public static void acceptFriendRequest(AcceptFriendRequest acceptedFriendRequest, String acceptedFriendId, int id) {
 
-        DatabaseQueries.getCurrentUserInfo(new GetCurrentUserInfo() {
+
+        DatabaseQueries.deleteFriendRequestFromCurrentUser(new DeleteFriendRequestFromCurrentUser() {
             @Override
-            public void afterGetCurrentUserInfo(UserPublicInfo currentUserInfo, int id) {
+            public void afterDeleteFriendRequestFromCurrentUser(boolean isDeleted) {
+                if (isDeleted) {
+                    DatabaseQueries.deleteFriendRequestFromOtherUser(new DeleteFriendRequestFromOtherUser() {
+                        @Override
+                        public void afterDeleteFriendRequestFromOtherUser(boolean isDeleted) {
+                            if (isDeleted) {
+                                DatabaseQueries.insertFriendToDatabase(new InsertNewFriend() {
+                                    @Override
+                                    public void afterInsertNewFriend(boolean isSuccess, String friendId, int id) {
 
-                DatabaseQueries.deleteFriendRequestFromCurrentUser(new DeleteFriendRequestFromCurrentUser() {
-                    @Override
-                    public void afterDeleteFriendRequestFromCurrentUser(boolean isDeleted) {
-                        if (isDeleted) {
-                            DatabaseQueries.deleteFriendRequestFromOtherUser(new DeleteFriendRequestFromOtherUser() {
-                                @Override
-                                public void afterDeleteFriendRequestFromOtherUser(boolean isDeleted) {
-                                    if (isDeleted) {
-                                        DatabaseQueries.insertFriendToDatabase(new InsertNewFriend() {
-                                            @Override
-                                            public void afterInsertNewFriend(boolean isSuccess, UserPublicInfo newFriendInfo, int id) {
-
-                                            }
-                                        }, currentUserInfo, acceptedFriend, 0);
-                                        DatabaseQueries.insertFriendToDatabase(new InsertNewFriend() {
-                                            @Override
-                                            public void afterInsertNewFriend(boolean isSuccess, UserPublicInfo newFriendInfo, int id) {
-
-                                            }
-                                        }, acceptedFriend, currentUserInfo, 0);
-                                        acceptedFriendRequest.afterAcceptFriendRequest(id);
                                     }
-                                }
-                            }, acceptedFriend.getUserId());
-                        }
-                    }
-                }, acceptedFriend);
-            }
+                                }, currentUser().getUid(), acceptedFriendId, 0);
+                                DatabaseQueries.insertFriendToDatabase(new InsertNewFriend() {
+                                    @Override
+                                    public void afterInsertNewFriend(boolean isSuccess, String friendId, int id) {
 
-        }, currentUser().getUid(), 0);
+                                    }
+                                }, acceptedFriendId, currentUser().getUid(), 0);
+                                acceptedFriendRequest.afterAcceptFriendRequest(id);
+                            }
+                        }
+                    }, acceptedFriendId);
+                }
+            }
+        }, acceptedFriendId);
 
 
     }
 
-    public static void ignoreFriendRequest(IgnoreFriendRequest ignoreFriendRequest, UserPublicInfo ignoredFriend, int id) {
+    public static void ignoreFriendRequest(IgnoreFriendRequest ignoreFriendRequest, String ignoredFriendId, int id) {
         DatabaseQueries.deleteFriendRequestFromCurrentUser(new DeleteFriendRequestFromCurrentUser() {
             @Override
             public void afterDeleteFriendRequestFromCurrentUser(boolean isDeleted) {
@@ -526,10 +544,10 @@ public class DatabaseQueries {
                             if (isDeleted)
                                 ignoreFriendRequest.afterIgnoreFriendRequest(id);
                         }
-                    }, ignoredFriend.getUserId());
+                    }, ignoredFriendId);
                 }
             }
-        }, ignoredFriend);
+        }, ignoredFriendId);
     }
 
     public static void insertPhotoToStorage(InsertPhotoToStorage insertPhotoToStorage, String photoUri) {
@@ -574,9 +592,14 @@ public class DatabaseQueries {
         String uniqueID = UUID.randomUUID().toString();
 
         Uri fileUri = Uri.fromFile(new File(recordAudioPath));
+        // Create file metadata including the content type
+        StorageMetadata metadata = new StorageMetadata.Builder()
+                .setContentType("audio/mpeg")
+                .build();
+
 
         mStorageRef.child(uniqueID)
-                .putFile(fileUri)
+                .putFile(fileUri, metadata)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -657,14 +680,25 @@ public class DatabaseQueries {
                 });
     }
 
-    public static void downloadRecordFromUrl(DownloadRecordFromUrl downloadRecordFromUrl, String recordUrl, String uniqueID) {
+    public static void downloadRecordFromUrl(DownloadRecordFromUrl downloadRecordFromUrl, @NonNull String recordType, String recordUrl, String uniqueID) {
         StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(recordUrl);
-        File rootPath = new File(Environment.getExternalStorageDirectory() + "/" + "Deaf Chat", "records");
-        // Create directory if not exists
-        if (!rootPath.exists()) {
-            rootPath.mkdirs();
+        File rootPath = null;
+        File localFile;
+        if (recordType.equals("audio")) {
+            rootPath = new File(Environment.getExternalStorageDirectory() + "/" + "Deaf Chat", "records-audio");
+            // Create directory if not exists
+            if (rootPath != null && !rootPath.exists()) {
+                rootPath.mkdirs();
+            }
+            localFile = new File(rootPath, uniqueID + ".m4a");
+        } else {
+            rootPath = new File(Environment.getExternalStorageDirectory() + "/" + "Deaf Chat", "records-video");
+            // Create directory if not exists
+            if (rootPath != null && !rootPath.exists()) {
+                rootPath.mkdirs();
+            }
+            localFile = new File(rootPath, uniqueID + ".mp4");
         }
-        File localFile = new File(rootPath, uniqueID + ".mp3");
 
         if (localFile.exists()) {
             Log.v("File Download To Local:", "is Exist");
@@ -686,6 +720,7 @@ public class DatabaseQueries {
                     });
         }
     }
+
 
     public static void convertRecordToText() {
         CustomModelDownloadConditions conditions = new CustomModelDownloadConditions.Builder()
@@ -713,11 +748,11 @@ public class DatabaseQueries {
     }
 
     public interface GetUserFriends {
-        void afterGetUserFriends(ArrayList<UserPublicInfo> friends, int id);
+        void afterGetUserFriends(ArrayList<String> friendsId, int id);
     }
 
     public interface InsertNewFriend {
-        void afterInsertNewFriend(boolean isSuccess, UserPublicInfo newFriendInfo, int id);
+        void afterInsertNewFriend(boolean isSuccess, String friendId, int id);
     }
 
     public interface GetUserMenuChat {
@@ -785,7 +820,7 @@ public class DatabaseQueries {
     }
 
     public interface GetFriendRequestList {
-        void afterGetFriendRequestList(ArrayList<UserPublicInfo> friendsList, int id);
+        void afterGetFriendRequestList(ArrayList<String> friendsListId, int id);
     }
 
     public interface InsertPhotoToStorage {
@@ -803,4 +838,5 @@ public class DatabaseQueries {
     public interface DownloadRecordFromUrl {
         void afterDownloadRecordFromUrl(String recordPath);
     }
+
 }

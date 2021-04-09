@@ -294,12 +294,22 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     @Override
     public void onClickItem(int position) {
         String friendId = userFriends.get(position).getUserId();
-        if (currentUserInfo.getUserState().equals("Normal"))
-            startActivity(new Intent(this, ChatPageNormal.class)
-                    .putExtra(FRIEND_ID_INTENT, friendId));
-        else
-            startActivity(new Intent(this, ChatPageDeaf.class)
-                    .putExtra(FRIEND_ID_INTENT, friendId));
+        if (currentUserInfo != null) {
+            if (currentUserInfo.getUserState().equals("Normal"))
+                startActivity(new Intent(this, ChatPageNormal.class)
+                        .putExtra(FRIEND_ID_INTENT, friendId));
+            else
+                startActivity(new Intent(this, ChatPageDeaf.class)
+                        .putExtra(FRIEND_ID_INTENT, friendId));
+        }
+        else {
+            DatabaseQueries.getCurrentUserInfo(new DatabaseQueries.GetCurrentUserInfo() {
+                @Override
+                public void afterGetCurrentUserInfo(UserPublicInfo userInfo, int id) {
+                    currentUserInfo = userInfo;
+                }
+            }, currentUser.getUid(), 0);
+        }
     }
 
     @Override
@@ -345,11 +355,14 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
 
     }
 
-    public void refreshAdapterNewMsg(@NonNull UserFriendsAdapter adapter, ArrayList<UserPublicInfo> arrayList) {
-        newMsgFriends.clear();
-        newMsgFriends.addAll(arrayList);
-        adapter.notifyDataSetChanged();
+
+    public void insertFriendToAdapter(UserPublicInfo userPublicInfo) {
+        int firstItemInList = 0;
+        newMsgFriends.add(firstItemInList, userPublicInfo);
+        newChatAdapter.notifyItemInserted(firstItemInList);
+        newMsgFriendList.smoothScrollToPosition(firstItemInList);
     }
+
 
     // onclick in any friend in newMsg
     @Override
@@ -367,11 +380,19 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     }
 
     @Override
-    public void afterGetUserFriends(ArrayList<UserPublicInfo> friends, int id) {
+    public void afterGetUserFriends(ArrayList<String> friendsId, int id) {
         switch (id) {
             case DB_GET_USER_FRIENDS_ID:
-                if (!friends.isEmpty()) {
-                    refreshAdapterNewMsg(newChatAdapter, friends);
+                if (!friendsId.isEmpty()) {
+
+                    for (String friendId : friendsId) {
+                        DatabaseQueries.getFriendInfo(new DatabaseQueries.GetFriendInfo() {
+                            @Override
+                            public void afterGetFriendInfo(UserPublicInfo friendInfo, int id) {
+                                insertFriendToAdapter(friendInfo);
+                            }
+                        }, 0, friendId);
+                    }
                     noFriendsTextMsg.setVisibility(View.GONE);
                     newMsgFriendList.setVisibility(View.VISIBLE);
                 }

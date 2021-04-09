@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,31 +21,31 @@ import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SignInActivity extends AppCompatActivity {
 
-    @BindView(R.id.sign_up_profile_image)
-    CircleImageView profileImage;
-    @BindView(R.id.bottom_background)
-    LinearLayout bottomBackground;
     @BindView(R.id.sign_in_button)
     Button signIn;
-    @BindView(R.id.sign_in_email)
+    @BindView(R.id.sign_in_email_edit_text)
     EditText signInEmail;
-    @BindView(R.id.sign_in_password)
+    @BindView(R.id.sign_in_password_edit_text)
     EditText signInPassword;
     @BindView(R.id.sign_in_forgot_pass)
     TextView signInForgotPass;
-    @BindView(R.id.sign_in_by_google_button)
-    Button signInByGoogleButton;
-    @BindView(R.id.sign_in_by_fb_button)
-    Button signInByFbButton;
+
     @BindView(R.id.sign_in_create_account)
     TextView signInCreateAccount;
 
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
+    @BindView(R.id.sign_in_by_google_button)
+    ImageView signInByGoogleButton;
+    @BindView(R.id.sign_in_by_facebook_button)
+    ImageView signInByFacebookButton;
+    @BindView(R.id.sign_in_by_twitter_button)
+    ImageView signInByTwitterButton;
+    @BindView(R.id.sign_in_by_instagram_button)
+    ImageView signInByInstagramButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +97,7 @@ public class SignInActivity extends AppCompatActivity {
         });
 
         //sign in by facebook account
-        signInByFbButton.setOnClickListener(new View.OnClickListener() {
+        signInByFacebookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             }
@@ -138,7 +138,7 @@ public class SignInActivity extends AppCompatActivity {
         return false;
     }
 
-//    @Override
+    //    @Override
 //    protected void onStart() {
 //        super.onStart();
 //        currentUser = FirebaseAuth.getInstance().getCurrentUser();

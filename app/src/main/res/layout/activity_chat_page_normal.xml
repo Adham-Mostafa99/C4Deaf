@@ -115,14 +115,24 @@
             android:layout_weight="1"
             android:hint="@string/type_a_message" />
 
-        <ImageView
-            android:id="@+id/btn_send"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:src="@drawable/arrow_send" />
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/btn_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginVertical="8dp"
+        android:layout_marginEnd="4dp"
+        android:scaleType="centerInside"
+        android:layout_marginRight="4dp"
+        android:visibility="invisible"
+        android:clickable="false"
+        android:src="@drawable/send_icon"
+        android:background="@drawable/send_btn_backgroud"
+        />
 
     <com.devlomi.record_view.RecordButton
         android:id="@+id/normal_record_button"

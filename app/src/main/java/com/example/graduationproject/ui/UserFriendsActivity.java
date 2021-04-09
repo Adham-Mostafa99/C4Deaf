@@ -31,6 +31,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.auth.User;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.ArrayList;
@@ -108,12 +109,6 @@ public class UserFriendsActivity extends AppCompatActivity implements SwipeRefre
         recyclerViewUserFriends.setAdapter(adapter);
     }
 
-    public void refreshAdapter(@NonNull ArrayList<UserPublicInfo> data) {
-        userFriends.clear();
-        userFriends.addAll(data);
-        adapter.notifyDataSetChanged();
-    }
-
     public void insertFriendToAdapter(UserPublicInfo userPublicInfo) {
         int firstItemInList = 0;
         userFriends.add(firstItemInList, userPublicInfo);
@@ -147,12 +142,28 @@ public class UserFriendsActivity extends AppCompatActivity implements SwipeRefre
 
     }
 
+    public void getFriendInfo(String friendId) {
+        DatabaseQueries.getFriendInfo(new DatabaseQueries.GetFriendInfo() {
+            @Override
+            public void afterGetFriendInfo(UserPublicInfo friendInfo, int id) {
+                insertFriendToAdapter(friendInfo);
+            }
+        }, 0, friendId);
+    }
+
 
     @Override
-    public void afterGetUserFriends(ArrayList<UserPublicInfo> friends, int id) {
+    public void afterGetUserFriends(ArrayList<String> friendsId, int id) {
         switch (id) {
             case DB_GET_FRIENDS_ID:
-                refreshAdapter(friends);
+                for (String friendId : friendsId) {
+                    DatabaseQueries.getFriendInfo(new DatabaseQueries.GetFriendInfo() {
+                        @Override
+                        public void afterGetFriendInfo(UserPublicInfo friendInfo, int id) {
+                            insertFriendToAdapter(friendInfo);
+                        }
+                    }, 0, friendId);
+                }
                 userFriendsRefreshSwipe.setRefreshing(false);
                 break;
             default:
@@ -161,11 +172,11 @@ public class UserFriendsActivity extends AppCompatActivity implements SwipeRefre
     }
 
     @Override
-    public void afterInsertNewFriend(boolean isSuccess, UserPublicInfo newFriendInfo, int id) {
+    public void afterInsertNewFriend(boolean isSuccess, String newFriendId, int id) {
         switch (id) {
             case DB_INSERT_FRIENDS_ID:
                 if (isSuccess)
-                    insertFriendToAdapter(newFriendInfo);
+                    getFriendInfo(newFriendId);
         }
 
     }

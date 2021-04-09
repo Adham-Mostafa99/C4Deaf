@@ -5,6 +5,9 @@ import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -24,6 +27,7 @@ import com.bumptech.glide.Glide;
 import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
+import com.example.graduationproject.ConvertSpeechToText;
 import com.example.graduationproject.R;
 import com.example.graduationproject.adapters.NormalMessageAdapter;
 import com.example.graduationproject.models.DatabaseQueries;
@@ -33,6 +37,7 @@ import com.example.graduationproject.models.UserPublicInfo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -132,7 +137,7 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
 
                 // Record to the external cache directory for visibility
                 fileName = getExternalCacheDir().getAbsolutePath();
-                fileName += "/" + UUID.randomUUID().toString() + ".mp3";
+                fileName += "/" + UUID.randomUUID().toString() + ".m4a";
                 startRecording(fileName);
                 hideInputText(editTextSend);
                 Log.d("RecordView", "onStart");
@@ -159,8 +164,19 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
                 if (friendInfo.getUserState().equals("Normal"))
                     sendRecordAudio(fileName, time);
                 else {
+                    ConvertSpeechToText convertSpeechToText = new ConvertSpeechToText(getApplicationContext(), fileName);
+                    try {
+                        convertSpeechToText.convert(new ConvertSpeechToText.OnConvert() {
+                            @Override
+                            public void afterConvert(String msgText) {
+                                sendTextMsg(msgText, getTimeNow());
+                            }
+                        });
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
                     //convert record to video
-                    Toast.makeText(getApplicationContext(),"will be converted",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "will be converted", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -190,6 +206,44 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
             }
         });
 
+
+        textSend.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (TextUtils.isEmpty(s.toString()))
+                    showBtnRecord();
+                else
+                    showBtnSend();
+
+
+            }
+        });
+
+    }
+
+    public void showBtnSend() {
+        normalRecordButton.setVisibility(View.INVISIBLE);
+        normalRecordButton.setClickable(false);
+        btnSend.setVisibility(View.VISIBLE);
+        btnSend.setClickable(true);
+
+    }
+
+    public void showBtnRecord() {
+        btnSend.setVisibility(View.INVISIBLE);
+        btnSend.setClickable(false);
+        normalRecordButton.setVisibility(View.VISIBLE);
+        normalRecordButton.setClickable(true);
     }
 
 
@@ -201,10 +255,6 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
         recyclerViewChat.setLayoutManager(linearLayoutManager);
-
-        // Record to the external cache directory for visibility
-        fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        fileName += "/audiorecord" + recordCounter + ".3gp";
 
         //sync recordButton with recordView
         normalRecordButton.setRecordView(normalRecordView);
@@ -227,7 +277,6 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
             recorder = null;
         }
     }
-
 
     /*
     this part for handling record [get record, store and stop it ]
@@ -254,9 +303,12 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
     public void startRecording(String fileName) {
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setAudioEncodingBitRate(16 * 44100);
+        recorder.setAudioSamplingRate(44100);
         recorder.setOutputFile(fileName);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
         try {
             recorder.prepare();
         } catch (IOException e) {
@@ -482,7 +534,7 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
                             public void afterDownloadRecordFromUrl(String recordPath) {
                                 insertItemToAdapter(new NormalChat(sender, recordPath, msgDuration, msgTime));
                             }
-                        }, msg, recordName);
+                        }, "record", msg, recordName);
                     }
                 }
                 break;
