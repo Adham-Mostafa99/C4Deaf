@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -118,6 +117,7 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
         //initialize objects
         initFirebase();
         init();
+
         DatabaseQueries.readMsg(this, DB_READ_MSG_ID, friendId);
 
         arrowBack.setOnClickListener(new View.OnClickListener() {
@@ -175,6 +175,7 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
+
                     //convert record to video
                     Toast.makeText(getApplicationContext(), "will be converted", Toast.LENGTH_SHORT).show();
                 }

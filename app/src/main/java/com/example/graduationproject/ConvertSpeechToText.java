@@ -127,6 +127,8 @@ public class ConvertSpeechToText {
         }
     }
 
+
+
     public interface OnConvert {
         void afterConvert(String msgText);
     }

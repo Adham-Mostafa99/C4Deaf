@@ -2,14 +2,23 @@ package com.example.graduationproject.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +27,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.graduationproject.ConvertSpeechToText;
+import com.example.graduationproject.ConvertTextToVideo;
 import com.example.graduationproject.sign_language.ConvertIconToText;
 import com.example.graduationproject.sign_language.KeyboardManager;
 import com.example.graduationproject.R;
@@ -42,7 +53,8 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.SendMsg, DatabaseQueries.GetFriendInfo
-        , DatabaseQueries.CreateNewChat, DatabaseQueries.ReadMsg, ConvertIconToText.OnPressKey {
+        , DatabaseQueries.CreateNewChat, DatabaseQueries.ReadMsg, ConvertIconToText.OnPressKey, DeafMessageAdapter.OnVideoClick
+        , DeafMessageAdapter.OnWordClick {
 
 
     @BindView(R.id.recycler_view_chat_deaf)
@@ -55,6 +67,9 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
     ImageView btnSend;
     @BindView(R.id.deaf_record)
     ImageView deafRecord;
+
+
+    private VideoView videoView;
 
     private static final String TAG = "DeafPageNormal";
 
@@ -156,7 +171,7 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
     public void init() {
         msg = new ArrayList<>();
 
-        adapter = new DeafMessageAdapter(msg, this);
+        adapter = new DeafMessageAdapter(msg, this, this, this);
         recyclerViewChatDeaf.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
@@ -504,6 +519,162 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
                 break;
         }
 
+    }
+
+    @Override
+    public void onVideoClick(int position) {
+        //open window to display video
+        PopupWindow popupWindow = openPopVideoView();
+
+        //play video
+        playVideo(msg.get(position).getMediaMsgPath());
+
+        //after finishing the video
+        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                closePopVideoView(mp, popupWindow);
+            }
+        });
+
+    }
+
+    @Override
+    public void onWordClick(int position) {
+        Toast.makeText(getApplicationContext(), "please wait", Toast.LENGTH_SHORT).show();
+
+
+
+
+
+        if (!msg.get(position).getMessage().trim().isEmpty()) {
+            Log.v(TAG, "message: " + msg.get(position).getMessage());
+            //get String from message
+            String[] msgStringArray = msg.get(position).getMessage().split(" ");
+
+            ConvertTextToVideo convertTextToVideo = new ConvertTextToVideo(msgStringArray);
+            convertTextToVideo.convert(new ConvertTextToVideo.Converted() {
+                @Override
+                public void afterConverted(AnimationDrawable animationDrawable) {
+                    if (animationDrawable != null) {
+                        playAnimationVideo(animationDrawable);
+                    }
+                }
+            });
+
+        }
+    }
+
+
+    /*
+   controlling the pop window which will display video
+    */
+    //make popup window for video
+    public PopupWindow openPopVideoView() {
+        //make the width and height for the pop Window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+
+        // lets taps outside the popup also dismiss it
+        boolean focusable = true;
+
+        //inflate new layout with specific layout(confirm_email) for the pop window
+        View popLayout = LayoutInflater.from(this).inflate(R.layout.vedio_message, null);
+
+        //create instance of popupWindow by specific view, width, and height
+        PopupWindow popupWindow = new PopupWindow(popLayout, width, height, focusable);
+
+        //show the created instance in specific location
+        popupWindow.showAtLocation(popLayout, Gravity.CENTER, 0, 0);
+
+        //declare videoView which will appear in pop up window
+        videoView = popLayout.findViewById(R.id.video_view);
+
+        return popupWindow;
+    }
+
+    /**
+     * @param mp          MediaPlayer which will release it from memory
+     * @param popupWindow window which will close
+     */
+    //close the popWindow
+    public void closePopVideoView(@NonNull MediaPlayer mp, @NonNull PopupWindow popupWindow) {
+        mp.reset();
+        popupWindow.dismiss();
+    }
+
+    /**
+     * @param videoResource video recourse of any message
+     */
+    //playing specific video by it's id
+    public void playVideo(String videoResource) {
+        //create the path of video
+//        String videoPath = "android.resource://" + context.getPackageName() + "/" + videoResource;
+
+        //create uri with specific path
+        Uri uri = Uri.parse(videoResource);
+
+        //set path to the videoView
+        videoView.setVideoURI(uri);
+
+        //create MediaController for control the video
+        //like play ,stop and etc...
+        MediaController mediaController = new MediaController(this);
+
+        //set this controller to the video view
+        videoView.setMediaController(mediaController);
+        mediaController.setAnchorView(videoView);
+
+        //start video
+        videoView.start();
+    }
+
+    public void playAnimationVideo(AnimationDrawable animationDrawable) {
+        //make the width and height for the pop Window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+
+        // lets taps outside the popup also dismiss it
+        boolean focusable = true;
+
+        //inflate new layout with specific layout(confirm_email) for the pop window
+        View popLayout = LayoutInflater.from(this).inflate(R.layout.deaf_page_animation_video, null);
+
+        //create instance of popupWindow by specific view, width, and height
+        PopupWindow popupWindow = new PopupWindow(popLayout, width, height, focusable);
+
+        //show the created instance in specific location
+        popupWindow.showAtLocation(popLayout, Gravity.CENTER, 0, 0);
+
+        //declare videoView which will appear in pop up window
+        ImageView imageView = popLayout.findViewById(R.id.gif_view);
+        imageView.setBackgroundDrawable(animationDrawable);
+
+        Handler mAnimationHandler = new Handler();
+        mAnimationHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                animationDrawable.start();
+            }
+        });
+        mAnimationHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                animationDrawable.stop();
+                popupWindow.dismiss();
+            }
+        }, getTotalDuration(animationDrawable));
+    }
+
+    public int getTotalDuration(AnimationDrawable animationDrawable) {
+
+        int iDuration = 0;
+
+        for (int i = 0; i < animationDrawable.getNumberOfFrames(); i++) {
+            iDuration += animationDrawable.getDuration(i);
+        }
+
+        return iDuration;
     }
 }
 

@@ -1,8 +1,11 @@
 package com.example.graduationproject.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,6 +21,7 @@ import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.graduationproject.ConvertTextToVideo;
 import com.example.graduationproject.R;
 import com.example.graduationproject.models.DeafChat;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,12 +39,15 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private ArrayList<DeafChat> chats;
     private Context context;
-    private VideoView videoView;
     private FirebaseUser currentUser;
+    OnVideoClick onVideoClick;
+    OnWordClick onWordClick;
 
-    public DeafMessageAdapter(ArrayList<DeafChat> deafChats, Context context) {
+    public DeafMessageAdapter(ArrayList<DeafChat> deafChats, Context context, OnVideoClick onVideoClick, OnWordClick onWordClick) {
         this.chats = deafChats;
         this.context = context;
+        this.onVideoClick = onVideoClick;
+        this.onWordClick = onWordClick;
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
@@ -57,10 +64,10 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             return new SenderViewHolderVideo(view);
         } else if (viewType == MSG_TYPE_RECEIVER_TEXT) {
             View view = LayoutInflater.from(context).inflate(R.layout.chat_item_left, parent, false);
-            return new ReceiverViewHolderText(view);
+            return new ReceiverViewHolderText(view, onWordClick);
         } else {
             View view = LayoutInflater.from(context).inflate(R.layout.chat_item_video_left, parent, false);
-            return new ReceiverViewHolderVideo(view);
+            return new ReceiverViewHolderVideo(view, onVideoClick);
         }
     }
 
@@ -79,6 +86,7 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         else if (holder.getClass() == ReceiverViewHolderText.class) {
             ((ReceiverViewHolderText) holder).receiverShowMessage.setText(msg.getMessage());
             ((ReceiverViewHolderText) holder).receiverTimeMessage.setText(msg.getTime());
+
         }
 
         //message is video for sender
@@ -86,31 +94,9 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             //display time of the message
             ((SenderViewHolderVideo) holder).senderTimeMessageVideo.setText(msg.getTime());
 
-//            //set duration of full video
-//            setRecordDuration(msg.getMediaMsg(), ((SenderViewHolderVideo) holder).senderVideoDuration);
 
             ((SenderViewHolderVideo) holder).senderVideoDuration.setText(msg.getMediaMsgTime());
 
-            //playing Video
-            ((SenderViewHolderVideo) holder).senderPlayVideoIcon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //open window to display video
-                    PopupWindow popupWindow = openPopVideoView();
-
-                    //play video
-                    playVideo(msg.getMediaMsgPath());
-
-                    //after finishing the video
-                    videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            closePopVideoView(mp, popupWindow);
-                        }
-                    });
-                }
-
-            });
 
         }
 
@@ -119,30 +105,8 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             //display time of the message
             ((ReceiverViewHolderVideo) holder).receiverTimeMessageVideo.setText(msg.getTime());
 
-//            //set duration of full video
-//            setRecordDuration(msg.getMediaMsg(), ((ReceiverViewHolderVideo) holder).receiverVideoDuration);
-
             ((ReceiverViewHolderVideo) holder).receiverVideoDuration.setText(msg.getMediaMsgTime());
 
-            //playing Video
-            ((ReceiverViewHolderVideo) holder).receiverPlayVideoIcon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //open window to display video
-                    PopupWindow popupWindow = openPopVideoView();
-                    //play video
-                    playVideo(msg.getMediaMsgPath());
-
-                    //after finishing the video
-                    videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            closePopVideoView(mp, popupWindow);
-                        }
-                    });
-                }
-
-            });
         }
 
     }
@@ -193,11 +157,19 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     static class ReceiverViewHolderText extends RecyclerView.ViewHolder {
         TextView receiverShowMessage;
         TextView receiverTimeMessage;
+        ImageView receiverPlayMsg;
 
-        public ReceiverViewHolderText(@NonNull View itemView) {
+        public ReceiverViewHolderText(@NonNull View itemView, OnWordClick onWordClick) {
             super(itemView);
             receiverShowMessage = itemView.findViewById(R.id.left_show_message);
             receiverTimeMessage = itemView.findViewById(R.id.left_time_message);
+            receiverPlayMsg = itemView.findViewById(R.id.left_play_msg);
+            receiverPlayMsg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onWordClick.onWordClick(getAdapterPosition());
+                }
+            });
         }
     }
 
@@ -221,11 +193,17 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         TextView receiverVideoDuration;
         ImageView receiverPlayVideoIcon;
 
-        public ReceiverViewHolderVideo(@NonNull View itemView) {
+        public ReceiverViewHolderVideo(@NonNull View itemView, OnVideoClick onVideoClick) {
             super(itemView);
             receiverTimeMessageVideo = itemView.findViewById(R.id.receiver_time_message_video);
             receiverVideoDuration = itemView.findViewById(R.id.receiver_video_duration);
             receiverPlayVideoIcon = itemView.findViewById(R.id.receiver_video_icon);
+            receiverPlayVideoIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onVideoClick.onVideoClick(getAdapterPosition());
+                }
+            });
         }
     }
 
@@ -281,67 +259,15 @@ public class DeafMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
 
-    /*
-    controlling the pop window which will display video
-     */
-    //make popup window for video
-    public PopupWindow openPopVideoView() {
-        //make the width and height for the pop Window
-        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-
-        // lets taps outside the popup also dismiss it
-        boolean focusable = true;
-
-        //inflate new layout with specific layout(confirm_email) for the pop window
-        View popLayout = LayoutInflater.from(context).inflate(R.layout.vedio_message, null);
-
-        //create instance of popupWindow by specific view, width, and height
-        PopupWindow popupWindow = new PopupWindow(popLayout, width, height, focusable);
-
-        //show the created instance in specific location
-        popupWindow.showAtLocation(popLayout, Gravity.CENTER, 0, 0);
-
-        //declare videoView which will appear in pop up window
-        videoView = popLayout.findViewById(R.id.video_view);
-
-        return popupWindow;
+    public interface OnWordClick {
+        void onWordClick(int position);
     }
 
-    /**
-     * @param mp          MediaPlayer which will release it from memory
-     * @param popupWindow window which will close
-     */
-    //close the popWindow
-    public void closePopVideoView(@NonNull MediaPlayer mp, @NonNull PopupWindow popupWindow) {
-        mp.reset();
-        popupWindow.dismiss();
+    public interface OnVideoClick {
+        void onVideoClick(int position);
     }
 
-    /**
-     * @param videoResource video recourse of any message
-     */
-    //playing specific video by it's id
-    public void playVideo(String videoResource) {
-        //create the path of video
-//        String videoPath = "android.resource://" + context.getPackageName() + "/" + videoResource;
 
-        //create uri with specific path
-        Uri uri = Uri.parse(videoResource);
 
-        //set path to the videoView
-        videoView.setVideoURI(uri);
-
-        //create MediaController for control the video
-        //like play ,stop and etc...
-        MediaController mediaController = new MediaController(context);
-
-        //set this controller to the video view
-        videoView.setMediaController(mediaController);
-        mediaController.setAnchorView(videoView);
-
-        //start video
-        videoView.start();
-    }
 
 }

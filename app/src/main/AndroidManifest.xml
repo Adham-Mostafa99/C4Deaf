@@ -20,6 +20,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Test"/>
         <activity android:name=".ui.FriendsRequestsActivity" />
         <activity android:name=".ui.AddFriendActivity" />
         <activity android:name=".ui.UserFriendsActivity" />
@@ -32,7 +33,9 @@
         <activity android:name=".ui.ChatMenuActivity" />
         <activity android:name=".ui.SignUpActivity" />
         <activity android:name=".ui.SignInActivity" />
-        <activity android:name=".ui.SplashScreenActivity"
+        <activity android:name=".ui.ConfirmEmailActivity" />
+        <activity
+            android:name=".ui.SplashScreenActivity"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,16 +43,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.ConfirmEmailActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
             android:value="ocr" />
-        <!-- To use multiple models: android:value="ocr,model2,model3" -->
     </application>
 
 </manifest>

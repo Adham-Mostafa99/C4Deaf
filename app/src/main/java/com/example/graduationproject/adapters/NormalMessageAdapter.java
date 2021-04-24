@@ -72,7 +72,7 @@ public class NormalMessageAdapter extends RecyclerView.Adapter<RecyclerView.View
             View view = LayoutInflater.from(context).inflate(R.layout.chat_item_record_right, parent, false);
             return new SenderViewHolderRecord(view);
         } else if (viewType == MSG_TYPE_RECEIVER_TEXT) {
-            View view = LayoutInflater.from(context).inflate(R.layout.chat_item_left, parent, false);
+            View view = LayoutInflater.from(context).inflate(R.layout.chat_item_left_normal, parent, false);
             return new ReceiverViewHolderText(view);
         } else {
             View view = LayoutInflater.from(context).inflate(R.layout.chat_item_record_left, parent, false);

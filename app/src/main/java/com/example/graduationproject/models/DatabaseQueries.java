@@ -31,6 +31,7 @@ import com.google.firebase.ml.modeldownloader.DownloadType;
 import com.google.firebase.ml.modeldownloader.FirebaseModelDownloader;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -168,7 +169,7 @@ public class DatabaseQueries {
         myRefMsgChatSend
                 .child(friendId)
                 .push()
-                .setValue(msg,-date.getTime())
+                .setValue(msg, -date.getTime())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -685,14 +686,14 @@ public class DatabaseQueries {
         File rootPath = null;
         File localFile;
         if (recordType.equals("audio")) {
-            rootPath = new File(Environment.getExternalStorageDirectory() + "/" + "Deaf Chat", "records-audio");
+            rootPath = new File(Environment.getExternalStorageDirectory() + "/" + "DeafChat", "records-audio");
             // Create directory if not exists
             if (rootPath != null && !rootPath.exists()) {
                 rootPath.mkdirs();
             }
             localFile = new File(rootPath, uniqueID + ".m4a");
         } else {
-            rootPath = new File(Environment.getExternalStorageDirectory() + "/" + "Deaf Chat", "records-video");
+            rootPath = new File(Environment.getExternalStorageDirectory() + "/" + "DeafChat", "records-video");
             // Create directory if not exists
             if (rootPath != null && !rootPath.exists()) {
                 rootPath.mkdirs();
@@ -719,6 +720,80 @@ public class DatabaseQueries {
                         }
                     });
         }
+    }
+
+
+    public static void downloadFramesOfWord(DownloadFramesOfWord downloadFramesOfWord, String word) {
+        File rootPath = new File(Environment.getExternalStorageDirectory() + "/" + "DeafChat", "convertedVideos");
+        // Create directory if not exists
+        if (rootPath != null && !rootPath.exists()) {
+            rootPath.mkdirs();
+        }
+        File localFile = new File(rootPath, word);
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("sign_language_frames");
+
+
+        if (localFile.exists() && localFile.listFiles().length != 0) {
+            Log.v("File Download To Local:", "is Exist");
+            downloadFramesOfWord.afterDownloadFramesOfWord(true, localFile.getPath());
+        } else {
+            storageReference
+                    .child(word)
+                    .listAll()
+                    .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                        @Override
+                        public void onSuccess(ListResult listResult) {
+
+                            if (!listResult.getItems().isEmpty()) {
+                                Log.v(TAG, listResult.getItems().toString());
+                                localFile.mkdirs();
+                                int numberOfFrame = 0;
+                                for (StorageReference fileRef : listResult.getItems()) {
+
+                                    String currentImageName = fileRef.getName();
+
+                                    File currentImagePath = new File(localFile, currentImageName + ".jpg");
+
+                                    int finalNumberOfFrame = numberOfFrame;
+                                    fileRef.getFile(currentImagePath)
+                                            .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                                @Override
+                                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                                    if (finalNumberOfFrame == listResult.getItems().size() - 1) {
+                                                        Log.v("File Download To Local:", "OK");
+                                                        downloadFramesOfWord.afterDownloadFramesOfWord(true, localFile.getPath());
+                                                    }
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+
+                                                }
+                                            });
+
+                                    numberOfFrame++;
+                                }
+
+                            } else {
+                                Log.v("File Download To Local:", "fall");
+                                downloadFramesOfWord.afterDownloadFramesOfWord(false, null);
+                            }
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                            Log.v("File Download To Local:", "fall");
+                            downloadFramesOfWord.afterDownloadFramesOfWord(false, null);
+                        }
+                    });
+        }
+
+
     }
 
 
@@ -837,6 +912,10 @@ public class DatabaseQueries {
 
     public interface DownloadRecordFromUrl {
         void afterDownloadRecordFromUrl(String recordPath);
+    }
+
+    public interface DownloadFramesOfWord {
+        void afterDownloadFramesOfWord(boolean isFound, String framesFolderPath);
     }
 
 }
