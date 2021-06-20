@@ -3,6 +3,8 @@ package com.example.graduationproject.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 public class UserPrivateInfo implements Parcelable {
     private String userEmail;
     private String userPassword;
@@ -20,7 +22,7 @@ public class UserPrivateInfo implements Parcelable {
         this.userDate = userDate;
     }
 
-    protected UserPrivateInfo(Parcel in) {
+    protected UserPrivateInfo(@NonNull Parcel in) {
         userEmail = in.readString();
         userPassword = in.readString();
         userPhone = in.readString();

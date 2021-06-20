@@ -46,7 +46,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SignUpActivity extends AppCompatActivity implements DatePickerFragment.OnFinish {
+public class SignUpActivity extends AppCompatActivity implements  DatePickerFragment.OnFinish {
 
     @BindView(R.id.sign_up_edit_first_name)
     EditText signUpEditFirstName;

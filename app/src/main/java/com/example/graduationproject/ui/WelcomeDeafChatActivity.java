@@ -11,10 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.graduationproject.R;
 import com.example.graduationproject.models.DatabaseQueries;
-import com.example.graduationproject.models.UserMenuChat;
 import com.example.graduationproject.models.UserPrivateInfo;
 import com.example.graduationproject.models.UserPublicInfo;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -28,15 +26,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -68,7 +63,7 @@ public class WelcomeDeafChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome_deaf_chat);
+        setContentView(R.layout.activity_welcome);
         ButterKnife.bind(this);
 
         initializeFirebase();
@@ -111,7 +106,7 @@ public class WelcomeDeafChatActivity extends AppCompatActivity {
     }
 
 
-    public void updateUserProfile(@NonNull UserPublicInfo userPublicInfo) {
+    public void supdateUserProfile(@NonNull UserPublicInfo userPublicInfo) {
         //create instance of UserProfileChangeRequest
         //holding display name and photoUrl
         UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest
