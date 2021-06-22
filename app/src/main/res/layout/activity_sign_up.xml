@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="#E9765B">
 
+
     <RelativeLayout
         android:id="@+id/sign_up_layout"
         android:layout_width="match_parent"
@@ -280,7 +281,8 @@
                     android:drawableStart="@drawable/sign_up_date_icon"
                     android:fontFamily="@font/andlso"
                     android:hint="Choose BirthDay"
-                    android:textAllCaps="false" />
+                    android:textAllCaps="false"
+                    tools:ignore="RtlSymmetry" />
 
 
             </LinearLayout>
@@ -335,7 +337,6 @@
                 android:layout_marginTop="12dp"
                 android:background="@drawable/sign_up_button"
                 android:fontFamily="@font/andlso"
-                android:text="Sign Up"
                 android:textColor="@android:color/white"
                 android:textSize="28sp" />
 

@@ -307,11 +307,11 @@ public class SignUpActivity extends AppCompatActivity implements  DatePickerFrag
 
     }
 
-    @Override
-    protected void onStop() {
-        signOut();
-        super.onStop();
-    }
+//    @Override
+//    protected void onStop() {
+//        signOut();
+//        super.onStop();
+//    }
 
     @Override
     protected void onDestroy() {
@@ -321,7 +321,6 @@ public class SignUpActivity extends AppCompatActivity implements  DatePickerFrag
 
     public void signOut() {
 
-        mAuth.signOut();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -333,6 +332,7 @@ public class SignUpActivity extends AppCompatActivity implements  DatePickerFrag
 
             }
         });
+        mAuth.signOut();
         LoginManager.getInstance().logOut();
 
     }

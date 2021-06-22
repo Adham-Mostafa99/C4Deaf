@@ -325,6 +325,7 @@ public class SignInActivity extends AppCompatActivity {
                                         .putExtra(ChatMenuActivity.FRIEND_ID_INTENT_EXTRA, user.getUid()));
                             }
                         }
+                        finish();
                         startActivity(new Intent(getApplicationContext(), SignUpActivity.class)
                                 .putExtra(SignUpActivity.COMPLETE_USER_INFO_INTENT_EXTRA
                                         , new CompleteInfo(user.getUid(), user.getEmail(), user.getDisplayName()
@@ -355,6 +356,11 @@ public class SignInActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.v(TAG, "message::::" + e.getMessage());
+                        finish();
+                        startActivity(new Intent(getApplicationContext(), SignUpActivity.class)
+                                .putExtra(SignUpActivity.COMPLETE_USER_INFO_INTENT_EXTRA
+                                        , new CompleteInfo(user.getUid(), user.getEmail(), user.getDisplayName()
+                                                , user.getPhotoUrl().toString(), user.getPhoneNumber())));
                     }
                 });
 

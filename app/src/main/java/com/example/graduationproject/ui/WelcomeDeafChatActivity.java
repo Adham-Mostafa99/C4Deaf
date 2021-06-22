@@ -38,9 +38,6 @@ import butterknife.ButterKnife;
 
 public class WelcomeDeafChatActivity extends AppCompatActivity {
 
-    @BindView(R.id.start_chat)
-    Button startChat;
-
     private static final String TAG = "WelcomeDeafChatActivity";
     private static final String USERS_PATH = "users";
 
@@ -51,11 +48,6 @@ public class WelcomeDeafChatActivity extends AppCompatActivity {
     private FirebaseStorage firebaseStorage;
     private StorageReference mStorageRef;
 
-    private boolean isPublicUserStored = false;
-    private boolean isPrivateUserStored = false;
-//    private boolean isFriendsStored = false;
-//    private boolean isMenuChatStored = false;
-    private boolean isUpdateUserProfile = false;
 
     private UserPublicInfo userPublicInfo;
     private UserPrivateInfo userPrivateInfo;
@@ -72,26 +64,7 @@ public class WelcomeDeafChatActivity extends AppCompatActivity {
         userPrivateInfo = getIntent().getParcelableExtra(ConfirmEmailActivity.USER_PRIVATE_INFO_INTENT_EXTRA);
 
 
-        try {
-            DatabaseQueries.insertPhotoToStorage(new DatabaseQueries.InsertPhotoToStorage() {
-                @Override
-                public void afterInsertPhotoToStorage(String downloadPhotoPath) {
-                    uploadUserDataToDatabase(downloadPhotoPath);
-                }
-            }, userPublicInfo.getUserPhotoPath());
-            insertUserPrivateInfoToDatabase(userPrivateInfo);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        startChat.setOnClickListener(v -> {
-
-            if (isUpdateUserProfile && isPublicUserStored && isPrivateUserStored ) {
-                finish();
-                startActivity(new Intent(getApplicationContext(), ChatMenuActivity.class));
-            }
-
-        });
+        insertUserPrivateInfoToDatabase(userPrivateInfo);
 
 
     }
@@ -105,28 +78,6 @@ public class WelcomeDeafChatActivity extends AppCompatActivity {
         mStorageRef = firebaseStorage.getReference("users_images" + "/" + currentUser.getUid() + "/" + "profile_photo.jpg");
     }
 
-
-    public void supdateUserProfile(@NonNull UserPublicInfo userPublicInfo) {
-        //create instance of UserProfileChangeRequest
-        //holding display name and photoUrl
-        UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest
-                .Builder()
-                .setDisplayName(userPublicInfo.getUserDisplayName())
-                .setPhotoUri(Uri.parse(userPublicInfo.getUserPhotoPath()))
-                .build();
-
-        //set UserProfileChangeRequest to current user
-        currentUser.updateProfile(userProfileChangeRequest)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "UpdateUserName:success");
-                            isUpdateUserProfile = true;
-                        }
-                    }
-                });
-    }
 
     /**
      * @param userPublicInfo which contain public user information
@@ -147,7 +98,9 @@ public class WelcomeDeafChatActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
-                        isPublicUserStored = true;
+
+                        finish();
+                        startActivity(new Intent(getApplicationContext(), ChatMenuActivity.class));
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -177,7 +130,7 @@ public class WelcomeDeafChatActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
-                        isPrivateUserStored = true;
+                        insertUserPublicInfoToDatabase(userPublicInfo);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -188,79 +141,17 @@ public class WelcomeDeafChatActivity extends AppCompatActivity {
                 });
     }
 
-    /**
-     * @param userPublicInfo which contain public user information
-     */
-//    public void insertUserDefaultFriendToDatabase(@NonNull UserPublicInfo userPublicInfo) {
-//        //path of user document
-//        //like: "users/ID"
-//        String pathOfFriendOfUserDocument = USERS_PATH + "/" + currentUser.getUid() + "/" + "Friends" + "/" + userPublicInfo.getUserId();
-//
-//        //store user default friend (self)
-//        db.document(pathOfFriendOfUserDocument)
-//                .set(userPublicInfo)
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        Log.d(TAG, "DocumentSnapshot successfully written!");
-//                        isFriendsStored = true;
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.w(TAG, "Error writing document", e);
-//                    }
-//                });
-//    }
-
-    /**
-//     * @param userPublicInfo which contain public user information
-     */
-//    public void insertUserDefaultMenuChatToDatabase(@NonNull UserPublicInfo userPublicInfo) {
-//
-//        //create instance of default chat
-//        //which will be [self]
-//        UserMenuChat userDefaultMenuChat = new UserMenuChat(
-//                userPublicInfo.getUserId()
-//                , userPublicInfo.getUserFirstName() + " " + userPublicInfo.getUserLastName()
-//                , "hello"
-//                , userPublicInfo.getUserPhotoPath()
-//                , getTimeNow());
-//
-//        //store instance of default chat in database
-//        //which myRef path :"users/userID/menu-chat"
-//        myRef
-//                .child(userPublicInfo.getUserId())
-//                .setValue(userDefaultMenuChat)
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        // Write was successful!
-//                        isMenuChatStored = true;
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        // Write failed
-//                        Log.w(TAG, "Error adding document", e);
-//                    }
-//                });
-//    }
-
-    //upload users data
-    public void uploadUserDataToDatabase(String imagePath) {
-        userPublicInfo.setUserPhotoPath(imagePath);
-        updateUserProfile(userPublicInfo);
-        insertUserPublicInfoToDatabase(userPublicInfo);
-//        insertUserDefaultFriendToDatabase(userPublicInfo);
-//        insertUserDefaultMenuChatToDatabase(userPublicInfo);
-    }
-
 
     //get current time for the message
     public String getTimeNow() {
         return new SimpleDateFormat("h:mm a", Locale.getDefault()).format(new Date());
+    }
+
+    public void insertUserId(String id) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference
+                .child("users ids")
+                .child(id)
+                .setValue(id);
     }
 }

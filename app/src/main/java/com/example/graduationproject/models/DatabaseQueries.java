@@ -32,6 +32,7 @@ import com.google.firebase.ml.modeldownloader.FirebaseModelDownloader;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -551,13 +552,20 @@ public class DatabaseQueries {
         }, ignoredFriendId);
     }
 
-    public static void insertPhotoToStorage(InsertPhotoToStorage insertPhotoToStorage, String photoUri) {
+    public static void insertPhotoToStorage(InsertPhotoToStorage insertPhotoToStorage, PhotoProgress photoProgress, String photoUri) {
         StorageReference mStorageRef = FirebaseStorage.getInstance()
                 .getReference("users_images" + "/" + currentUser().getUid() + "/" + "profile_photo.jpg");
 
         Uri fileUri = Uri.fromFile(new File(photoUri));
         mStorageRef
                 .putFile(fileUri)
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                        double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                        photoProgress.progress(progress);
+                    }
+                })
                 .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
                     public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
@@ -578,6 +586,7 @@ public class DatabaseQueries {
                             assert imageUri != null;
                             //upload user data
                             insertPhotoToStorage.afterInsertPhotoToStorage(imageUri.toString());
+                            photoProgress.progress(100);
                         } else {
                             // Handle failures
                             // ...
@@ -723,7 +732,7 @@ public class DatabaseQueries {
     }
 
 
-    public static void downloadFramesOfWord(DownloadFramesOfWord downloadFramesOfWord, String word) {
+    public static void downloadFramesOfWord(DownloadFramesOfWord downloadFramesOfWord, String word, int videoNumber) {
         File rootPath = new File(Environment.getExternalStorageDirectory() + "/" + "DeafChat", "convertedVideos");
         // Create directory if not exists
         if (rootPath != null && !rootPath.exists()) {
@@ -736,7 +745,7 @@ public class DatabaseQueries {
 
         if (localFile.exists() && localFile.listFiles().length != 0) {
             Log.v("File Download To Local:", "is Exist");
-            downloadFramesOfWord.afterDownloadFramesOfWord(true, localFile.getPath());
+            downloadFramesOfWord.afterDownloadFramesOfWord(true, localFile.getPath(), videoNumber);
         } else {
             storageReference
                     .child(word)
@@ -762,7 +771,7 @@ public class DatabaseQueries {
                                                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                                                     if (finalNumberOfFrame == listResult.getItems().size() - 1) {
                                                         Log.v("File Download To Local:", "OK");
-                                                        downloadFramesOfWord.afterDownloadFramesOfWord(true, localFile.getPath());
+                                                        downloadFramesOfWord.afterDownloadFramesOfWord(true, localFile.getPath(), videoNumber);
                                                     }
                                                 }
                                             })
@@ -778,7 +787,7 @@ public class DatabaseQueries {
 
                             } else {
                                 Log.v("File Download To Local:", "fall");
-                                downloadFramesOfWord.afterDownloadFramesOfWord(false, null);
+                                downloadFramesOfWord.afterDownloadFramesOfWord(false, null, videoNumber);
                             }
 
                         }
@@ -788,7 +797,7 @@ public class DatabaseQueries {
                         public void onFailure(@NonNull Exception e) {
                             e.printStackTrace();
                             Log.v("File Download To Local:", "fall");
-                            downloadFramesOfWord.afterDownloadFramesOfWord(false, null);
+                            downloadFramesOfWord.afterDownloadFramesOfWord(false, null, videoNumber);
                         }
                     });
         }
@@ -915,7 +924,11 @@ public class DatabaseQueries {
     }
 
     public interface DownloadFramesOfWord {
-        void afterDownloadFramesOfWord(boolean isFound, String framesFolderPath);
+        void afterDownloadFramesOfWord(boolean isFound, String framesFolderPath, int videoNumber);
+    }
+
+    public interface PhotoProgress {
+        void progress(double progress);
     }
 
 }

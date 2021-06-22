@@ -18,21 +18,21 @@ public class ConvertTextToVideo {
         this.msgArray = msgArray;
     }
 
-    //TODO use recursive function
     private void downloadVideos(GetVideosPaths getVideosPaths) {
         ArrayList<String> videosPath = new ArrayList<>();
 
-        //good ok best
+        int videoNumber = 0;
 
         for (String currentWord : msgArray) {
             String word = currentWord.toLowerCase();
 
+
             Log.v(TAG, "current Word is : " + word);
             DatabaseQueries.downloadFramesOfWord(new DatabaseQueries.DownloadFramesOfWord() {
                 @Override
-                public void afterDownloadFramesOfWord(boolean isFound, String framesFolderPath) {
+                public void afterDownloadFramesOfWord(boolean isFound, String framesFolderPath, int videoNumber) {
                     if (isFound) {
-                        videosPath.add(framesFolderPath);
+                        videosPath.add(videoNumber, framesFolderPath);
                         if (currentWord.equals(msgArray[msgArray.length - 1])) {
                             getVideosPaths.afterGetVideosPaths(videosPath);
                         }
@@ -42,9 +42,9 @@ public class ConvertTextToVideo {
                             String character = currentChar + "";
                             DatabaseQueries.downloadFramesOfWord(new DatabaseQueries.DownloadFramesOfWord() {
                                 @Override
-                                public void afterDownloadFramesOfWord(boolean isFound, String framesFolderPath) {
+                                public void afterDownloadFramesOfWord(boolean isFound, String framesFolderPath, int videoNumber) {
                                     if (isFound)
-                                        videosPath.add(framesFolderPath);
+                                        videosPath.add(videoNumber, framesFolderPath);
                                     else
                                         Log.v(TAG, "not recognized word");
 
@@ -53,16 +53,16 @@ public class ConvertTextToVideo {
                                     }
 
                                 }
-                            }, character);
+                            }, character, videoNumber);
                         }
                     }
 
                 }
-            }, word);
+            }, word, videoNumber);
 
+            videoNumber++;
         }
     }
-
 
 
     public void convert(Converted converted) {

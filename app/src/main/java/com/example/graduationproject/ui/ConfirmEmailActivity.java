@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Map;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -85,6 +86,8 @@ public class ConfirmEmailActivity extends AppCompatActivity {
 
     public void initFirebase() {
         //create instance of user from FirebaseAuth
+//        FirebaseAuth auth = FirebaseAuth.getInstance();
+//        auth.sig
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
@@ -122,6 +125,7 @@ public class ConfirmEmailActivity extends AppCompatActivity {
         if (currentUser != null) {
             //refresh user information
             currentUser.reload();
+            Log.v(TAG, "cureentUser:" + currentUser);
 
             if (currentUser.isEmailVerified()) {
                 emailVerify.setText("Verify");
@@ -130,12 +134,13 @@ public class ConfirmEmailActivity extends AppCompatActivity {
                 //end the current thread from running
                 endThread(thread);
 
-                //go to chat menu activity
+                //go to upload photo activity
                 finish();
-                startActivity(new Intent(getApplicationContext(), WelcomeDeafChatActivity.class)
+                startActivity(new Intent(getApplicationContext(), UploadPhotoActivity.class)
                         .putExtra(SignUpActivity.USER_PRIVATE_INFO_INTENT_EXTRA, userPrivateInfo)
                         .putExtra(SignUpActivity.USER_PUBLIC_INFO_INTENT_EXTRA, userPublicInfo));
-            }
+            } else
+                Log.v(TAG, "not virifides");
         }
     }
 
