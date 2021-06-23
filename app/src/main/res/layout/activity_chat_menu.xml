@@ -12,19 +12,19 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/chat_menu_lower_background"
+        android:background="@drawable/chat_page_back"
         android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/top_bar"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="51dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:background="@drawable/upper_background">
+            >
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/menu"
@@ -61,17 +61,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/new_chat_button"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginHorizontal="@dimen/margin_horizontal_value"
-                android:src="@drawable/new_message_button"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/search_button"
-                app:layout_constraintTop_toTopOf="parent" />
+            <!--            <ImageView-->
+            <!--                android:id="@+id/new_chat_button"-->
+            <!--                android:layout_width="30dp"-->
+            <!--                android:layout_height="30dp"-->
+            <!--                android:layout_marginHorizontal="@dimen/margin_horizontal_value"-->
+            <!--                android:src="@drawable/new_message_button"-->
+            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                app:layout_constraintEnd_toStartOf="@id/search_button"-->
+            <!--                app:layout_constraintTop_toTopOf="parent" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
         <TextView
@@ -99,6 +100,15 @@
                 android:layout_height="match_parent" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+        <ImageButton
+            android:layout_width="67dp"
+            android:layout_height="69dp"
+            android:background="@drawable/photo"
+            android:src="@drawable/add_friend"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="22dp"/>
+
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView
@@ -107,5 +117,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/navigation_header"
-        app:menu="@menu/drawer_menu" />
+        app:menu="@menu/drawer_menu"
+        android:background="@drawable/navigation_back"
+        />
 </androidx.drawerlayout.widget.DrawerLayout>
