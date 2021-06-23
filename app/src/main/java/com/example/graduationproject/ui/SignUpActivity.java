@@ -34,11 +34,15 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +50,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SignUpActivity extends AppCompatActivity implements  DatePickerFragment.OnFinish {
+public class SignUpActivity extends AppCompatActivity implements DatePickerFragment.OnFinish {
 
     @BindView(R.id.sign_up_edit_first_name)
     EditText signUpEditFirstName;
@@ -107,6 +111,7 @@ public class SignUpActivity extends AppCompatActivity implements  DatePickerFrag
         if (completeInfo.getUserEmail() != null) {
             setCompleteInfo(completeInfo);
         }
+
 
 //        //upload photo form camera or gallery button
 //        signUpUploadImage.setOnClickListener(v -> {
@@ -321,18 +326,28 @@ public class SignUpActivity extends AppCompatActivity implements  DatePickerFrag
 
     public void signOut() {
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        GoogleSignIn.getClient(getApplicationContext(), gso).signOut();
-        mAuth.removeAuthStateListener(new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestIdToken(getString(R.string.default_web_client_id))
+//                .requestEmail()
+//                .build();
+//        GoogleSignIn.getClient(getApplicationContext(), gso).signOut();
+////        mAuth.removeAuthStateListener(new FirebaseAuth.AuthStateListener() {
+////            @Override
+////            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+////
+////            }
+////        });
 
-            }
-        });
-        mAuth.signOut();
+        //TODO delete google account from Auth
+//        currentUser.getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+//            @Override
+//            public void onSuccess(GetTokenResult getTokenResult) {
+//                String token = getTokenResult.getToken();
+//                AuthCredential authCredential = GoogleAuthProvider.getCredential(token, null);
+//                currentUser.reauthenticate(authCredential);
+//            }
+//        });
+
         LoginManager.getInstance().logOut();
 
     }

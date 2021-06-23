@@ -82,6 +82,10 @@ public class UploadPhotoActivity extends AppCompatActivity {
 
         progressPhoto.setProgressWithAnimation(0);
 
+        if(currentUser.getPhotoUrl()!=null){
+            uploadPhoto(currentUser.getPhotoUrl().toString());
+        }
+
         chosePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
