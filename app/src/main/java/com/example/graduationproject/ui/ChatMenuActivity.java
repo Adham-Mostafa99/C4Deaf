@@ -144,6 +144,9 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
+                    case R.id.user_profile:
+                        //TODO go to Profile
+                        break;
                     case R.id.user_friends:
                         Toast.makeText(getApplicationContext(), "friends", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(getApplicationContext(), UserFriendsActivity.class));
@@ -151,8 +154,14 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
                     case R.id.user_friends_requests:
                         startActivity(new Intent(getApplicationContext(), FriendsRequestsActivity.class));
                         break;
-                    case R.id.settings:
+                    case R.id.sent_requests:
+                        //TODO go to sent_requests
+                        break;
+                    case R.id.account_setting:
                         startActivity(new Intent(getApplicationContext(), SettingActivity.class));
+                        break;
+                    case R.id.about:
+                        //TODO go to about activity
                         break;
                     case R.id.sign_out:
                         signOut();

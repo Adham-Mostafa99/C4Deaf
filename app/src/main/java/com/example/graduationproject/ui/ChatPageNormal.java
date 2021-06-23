@@ -93,7 +93,7 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
 
     @BindView(R.id.chat_view)
     RelativeLayout chatView;
-    @BindView(R.id.recycler_view_chat)
+    @BindView(R.id.recycler_view_chat_normal)
     RecyclerView recyclerViewChat;
     @BindView(R.id.btn_emoji)
     ImageView btnEmoji;

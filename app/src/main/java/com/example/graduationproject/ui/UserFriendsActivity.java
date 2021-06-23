@@ -24,6 +24,7 @@ import com.example.graduationproject.R;
 import com.example.graduationproject.adapters.UserFriendsAdapter;
 import com.example.graduationproject.models.DatabaseQueries;
 import com.example.graduationproject.models.UserPublicInfo;
+import com.github.clans.fab.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
@@ -48,8 +49,8 @@ public class UserFriendsActivity extends AppCompatActivity implements SwipeRefre
     public static final int DB_GET_FRIENDS_ID = 1;
     public static final int DB_INSERT_FRIENDS_ID = 2;
 
-    @BindView(R.id.add_friend_button)
-    Button addFriendButton;
+    @BindView(R.id.fab_add_friend)
+    FloatingActionButton addFriendButton;
 
     private FirebaseUser currentUser;
     private ArrayList<UserPublicInfo> userFriends;

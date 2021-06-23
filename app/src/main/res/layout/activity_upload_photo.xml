@@ -82,7 +82,7 @@
         android:src="@drawable/camera" />
 
     <Button
-        android:id="@+id/email_verify"
+        android:id="@+id/photo_verified"
         android:layout_width="172dp"
         android:layout_height="57dp"
         android:layout_gravity="center"

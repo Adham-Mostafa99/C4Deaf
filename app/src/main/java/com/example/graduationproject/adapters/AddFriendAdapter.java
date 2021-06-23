@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -53,6 +54,7 @@ public class AddFriendAdapter extends RecyclerView.Adapter<AddFriendAdapter.View
         //set friend display name
         holder.displayName.setText(currentFriend.getUserDisplayName());
 
+        //TODO change add friend to cancel after sent reqeust
         holder.addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,7 +73,7 @@ public class AddFriendAdapter extends RecyclerView.Adapter<AddFriendAdapter.View
     static class ViewHolder extends RecyclerView.ViewHolder {
         private CircleImageView friendPhoto;
         private TextView displayName;
-        private CircleImageView addFriend;
+        private Button addFriend;
 
         private OnItemClick onItemClick;
 
@@ -79,7 +81,7 @@ public class AddFriendAdapter extends RecyclerView.Adapter<AddFriendAdapter.View
             super(itemView);
             friendPhoto = itemView.findViewById(R.id.add_friend_item_photo);
             displayName = itemView.findViewById(R.id.add_friend_display_name);
-            addFriend = itemView.findViewById(R.id.search_friends);
+            addFriend = itemView.findViewById(R.id.add_friend);
 
             this.onItemClick = onItemClick;
 

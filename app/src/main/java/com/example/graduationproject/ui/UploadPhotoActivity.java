@@ -49,12 +49,15 @@ public class UploadPhotoActivity extends AppCompatActivity {
     ImageView chosePhoto;
     @BindView(R.id.progress_photo)
     CircularProgressBar progressPhoto;
+    @BindView(R.id.photo_verified)
+    Button nextActivity;
 
     private static final int REQUEST_CAMERA_PERMISSION = 101;
     private static final int WRITE_TO_STORAGE_PERMISSION_REQUEST_CODE = 102;
     private static final int READ_FROM_STORAGE_PERMISSION_REQUEST_CODE = 103;
 
     String userChosenPhoto, userPhotoPath;
+    boolean done = false;
 
     private UserPublicInfo userPublicInfo;
     private UserPrivateInfo userPrivateInfo;
@@ -82,7 +85,7 @@ public class UploadPhotoActivity extends AppCompatActivity {
 
         progressPhoto.setProgressWithAnimation(0);
 
-        if(currentUser.getPhotoUrl()!=null){
+        if (currentUser.getPhotoUrl() != null) {
             uploadPhoto(currentUser.getPhotoUrl().toString());
         }
 
@@ -91,6 +94,18 @@ public class UploadPhotoActivity extends AppCompatActivity {
             public void onClick(View v) {
                 setCameraPermission();
                 uploadProfileImage();
+            }
+        });
+
+        nextActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (done) {
+                    finish();
+                    startActivity(new Intent(getApplicationContext(), WelcomeDeafChatActivity.class)
+                            .putExtra(SignUpActivity.USER_PRIVATE_INFO_INTENT_EXTRA, userPrivateInfo)
+                            .putExtra(SignUpActivity.USER_PUBLIC_INFO_INTENT_EXTRA, userPublicInfo));
+                }
             }
         });
 
@@ -289,11 +304,7 @@ public class UploadPhotoActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             Log.d("TAG", "UpdateUserName:success");
-
-                            finish();
-                            startActivity(new Intent(getApplicationContext(), WelcomeDeafChatActivity.class)
-                                    .putExtra(SignUpActivity.USER_PRIVATE_INFO_INTENT_EXTRA, userPrivateInfo)
-                                    .putExtra(SignUpActivity.USER_PUBLIC_INFO_INTENT_EXTRA, userPublicInfo));
+                            done = true;
                         }
                     }
                 });

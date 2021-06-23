@@ -3,31 +3,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single" >
+    <group android:checkableBehavior="single">
+
         <item
-            android:id="@+id/user_friends"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:id="@+id/user_profile"
             android:title="Profile" />
+        <item
+            android:icon="@drawable/ic_launcher_foreground"
+            android:id="@+id/user_friends"
+            android:title="Friends" />
         <item
             android:id="@+id/user_friends_requests"
             android:icon="@drawable/ic_launcher_foreground"
-            android:title="Friends Requests"
-            />
+            android:title="Friends Requests" />
         <item
-            android:id="@+id/user_friends_send_request"
-            android:icon="@drawable/add_friend"
-            android:title="Friend Send Request" />
+            android:id="@+id/sent_requests"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="Sent Requests" />
         <item
-            android:id="@+id/list_friends"
-            android:title="Friends" />
+            android:id="@+id/account_setting"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="Account" />
+
     </group>
     <group android:checkableBehavior="single">
 
         <item
-            android:id="@+id/sign_out"
+            android:id="@+id/about"
             android:icon="@drawable/ic_launcher_foreground"
             android:title="About" />
-    </group>
+        <item
+            android:id="@+id/sign_out"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="Sign out" />
 
+    </group>
 
 
 </menu>

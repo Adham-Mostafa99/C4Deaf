@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context=".ui.ChatMenuActivity"
-    tools:openDrawer="">
+    tools:openDrawer="start">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -62,18 +62,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-<<<<<<< Updated upstream
-            <!--            <ImageView-->
-            <!--                android:id="@+id/new_chat_button"-->
-            <!--                android:layout_width="30dp"-->
-            <!--                android:layout_height="30dp"-->
-            <!--                android:layout_marginHorizontal="@dimen/margin_horizontal_value"-->
-            <!--                android:src="@drawable/new_message_button"-->
-            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--                app:layout_constraintEnd_toStartOf="@id/search_button"-->
-            <!--                app:layout_constraintTop_toTopOf="parent" />-->
-=======
->>>>>>> Stashed changes
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -104,17 +92,6 @@
                 android:layout_height="match_parent" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-<<<<<<< Updated upstream
-        <ImageButton
-            android:layout_width="67dp"
-            android:layout_height="69dp"
-            android:background="@drawable/photo"
-            android:src="@drawable/add_friend"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="22dp"/>
-=======
-
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
@@ -137,7 +114,6 @@
             app:fab_hideAnimation="@anim/fab_scale_down"
             app:fab_label=""
             />
->>>>>>> Stashed changes
 
     </RelativeLayout>
 

@@ -2,6 +2,7 @@ package com.example.graduationproject.ui;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,7 +69,9 @@ public class AddFriendActivity extends AppCompatActivity implements AddFriendAda
             public void onClick(View v) {
                 clearAdapter();
                 String displayName = displayNameSearch.getText().toString().trim();
-                DatabaseQueries.getFriendByDisplayName(getFriendByDisplayName, DB_GET_FRIEND_BY_DISPLAY_NAME_ID, displayName);
+                DatabaseQueries.getFriendByDisplayName(getFriendByDisplayName
+                        , DB_GET_FRIEND_BY_DISPLAY_NAME_ID, displayName);
+
             }
         });
     }
@@ -111,6 +114,7 @@ public class AddFriendActivity extends AppCompatActivity implements AddFriendAda
     public void afterGetFriendByDisplayName(UserPublicInfo friendInfo, int id) {
         switch (id) {
             case DB_GET_FRIEND_BY_DISPLAY_NAME_ID:
+                Log.v(TAG, "friend info :" + friendInfo.getUserDisplayName());
                 insertToAdapter(friendInfo);
                 break;
             default:

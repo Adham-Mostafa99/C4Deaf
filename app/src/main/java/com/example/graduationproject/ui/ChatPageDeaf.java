@@ -27,7 +27,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.graduationproject.ConvertSpeechToText;
 import com.example.graduationproject.ConvertTextToVideo;
 import com.example.graduationproject.sign_language.ConvertIconToText;
 import com.example.graduationproject.sign_language.KeyboardManager;
@@ -65,7 +64,7 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
     EditText textSend;
     @BindView(R.id.btn_send)
     ImageView btnSend;
-    @BindView(R.id.deaf_record)
+    @BindView(R.id.normal_record_button)
     ImageView deafRecord;
 
 

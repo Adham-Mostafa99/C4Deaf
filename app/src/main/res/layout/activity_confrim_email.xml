@@ -58,6 +58,7 @@
         android:textColor="@android:color/white"
         android:textSize="24sp"/>
     <TextView
+        android:id="@+id/email_verify"
         android:layout_width="wrap_content"
         android:layout_height="28dp"
         android:layout_centerHorizontal="true"
@@ -87,7 +88,7 @@
         android:textSize="20sp" />
 
     <Button
-        android:id="@+id/email_verify"
+        android:id="@+id/change_button"
         android:layout_width="235dp"
         android:layout_height="57dp"
         android:layout_gravity="center"
