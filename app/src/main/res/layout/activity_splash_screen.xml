@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/splash_screen"
+    android:background="@drawable/chat_page_back"
     android:fitsSystemWindows="false"
     tools:context=".ui.SplashScreenActivity">
 
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="70dp"
         android:fontFamily="@font/constantia"
-        android:text="DAN Chatting"
+        android:text="C4Deaf"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="40sp"
@@ -39,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/constantia"
-        android:text="Deaf and Normal chatting "
+        android:text="Chatting for Deaf "
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="14sp"

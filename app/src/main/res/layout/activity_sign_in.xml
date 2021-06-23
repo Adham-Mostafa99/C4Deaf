@@ -117,7 +117,7 @@
             <Button
                 android:id="@+id/sign_in_button"
                 android:layout_width="193dp"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="22dp"
                 android:background="@drawable/sign_in_button_backgroud"
