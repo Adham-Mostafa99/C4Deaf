@@ -415,31 +415,31 @@ public class SignInActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onPause() {
-        signOut();
-        super.onPause();
-    }
+//    @Override
+//    protected void onPause() {
+//        signOut();
+//        super.onPause();
+//    }
+//
+//    @Override
+//    protected void onStop() {
+//        signOut();
+//        super.onStop();
+//    }
 
-    @Override
-    protected void onStop() {
-        signOut();
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        signOut();
-        super.onDestroy();
-    }
-
-    public void signOut() {
-        mAuth.signOut();
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        GoogleSignIn.getClient(getApplicationContext(), gso).signOut();
-        LoginManager.getInstance().logOut();//facebook
-    }
+//    @Override
+//    protected void onDestroy() {
+//        signOut();
+//        super.onDestroy();
+//    }
+//
+//    public void signOut() {
+//        mAuth.signOut();
+//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestIdToken(getString(R.string.default_web_client_id))
+//                .requestEmail()
+//                .build();
+//        GoogleSignIn.getClient(getApplicationContext(), gso).signOut();
+//        LoginManager.getInstance().logOut();//facebook
+//    }
 }

@@ -21,8 +21,7 @@ public class KeyboardManager {
     private Activity activity;
     private EditText textSend;
     private LinearLayout keyboard;
-    private boolean isOpen = true;
-    private boolean isFirst = true;
+    private boolean isOpen = false;
 
     public KeyboardManager(Context context, Activity activity, EditText textSend, LinearLayout keyboard) {
         this.context = context;
@@ -79,12 +78,14 @@ public class KeyboardManager {
                 activity,
                 new KeyboardVisibilityEventListener() {
                     @Override
-                    public void onVisibilityChanged(boolean isOpen) {
-                        isOpen = isOpen;
+                    public void onVisibilityChanged(boolean isOpened) {
+
+                        isOpen = isOpened;
                     }
                 });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {// API 21
+            Log.v("TAG", "states keyborad:" + isOpen);
             if (!isOpen) {
                 showPrimaryKeyboardApi21();
                 hideSignLanguageKeyboard();

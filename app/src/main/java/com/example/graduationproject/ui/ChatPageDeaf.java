@@ -220,6 +220,7 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
             }
         });
 
+        //TODO make animation when clicl button
         btnKeyboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -505,6 +506,78 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
             case R.id.key_b:
                 textSend.append("b");
                 break;
+            case R.id.key_c:
+                textSend.append("c");
+                break;
+            case R.id.key_d:
+                textSend.append("d");
+                break;
+            case R.id.key_e:
+                textSend.append("e");
+                break;
+            case R.id.key_f:
+                textSend.append("f");
+                break;
+            case R.id.key_g:
+                textSend.append("g");
+                break;
+            case R.id.key_h:
+                textSend.append("h");
+                break;
+            case R.id.key_i:
+                textSend.append("i");
+                break;
+            case R.id.key_j:
+                textSend.append("j");
+                break;
+            case R.id.key_k:
+                textSend.append("k");
+                break;
+            case R.id.key_l:
+                textSend.append("l");
+                break;
+            case R.id.key_m:
+                textSend.append("m");
+                break;
+            case R.id.key_n:
+                textSend.append("n");
+                break;
+            case R.id.key_o:
+                textSend.append("o");
+                break;
+            case R.id.key_p:
+                textSend.append("p");
+                break;
+            case R.id.key_q:
+                textSend.append("q");
+                break;
+            case R.id.key_r:
+                textSend.append("r");
+                break;
+            case R.id.key_s:
+                textSend.append("s");
+                break;
+            case R.id.key_t:
+                textSend.append("t");
+                break;
+            case R.id.key_u:
+                textSend.append("u");
+                break;
+            case R.id.key_v:
+                textSend.append("v");
+                break;
+            case R.id.key_w:
+                textSend.append("w");
+                break;
+            case R.id.key_x:
+                textSend.append("x");
+                break;
+            case R.id.key_y:
+                textSend.append("y");
+                break;
+            case R.id.key_z:
+                textSend.append("z");
+                break;
             case R.id.key_space:
                 textSend.append(" ");
                 break;
@@ -542,9 +615,6 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
     @Override
     public void onWordClick(int position) {
         Toast.makeText(getApplicationContext(), "please wait", Toast.LENGTH_SHORT).show();
-
-
-
 
 
         if (!msg.get(position).getMessage().trim().isEmpty()) {

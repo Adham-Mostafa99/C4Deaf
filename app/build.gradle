@@ -160,5 +160,8 @@ dependencies {
     //animation wait
     implementation 'com.github.elmliu:loadingdrawable:1.0'
 
+    //floating button
+    implementation 'com.github.clans:fab:1.6.4'
+
 
 }

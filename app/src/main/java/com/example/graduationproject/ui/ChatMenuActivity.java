@@ -30,6 +30,7 @@ import com.example.graduationproject.adapters.UserFriendsAdapter;
 import com.example.graduationproject.models.DatabaseQueries;
 import com.example.graduationproject.models.UserMenuChat;
 import com.example.graduationproject.models.UserPublicInfo;
+import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -66,8 +67,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     ImageView menu;
     @BindView(R.id.search_button)
     ImageView searchButton;
-    @BindView(R.id.new_chat_button)
-    ImageView newChatButton;
+
     @BindView(R.id.recycler_view_chat)
     RecyclerView recyclerViewChat;
     @BindView(R.id.swipe_refresh_layout)
@@ -101,6 +101,8 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     private DatabaseQueries.GetUserMenuChat getUserMenuChat = this;
     @BindView(R.id.no_chat_items)
     TextView noChatItems;
+    @BindView(R.id.fab)
+    FloatingActionButton newMsgButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +112,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         init();
         initializeAdapter();
         initializeFirebase();
+
 
         DatabaseQueries.getCurrentUserInfo(new DatabaseQueries.GetCurrentUserInfo() {
             @Override
@@ -170,7 +173,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         });
 
         //when click on new chat button
-        newChatButton.setOnClickListener(new View.OnClickListener() {
+        newMsgButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 popWindowCreation();
@@ -182,7 +185,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //will add search msg in all msg_chats
+                //TODO will add search Friends in my friends
             }
         });
 
@@ -226,9 +229,9 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     public void initializeFirebase() {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-        db = FirebaseFirestore.getInstance();
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("users/" + currentUser.getUid() + "/menu-chat");
+//        db = FirebaseFirestore.getInstance();
+//        database = FirebaseDatabase.getInstance();
+//        myRef = database.getReference("users/" + currentUser.getUid() + "/menu-chat");
     }
 
     /**
@@ -339,6 +342,8 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     public void popWindowCreation() {
         View popupView = LayoutInflater.from(this).inflate(R.layout.new_msg_pop_window, null);
 
+        //TODO make pop ex.. 300*200
+
         // create the popup window
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
@@ -378,6 +383,8 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     // onclick in any friend in newMsg
     @Override
     public void onItemClick(int position) {
+
+        //TODO make animation when click
         //open user
         String friendId = newMsgFriends.get(position).getUserId();
         if (currentUserInfo.getUserState().equals("Normal"))

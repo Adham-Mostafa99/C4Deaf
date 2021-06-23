@@ -20,7 +20,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.bumptech.glide.Glide;
 import com.example.graduationproject.R;
 import com.example.graduationproject.adapters.FriendsRequestsAdapter;
-import com.example.graduationproject.adapters.UserFriendsAdapter;
 import com.example.graduationproject.models.DatabaseQueries;
 import com.example.graduationproject.models.UserPublicInfo;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
@@ -85,13 +84,13 @@ public class FriendsRequestsActivity extends AppCompatActivity implements Friend
 
     @Override
     public void onItemClick(int position) {
-        String friendDisplayName = friendsRequestsArrayList.get(position).getUserDisplayName();
+        String friendDisplayNameName = friendsRequestsArrayList.get(position).getUserDisplayName();
         DatabaseQueries.getFriendByDisplayName(new DatabaseQueries.GetFriendByDisplayName() {
             @Override
             public void afterGetFriendByDisplayName(UserPublicInfo friendInfo, int id) {
                 popWindowCreation(friendInfo);
             }
-        }, 0, friendDisplayName);
+        }, 0, friendDisplayNameName);
     }
 
     @Override

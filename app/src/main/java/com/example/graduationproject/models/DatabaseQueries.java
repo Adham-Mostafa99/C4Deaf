@@ -119,21 +119,23 @@ public class DatabaseQueries {
     public static void getUserMenuChat(GetUserMenuChat getUserMenuChat, int id) {
         DatabaseReference myRefMenuChat =
                 FirebaseDatabase.getInstance().
-                        getReference("users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/menu-chat");
+                        getReference("users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
 
         myRefMenuChat.keepSynced(true);
 
-        myRefMenuChat.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                getUserMenuChat.afterGetUserMenuChat(snapshot, id);
-            }
+        myRefMenuChat
+                .child("menu-chat")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        getUserMenuChat.afterGetUserMenuChat(snapshot, id);
+                    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+                    }
+                });
     }
 
     public static void createNewChat(CreateNewChat createNewChat, int id, String userId, @NonNull UserMenuChat friendMenuChat) {
@@ -170,7 +172,7 @@ public class DatabaseQueries {
         myRefMsgChatSend
                 .child(friendId)
                 .push()
-                .setValue(msg, -date.getTime())
+                .setValue(msg)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
