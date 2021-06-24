@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="User name"
-        android:textColor="@android:color/white"
+        android:textColor="#1B1A1A"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/header_photo"
         android:textSize="18sp"
