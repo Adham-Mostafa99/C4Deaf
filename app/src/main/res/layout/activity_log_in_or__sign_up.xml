@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/chat_page_back"
-    tools:context=".LogIn_or_SignUp">
+    android:background="#E9765B"
+    tools:context=".ui.LogIn_or_SignUp">
 
     <!--    <ImageView-->
     <!--        android:layout_width="wrap_content"-->
@@ -13,51 +13,96 @@
     <!--        android:background=""-->
     <!--        android:src="@drawable/picture_circle"/>-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_marginTop="282dp"
-        android:text="Welcome to C4Deaf"
-        android:textSize="26sp"
-        android:layout_centerHorizontal="true"
-        android:fontFamily="@font/andlso"
-        android:textColor="@color/white"/>
-    <Button
-        android:id="@+id/log_in"
-        android:layout_width="262dp"
-        android:layout_height="56dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="386dp"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/sign_in_button_backgroud"
-        android:clickable="true"
-        android:focusable="true"
-        android:fontFamily="@font/andlso"
-        android:text="Log In"
-        android:textAllCaps="false"
-        android:textColor="@android:color/white"
-        android:textSize="28sp" />
-    <Button
-        android:id="@+id/sign_in"
-        android:layout_width="262dp"
-        android:layout_height="56dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="506dp"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/sign_in_button_backgroud"
-        android:clickable="true"
-        android:focusable="true"
-        android:fontFamily="@font/andlso"
-        android:text="Sign Up"
-        android:textAllCaps="false"
-        android:textColor="@android:color/white"
-        android:textSize="28sp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/login_signup_vector" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="459dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="369dp"
+            android:background="@drawable/sign_in_lower_background">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/sign_in_info_background" />
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="399dp"
+            android:text="Welcome to C4Deaf"
+            android:textSize="35sp"
+            android:gravity="center"
+            android:layout_marginHorizontal="28dp"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/andlso"
+            android:textColor="@color/white"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="456dp"
+            android:text="if you already have an account please log in\n
+            or click sign up if this is your first time\n using app"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_marginHorizontal="28dp"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/andlso"
+            android:textColor="@color/white"/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="534dp"
+            android:layout_marginHorizontal="16dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/log_in"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="35dp"
+                android:background="@drawable/sign_in_button_backgroud"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/andlso"
+                android:text="Log In"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="30dp" />
+            <Button
+                android:id="@+id/button_sign_up"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/sign_in_button_backgroud"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/andlso"
+                android:text="Sign Up"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="30dp"
+                android:layout_marginTop="18dp"/>
+
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+</ScrollView>
 
 
 
 
 
-
-
-
-</RelativeLayout>

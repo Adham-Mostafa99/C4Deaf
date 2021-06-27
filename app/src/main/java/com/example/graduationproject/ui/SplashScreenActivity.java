@@ -60,7 +60,7 @@ public class SplashScreenActivity extends Activity {
         } else {
             Toast.makeText(getApplicationContext(), "please sign in", Toast.LENGTH_SHORT).show();
             finish();
-            startActivity(new Intent(getApplicationContext(), SignInActivity.class)
+            startActivity(new Intent(getApplicationContext(), LogIn_or_SignUp.class)
                     .addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT));
 
         }
