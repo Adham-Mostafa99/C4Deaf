@@ -144,9 +144,6 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
-                    case R.id.user_profile:
-                        //TODO go to Profile
-                        break;
                     case R.id.user_friends:
                         Toast.makeText(getApplicationContext(), "friends", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(getApplicationContext(), UserFriendsActivity.class));

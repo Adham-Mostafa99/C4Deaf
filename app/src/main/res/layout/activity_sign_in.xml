@@ -58,7 +58,6 @@
             android:layout_marginTop="300dp"
             android:gravity="center"
             android:orientation="vertical">
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/sign_in_email_edit_text"
                 android:layout_width="wrap_content"
@@ -70,7 +69,6 @@
                 app:errorEnabled="true"
                 app:hintEnabled="false"
                 app:startIconDrawable="@drawable/sign_in_email_icon">
-
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="315dp"
                     android:layout_height="55dp"
@@ -82,7 +80,6 @@
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:paddingHorizontal="34dp" />
-
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -112,8 +109,6 @@
                     android:paddingHorizontal="34dp" />
 
             </com.google.android.material.textfield.TextInputLayout>
-
-
             <Button
                 android:id="@+id/sign_in_button"
                 android:layout_width="193dp"

@@ -34,7 +34,8 @@
             android:layout_height="44dp"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
-            android:src="@drawable/photo"
+            android:src="@drawable/default_photo"
+            android:background="@drawable/photo"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/arrow_back"
             app:layout_constraintTop_toTopOf="parent" />

@@ -6,35 +6,41 @@
     <group android:checkableBehavior="single">
 
         <item
-            android:icon="@drawable/profile_icone"
-            android:id="@+id/user_profile"
-            android:title="Profile" />
+            android:icon="@drawable/profile_setting_icon"
+            android:id="@+id/account_setting"
+            android:title="profile setting " />
+        <item
+            android:id="@+id/sent_requests"
+            android:icon="@drawable/send_friends_icone"
+            android:title="sent friend requests" />
+
         <item
             android:icon="@drawable/friends_icone"
             android:id="@+id/user_friends"
             android:title="Friends" />
+
         <item
             android:id="@+id/user_friends_requests"
             android:icon="@drawable/friends_request_icone"
-            android:title="Friends Requests" />
-        <item
-            android:id="@+id/sent_requests"
-            android:icon="@drawable/send_friends_icone"
-            android:title="Sent Requests" />
-        <item
-            android:id="@+id/account_setting"
-            android:icon="@drawable/account_icone"
-            android:title="Account" />
+            android:title="friends requests" />
+
+
+<!--        <item-->
+<!--            android:id="@+id/user_profile"-->
+<!--            android:icon="@drawable/account_icone"-->
+<!--            android:title="Account" />-->
 
     </group>
     <group android:checkableBehavior="single">
 
         <item
             android:id="@+id/about"
-            android:title="About" />
+            android:title="About"
+            android:icon="@drawable/about_icon"/>
         <item
             android:id="@+id/sign_out"
-            android:title="Sign out" />
+            android:title="Sign out"
+            android:icon="@drawable/sign_out"/>
 
     </group>
 
