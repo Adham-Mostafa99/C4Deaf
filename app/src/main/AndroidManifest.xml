@@ -20,8 +20,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LogIn_or_SignUp"></activity>
-        <activity android:name=".ui.UploadPhotoActivity"></activity>
+        <activity android:name=".AboutActivity"></activity>
+        <activity android:name=".LogIn_or_SignUp" />
+        <activity android:name=".ui.UploadPhotoActivity" />
         <activity android:name=".ui.FriendsRequestsActivity" />
         <activity android:name=".ui.AddFriendActivity" />
         <activity android:name=".ui.UserFriendsActivity" />

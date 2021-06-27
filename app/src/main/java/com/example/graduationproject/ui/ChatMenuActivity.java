@@ -158,7 +158,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
                         startActivity(new Intent(getApplicationContext(), SettingActivity.class));
                         break;
                     case R.id.about:
-                        //TODO go to about activity
+                        startActivity(new Intent(getApplicationContext(),AboutActivity.class));
                         break;
                     case R.id.sign_out:
                         signOut();
