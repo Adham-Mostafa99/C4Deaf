@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/chat_page_back"
     android:orientation="vertical"
-    tools:context=".ui.FriendsRequestsActivity">
+    tools:context=".ui.SentRequests">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bar_layout"
@@ -30,10 +30,10 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="25dp"
-            android:layout_marginStart="16dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16.9dp"
             android:fontFamily="@font/cambo"
-            android:text="Friend request"
+            android:text="Friend request sent"
             android:textColor="@android:color/white"
             android:textSize="22sp"
             android:textStyle="bold"
@@ -42,10 +42,8 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/request_friends_refresh_swipe"
+        android:id="@+id/sent_request_friends_refresh_swipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/bar_layout"
@@ -56,14 +54,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/friends_requests_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="16dp"
-            />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/friends_sent_requests_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="17dp"
+                />
         </ScrollView>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
 </RelativeLayout>

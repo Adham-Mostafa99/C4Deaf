@@ -152,7 +152,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
                         startActivity(new Intent(getApplicationContext(), FriendsRequestsActivity.class));
                         break;
                     case R.id.sent_requests:
-                        //TODO go to sent_requests
+                        startActivity(new Intent(getApplicationContext(), SentRequests.class));
                         break;
                     case R.id.account_setting:
                         startActivity(new Intent(getApplicationContext(), SettingActivity.class));

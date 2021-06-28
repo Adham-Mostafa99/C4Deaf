@@ -19,16 +19,8 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:scaleType="centerCrop"
-            android:src="@drawable/sign_in_upper_background" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="66dp"
-            android:fontFamily="@font/andlso"
-            android:text="Sign up"
-            android:textColor="@android:color/white"
-            android:textSize="42sp" />
+            android:src="@drawable/login_signup_vector" />
+
 
 
         <!--        <de.hdodenhof.circleimageview.CircleImageView-->
@@ -70,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="700dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="150dp"
+            android:layout_marginTop="140dp"
             android:background="@drawable/sign_in_lower_background">
 
             <ImageView
