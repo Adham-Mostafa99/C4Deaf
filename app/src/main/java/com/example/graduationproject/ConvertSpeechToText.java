@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-
 import com.arthenica.mobileffmpeg.Config;
 import com.arthenica.mobileffmpeg.FFmpeg;
 import com.ibm.cloud.sdk.core.http.HttpMediaType;
@@ -12,7 +11,6 @@ import com.ibm.cloud.sdk.core.security.IamAuthenticator;
 import com.ibm.watson.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.speech_to_text.v1.model.RecognizeOptions;
 import com.ibm.watson.speech_to_text.v1.model.SpeechRecognitionResults;
-
 
 import org.json.JSONArray;
 import org.json.JSONException;

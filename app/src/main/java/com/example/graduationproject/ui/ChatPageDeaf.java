@@ -72,6 +72,7 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
 
     private static final String TAG = "DeafPageNormal";
 
+    private static final int OPEN_CV_REQUEST_CODE = 0;
     private static final int OPEN_RECORD_VIDEO_REQUEST_CODE = 1;
     private static final int DB_SEND_RECORD_VIDEO_MSG_USER_ID = 2;
     private static final int DB_SEND_RECORD_VIDEO_MSG_FRIEND_ID = 3;
@@ -200,14 +201,20 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
             @Override
             public void onClick(View v) {
 
-                fileName = getExternalCacheDir().getAbsolutePath();
-                fileName += "/" + UUID.randomUUID().toString() + ".mp4";
 
-                // go to video recoding activity
-                Intent intent = new Intent(getApplicationContext(), OpenRecordVideoActivity.class);
-                intent.putExtra("file name", fileName);
-                startActivityForResult(intent, OPEN_RECORD_VIDEO_REQUEST_CODE);
+                if (friendInfo.getUserState().equals("normal")) {
+                    Intent intent = new Intent(getApplicationContext(), OpenCvActivity.class);
+                    startActivityForResult(intent, OPEN_CV_REQUEST_CODE);
+                } else if (friendInfo.getUserState().equals("deaf")) {
 
+                    fileName = getExternalCacheDir().getAbsolutePath();
+                    fileName += "/" + UUID.randomUUID().toString() + ".mp4";
+
+                    // go to video recoding activity
+                    Intent intent = new Intent(getApplicationContext(), OpenRecordVideoActivity.class);
+                    intent.putExtra("file name", fileName);
+                    startActivityForResult(intent, OPEN_RECORD_VIDEO_REQUEST_CODE);
+                }
             }
 
         });
@@ -321,12 +328,22 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
 
                 //insert new msg that contain video
                 if (deafChat != null) {
-                    if (friendInfo.getUserState().equals("Deaf"))
-                        sendRecordVideo(deafChat);
-                    else {
-                        //convert video to text
-                        Toast.makeText(getApplicationContext(), "will be converted", Toast.LENGTH_SHORT).show();
-                    }
+                    sendRecordVideo(deafChat);
+                }
+
+
+            }
+        } else if (requestCode == OPEN_CV_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                String stringMsg = null;
+                if (data != null) {
+                    //get JsonString msg which contain video-message details
+                    stringMsg = data.getStringExtra("msg");
+                }
+
+                //insert new msg that contain video content
+                if (stringMsg != null) {
+                    sendTextMsg(stringMsg, getTimeNow());
                 }
 
 

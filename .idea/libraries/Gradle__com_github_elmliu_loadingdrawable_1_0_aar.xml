@@ -1,0 +1,20 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.elmliu:loadingdrawable:1.0@aar">
+    <ANNOTATIONS>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3014c3c9eba59ce9befdc6b796df1414/jetified-loadingdrawable-1.0/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/d7adc2a359af2e599f64a54a90a5a6c6/jetified-loadingdrawable-1.0/annotations.zip!/" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3014c3c9eba59ce9befdc6b796df1414/jetified-loadingdrawable-1.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3014c3c9eba59ce9befdc6b796df1414/jetified-loadingdrawable-1.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3014c3c9eba59ce9befdc6b796df1414/jetified-loadingdrawable-1.0/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/d7adc2a359af2e599f64a54a90a5a6c6/jetified-loadingdrawable-1.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/d7adc2a359af2e599f64a54a90a5a6c6/jetified-loadingdrawable-1.0/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/d7adc2a359af2e599f64a54a90a5a6c6/jetified-loadingdrawable-1.0/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.elmliu/loadingdrawable/1.0/701b0cec9c7f7e492ac62197dd928b580d04ac3d/loadingdrawable-1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

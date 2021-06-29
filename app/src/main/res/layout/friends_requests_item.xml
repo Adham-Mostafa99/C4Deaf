@@ -2,33 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_marginEnd="15dp"
-    android:layout_marginStart="17dp">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
+    android:background="#2564"
+    android:orientation="horizontal"
+    android:paddingHorizontal="8dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/friend_request_item_photo"
         android:layout_width="65dp"
         android:layout_height="65dp"
         android:layout_gravity="center"
-        android:src="@drawable/default_photo" />
+        android:layout_margin="16dp"
+        android:src="@drawable/photo" />
 
     <TextView
         android:id="@+id/friend_request_item_display_name"
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
+        android:layout_width="96dp"
+        android:layout_height="33dp"
         android:layout_gravity="center"
-        android:layout_marginStart="8dp"
-        android:text="user name"
-        android:textColor="@color/white"
-        android:textAllCaps="false"
-        android:textSize="18sp"/>
+        android:layout_marginHorizontal="8dp"
+        android:text="display_name"
+        android:textColor="@color/white" />
 
     <!--    <de.hdodenhof.circleimageview.CircleImageView-->
     <!--        android:id="@+id/accept_friend_request"-->
@@ -51,10 +44,10 @@
 
     <Button
         android:id="@+id/accept_friend_request"
-        android:layout_width="72dp"
-        android:layout_height="40dp"
+        android:layout_width="65dp"
+        android:layout_height="28dp"
         android:layout_gravity="center"
-        android:layout_marginStart="62dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/sign_in_button_backgroud"
         android:clickable="true"
         android:focusable="true"
@@ -62,30 +55,22 @@
         android:text="Accept"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
-        android:textSize="16sp" />
+        android:textSize="14sp" />
 
     <Button
         android:id="@+id/ignore_friend_request"
-        android:layout_width="72dp"
-        android:layout_height="40dp"
+        android:layout_width="65dp"
+        android:layout_height="28dp"
         android:layout_gravity="center"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/border_btn_sign_in_gft"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/btn_remove_friend_back"
         android:clickable="true"
         android:focusable="true"
         android:fontFamily="@font/andlso"
         android:text="Remove"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
-        android:textSize="16sp" />
+        android:textSize="14sp" />
 
-    </LinearLayout>
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/white"
-        android:layout_marginStart="77dp"/>
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="21dp"/>
+
 </LinearLayout>

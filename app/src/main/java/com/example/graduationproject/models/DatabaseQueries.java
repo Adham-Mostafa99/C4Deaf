@@ -734,7 +734,7 @@ public class DatabaseQueries {
     }
 
 
-    public static void downloadFramesOfWord(DownloadFramesOfWord downloadFramesOfWord, String word, int videoNumber) {
+    public static void downloadFramesOfWord(DownloadFramesOfWord downloadFramesOfWord, String word) {
         File rootPath = new File(Environment.getExternalStorageDirectory() + "/" + "DeafChat", "convertedVideos");
         // Create directory if not exists
         if (rootPath != null && !rootPath.exists()) {
@@ -747,7 +747,7 @@ public class DatabaseQueries {
 
         if (localFile.exists() && localFile.listFiles().length != 0) {
             Log.v("File Download To Local:", "is Exist");
-            downloadFramesOfWord.afterDownloadFramesOfWord(true, localFile.getPath(), videoNumber);
+            downloadFramesOfWord.afterDownloadFramesOfWord(true, localFile.getPath());
         } else {
             storageReference
                     .child(word)
@@ -773,7 +773,7 @@ public class DatabaseQueries {
                                                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                                                     if (finalNumberOfFrame == listResult.getItems().size() - 1) {
                                                         Log.v("File Download To Local:", "OK");
-                                                        downloadFramesOfWord.afterDownloadFramesOfWord(true, localFile.getPath(), videoNumber);
+                                                        downloadFramesOfWord.afterDownloadFramesOfWord(true, localFile.getPath());
                                                     }
                                                 }
                                             })
@@ -789,7 +789,7 @@ public class DatabaseQueries {
 
                             } else {
                                 Log.v("File Download To Local:", "fall");
-                                downloadFramesOfWord.afterDownloadFramesOfWord(false, null, videoNumber);
+                                downloadFramesOfWord.afterDownloadFramesOfWord(false, null);
                             }
 
                         }
@@ -799,7 +799,7 @@ public class DatabaseQueries {
                         public void onFailure(@NonNull Exception e) {
                             e.printStackTrace();
                             Log.v("File Download To Local:", "fall");
-                            downloadFramesOfWord.afterDownloadFramesOfWord(false, null, videoNumber);
+                            downloadFramesOfWord.afterDownloadFramesOfWord(false, null);
                         }
                     });
         }
@@ -926,7 +926,7 @@ public class DatabaseQueries {
     }
 
     public interface DownloadFramesOfWord {
-        void afterDownloadFramesOfWord(boolean isFound, String framesFolderPath, int videoNumber);
+        void afterDownloadFramesOfWord(boolean isFound, String framesFolderPath);
     }
 
     public interface PhotoProgress {

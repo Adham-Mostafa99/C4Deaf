@@ -6,41 +6,37 @@
     <group android:checkableBehavior="single">
 
         <item
-            android:icon="@drawable/profile_setting_icon"
-            android:id="@+id/account_setting"
-            android:title="profile setting " />
+            android:icon="@drawable/ic_launcher_foreground"
+            android:id="@+id/user_profile"
+            android:title="Profile" />
         <item
-            android:id="@+id/sent_requests"
-            android:icon="@drawable/send_friends_icone"
-            android:title="sent friend requests" />
-
-        <item
-            android:icon="@drawable/friends_icone"
+            android:icon="@drawable/ic_launcher_foreground"
             android:id="@+id/user_friends"
             android:title="Friends" />
-
         <item
             android:id="@+id/user_friends_requests"
-            android:icon="@drawable/friends_request_icone"
-            android:title="friends requests" />
-
-
-<!--        <item-->
-<!--            android:id="@+id/user_profile"-->
-<!--            android:icon="@drawable/account_icone"-->
-<!--            android:title="Account" />-->
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="Friends Requests" />
+        <item
+            android:id="@+id/sent_requests"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="Sent Requests" />
+        <item
+            android:id="@+id/account_setting"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="Account" />
 
     </group>
     <group android:checkableBehavior="single">
 
         <item
             android:id="@+id/about"
-            android:title="About"
-            android:icon="@drawable/about_icon"/>
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="About" />
         <item
             android:id="@+id/sign_out"
-            android:title="Sign out"
-            android:icon="@drawable/sign_out"/>
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="Sign out" />
 
     </group>
 

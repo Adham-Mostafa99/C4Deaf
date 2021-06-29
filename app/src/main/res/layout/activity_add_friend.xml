@@ -1,121 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#4478"
     android:orientation="vertical"
-    android:background="@drawable/chat_page_back"
+    android:padding="16dp"
     tools:context=".ui.AddFriendActivity">
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/bar_layout"
-        android:layout_width="match_parent"
-        android:layout_height="78dp"
-        android:layout_gravity="center_vertical"
-        android:background="@drawable/toolbar"
-        >
-        <ImageView
-            android:id="@+id/arrow_back"
-            android:layout_width="wrap_content"
-            android:layout_height="18dp"
-            android:layout_marginStart="18dp"
-            android:contentDescription="TODO"
-            android:src="@drawable/arrow_back"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16.9dp"
-            android:fontFamily="@font/andlso"
-            android:text="Add friend"
-            android:textColor="@android:color/white"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/arrow_back"
-            app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <RelativeLayout
-        android:id="@+id/search_add_friends"
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/bar_layout"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
-        android:alpha="0.5"
-        android:background="@drawable/edit_text_search"
-        android:orientation="horizontal">
+        android:layout_gravity="center"
+        android:text="ENTER your friend diplayName"
+        android:textSize="16sp" />
 
-        <EditText
-            android:id="@+id/display_name_search"
-            android:layout_width="380dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="22dp"
-            android:alpha="0.5"
-            android:hint="Search userName... "
-            android:textSize="18sp"
-            android:textColor="@color/white"/>
+    <EditText
+        android:id="@+id/display_name_search"
+        android:layout_width="172dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/pass_edit"
+        android:hint="display name"
 
-        <Button
-            android:id="@+id/search_friends"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginHorizontal="15dp"
-            android:background="@drawable/search_icon" />
+        android:paddingHorizontal="12dp" />
 
-    </RelativeLayout>
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/search_add_friends_refresh_swipe"
+    <Button
+        android:id="@+id/search_friends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Search" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/searched_friend_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/search_add_friends"
-        android:layout_centerHorizontal="true"
-        >
+        android:layout_marginTop="16dp" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/searched_friend_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="16dp" />
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-</RelativeLayout>
-
-<!--<TextView-->
-<!--android:layout_width="wrap_content"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:layout_gravity="center"-->
-<!--android:text="ENTER your friend diplayName"-->
-<!--android:textSize="16sp" />-->
-
-<!--<EditText-->
-<!--android:id="@+id/display_name_search"-->
-<!--android:layout_width="172dp"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:layout_gravity="center"-->
-<!--android:background="@drawable/pass_edit"-->
-<!--android:hint="display name"-->
-
-<!--android:paddingHorizontal="12dp" />-->
-
-<!--<Button-->
-<!--android:id="@+id/search_friends"-->
-<!--android:layout_width="wrap_content"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:layout_gravity="center"-->
-<!--android:text="Search" />-->
-
-<!--<androidx.recyclerview.widget.RecyclerView-->
-<!--android:id="@+id/searched_friend_recycler"-->
-<!--android:layout_width="match_parent"-->
-<!--android:layout_height="match_parent"-->
-<!--android:layout_marginTop="16dp" />-->
-
+</LinearLayout>

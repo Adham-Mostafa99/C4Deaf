@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#E9765B</color>
-    <color name="colorAccent">#490C87</color>
+    <color name="colorAccent">#03DAC5</color>
     <color name="color_navigation_bar">#483889</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>

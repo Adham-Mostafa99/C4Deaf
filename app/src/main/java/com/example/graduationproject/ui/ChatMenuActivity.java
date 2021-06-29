@@ -144,6 +144,9 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
+                    case R.id.user_profile:
+                        //TODO go to Profile
+                        break;
                     case R.id.user_friends:
                         Toast.makeText(getApplicationContext(), "friends", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(getApplicationContext(), UserFriendsActivity.class));
@@ -152,13 +155,13 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
                         startActivity(new Intent(getApplicationContext(), FriendsRequestsActivity.class));
                         break;
                     case R.id.sent_requests:
-                        startActivity(new Intent(getApplicationContext(), SentRequests.class));
+                        //TODO go to sent_requests
                         break;
                     case R.id.account_setting:
                         startActivity(new Intent(getApplicationContext(), SettingActivity.class));
                         break;
                     case R.id.about:
-                        startActivity(new Intent(getApplicationContext(),AboutActivity.class));
+                        //TODO go to about activity
                         break;
                     case R.id.sign_out:
                         signOut();
@@ -393,10 +396,10 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         //TODO make animation when click
         //open user
         String friendId = newMsgFriends.get(position).getUserId();
-        if (currentUserInfo.getUserState().equals("Normal"))
+        if (currentUserInfo.getUserState().equals("normal"))
             startActivity(new Intent(this, ChatPageNormal.class)
                     .putExtra(FRIEND_ID_INTENT, friendId));
-        else
+        else if (currentUserInfo.getUserState().equals("deaf"))
             startActivity(new Intent(this, ChatPageDeaf.class)
                     .putExtra(FRIEND_ID_INTENT, friendId));
         popupWindow.dismiss();
