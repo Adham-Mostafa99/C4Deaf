@@ -14,6 +14,7 @@ public class ConvertTextToVideo {
     public final static String TAG = "ConvertTextToVideo";
     private String[] msgArray;
 
+
     public ConvertTextToVideo(String[] msgArray) {
         this.msgArray = msgArray;
     }
@@ -21,46 +22,48 @@ public class ConvertTextToVideo {
     private void downloadVideos(GetVideosPaths getVideosPaths) {
         ArrayList<String> videosPath = new ArrayList<>();
 
-        int videoNumber = 0;
 
         for (String currentWord : msgArray) {
             String word = currentWord.toLowerCase();
 
-
             Log.v(TAG, "current Word is : " + word);
-            DatabaseQueries.downloadFramesOfWord(new DatabaseQueries.DownloadFramesOfWord() {
-                @Override
-                public void afterDownloadFramesOfWord(boolean isFound, String framesFolderPath, int videoNumber) {
-                    if (isFound) {
-                        videosPath.add(videoNumber, framesFolderPath);
-                        if (currentWord.equals(msgArray[msgArray.length - 1])) {
-                            getVideosPaths.afterGetVideosPaths(videosPath);
-                        }
-                    } else {
-                        char[] wordCharArray = word.toCharArray();
-                        for (char currentChar : wordCharArray) {
-                            String character = currentChar + "";
-                            DatabaseQueries.downloadFramesOfWord(new DatabaseQueries.DownloadFramesOfWord() {
-                                @Override
-                                public void afterDownloadFramesOfWord(boolean isFound, String framesFolderPath, int videoNumber) {
-                                    if (isFound)
-                                        videosPath.add(videoNumber, framesFolderPath);
-                                    else
-                                        Log.v(TAG, "not recognized word");
 
-                                    if (currentWord.equals(msgArray[msgArray.length - 1]) && currentChar == wordCharArray[wordCharArray.length - 1]) {
-                                        getVideosPaths.afterGetVideosPaths(videosPath);
-                                    }
 
-                                }
-                            }, character, videoNumber);
-                        }
+            DatabaseQueries.downloadFramesOfWord((isFound, framesFolderPath) -> {
+                if (isFound) {
+
+                    videosPath.add(framesFolderPath);
+
+                    if (currentWord.equals(msgArray[msgArray.length - 1])) {
+                        getVideosPaths.afterGetVideosPaths(videosPath);
                     }
 
-                }
-            }, word, videoNumber);
+                } else {
 
-            videoNumber++;
+                    char[] wordCharArray = word.toCharArray();
+
+                    for (char currentChar : wordCharArray) {
+
+                        String character = currentChar + "";
+
+                        DatabaseQueries.downloadFramesOfWord((isFound1, framesFolderPath1) -> {
+
+                            if (isFound1)
+                                videosPath.add(framesFolderPath1);
+                            else
+                                Log.v(TAG, "not recognized word");
+
+
+                            if (currentWord.equals(msgArray[msgArray.length - 1]) && currentChar == wordCharArray[wordCharArray.length - 1]) {
+                                getVideosPaths.afterGetVideosPaths(videosPath);
+                            }
+
+                        }, character);
+                    }
+                }
+
+            }, word);
+
         }
     }
 
@@ -69,22 +72,21 @@ public class ConvertTextToVideo {
 
         AnimationDrawable animationDrawable = new AnimationDrawable();
 
-        downloadVideos(new GetVideosPaths() {
-            @Override
-            public void afterGetVideosPaths(ArrayList<String> videosPath) {
-                Log.v(TAG, "videosPath: " + videosPath.toString());
+        downloadVideos(videosPath -> {
 
-                for (String currentFolderPath : videosPath) {
-                    File directory = new File(currentFolderPath);
-                    File[] files = directory.listFiles();
-                    Log.d("Files", "Size: " + files.length);
-                    for (File currentFile : files) {
-                        Log.d("Files", "FileName:" + currentFile.getName());
-                        animationDrawable.addFrame(Drawable.createFromPath(currentFile.getPath()), 50);
-                    }
+
+            for (String currentFolderPath : videosPath) {
+
+                File directory = new File(currentFolderPath);
+                File[] files = directory.listFiles();
+
+                Log.d("Files", "Size: " + files.length);
+                for (File currentFile : files) {
+                    Log.d("Files", "FileName:" + currentFile.getName());
+                    animationDrawable.addFrame(Drawable.createFromPath(currentFile.getPath()), 50);
                 }
-                converted.afterConverted(animationDrawable);
             }
+            converted.afterConverted(animationDrawable);
         });
 
     }

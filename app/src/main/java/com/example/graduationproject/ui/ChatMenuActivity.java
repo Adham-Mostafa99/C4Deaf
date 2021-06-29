@@ -317,10 +317,10 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     public void onClickItem(int position) {
         String friendId = userFriends.get(position).getUserId();
         if (currentUserInfo != null) {
-            if (currentUserInfo.getUserState().equals("Normal"))
+            if (currentUserInfo.getUserState().equals("normal"))
                 startActivity(new Intent(this, ChatPageNormal.class)
                         .putExtra(FRIEND_ID_INTENT, friendId));
-            else
+            else if(currentUserInfo.getUserState().equals("deaf"))
                 startActivity(new Intent(this, ChatPageDeaf.class)
                         .putExtra(FRIEND_ID_INTENT, friendId));
         } else {
