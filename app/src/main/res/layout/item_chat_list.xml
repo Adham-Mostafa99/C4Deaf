@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+
+    >
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/user_photo"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:layout_centerVertical="true"
+        app:civ_border_width="0.50dp"
+        android:src="@drawable/default_photo" />
+
+    <LinearLayout
+        android:id="@+id/userMenuChat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/user_photo"
+        android:orientation="vertical"
+        android:layout_marginStart="12dp"
+       android:paddingVertical="9dp">
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/andlso"
+            android:text="@string/user_name"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+             />
+
+        <TextView
+            android:id="@+id/user_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/catamaran_thin"
+            android:text="@string/last_message"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="normal"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/message_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/userMenuChat"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="49dp"
+        android:text="@string/time"
+        android:textSize="18sp"
+        android:textColor="@color/white"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/white"
+        android:layout_marginStart="77dp"
+        android:layout_below="@id/userMenuChat"
+        android:layout_marginTop="6dp"/>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="21dp"
+        android:layout_below="@id/userMenuChat"/>
+
+
+</RelativeLayout>

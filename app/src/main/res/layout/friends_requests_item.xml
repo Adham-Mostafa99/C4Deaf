@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginEnd="15dp"
+    android:layout_marginStart="17dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/friend_request_item_photo"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:layout_gravity="center"
+        android:src="@drawable/default_photo" />
+
+    <TextView
+        android:id="@+id/friend_request_item_display_name"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="8dp"
+        android:text="user name"
+        android:textColor="@color/white"
+        android:textAllCaps="false"
+        android:textSize="18sp"/>
+
+    <!--    <de.hdodenhof.circleimageview.CircleImageView-->
+    <!--        android:id="@+id/accept_friend_request"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_gravity="center"-->
+    <!--        android:layout_marginLeft="64dp"-->
+    <!--        android:src="@drawable/accept"-->
+    <!--        android:layout_marginStart="64dp" />-->
+
+    <!--    <de.hdodenhof.circleimageview.CircleImageView-->
+    <!--        android:id="@+id/ignore_friend_request"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_gravity="center"-->
+    <!--        android:layout_marginLeft="32dp"-->
+    <!--        android:src="@drawable/ignore"-->
+    <!--        android:layout_marginStart="32dp" />-->
+
+
+    <Button
+        android:id="@+id/accept_friend_request"
+        android:layout_width="72dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="62dp"
+        android:background="@drawable/sign_in_button_backgroud"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/andlso"
+        android:text="Accept"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/ignore_friend_request"
+        android:layout_width="72dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/border_btn_sign_in_gft"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/andlso"
+        android:text="Remove"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+
+    </LinearLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/white"
+        android:layout_marginStart="77dp"/>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="21dp"/>
+</LinearLayout>
