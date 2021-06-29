@@ -3,9 +3,11 @@ package com.example.graduationproject.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -85,6 +87,7 @@ public class OpenCvActivity extends AppCompatActivity implements CameraBridgeVie
 
         setContentView(R.layout.activity_open_cv);
         ButterKnife.bind(this);
+        hideSystemUI();
 
         javaCameraView = (JavaCameraView) findViewById(R.id.camera_view);
         javaCameraView.setVisibility(SurfaceView.VISIBLE);
@@ -145,6 +148,7 @@ public class OpenCvActivity extends AppCompatActivity implements CameraBridgeVie
     @Override
     protected void onResume() {
         super.onResume();
+        hideSystemUI();
         if (OpenCVLoader.initDebug()) {
             Log.d(TAG, "opencv successfully");
             try {
@@ -161,5 +165,25 @@ public class OpenCvActivity extends AppCompatActivity implements CameraBridgeVie
     @Override
     public void statement(String msg) {
         statement = msg;
+    }
+
+    private void hideSystemUI() {
+        Window window = this.getWindow();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // API 30
+            window.setDecorFitsSystemWindows(false);
+        } else {
+
+            this.getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+
+        }
+
+
     }
 }
