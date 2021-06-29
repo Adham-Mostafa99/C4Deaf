@@ -96,7 +96,11 @@ public abstract class BaseLoaderCallback implements LoaderCallbackInterface {
                 {
                     public void onClick(DialogInterface dialog, int which)
                     {
-                        callback.install();
+                        try {
+                            callback.install();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
 
@@ -104,7 +108,11 @@ public abstract class BaseLoaderCallback implements LoaderCallbackInterface {
 
                     public void onClick(DialogInterface dialog, int which)
                     {
-                        callback.cancel();
+                        try {
+                            callback.cancel();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
 
@@ -118,12 +126,20 @@ public abstract class BaseLoaderCallback implements LoaderCallbackInterface {
                 WaitMessage.setCancelable(false); // This blocks the 'BACK' button
                 WaitMessage.setButton(AlertDialog.BUTTON_POSITIVE, "Wait", new OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        callback.wait_install();
+                        try {
+                            callback.wait_install();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
                 WaitMessage.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit", new OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        callback.cancel();
+                        try {
+                            callback.cancel();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
 

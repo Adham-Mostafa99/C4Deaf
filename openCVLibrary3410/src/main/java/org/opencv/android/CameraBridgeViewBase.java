@@ -386,7 +386,7 @@ public abstract class CameraBridgeViewBase extends SurfaceView implements Surfac
      * then displayed on the screen.
      * @param frame - the current frame to be delivered
      */
-    protected void deliverAndDrawFrame(CvCameraViewFrame frame) {
+    protected void deliverAndDrawFrame(CvCameraViewFrame frame) throws IOException {
         Mat modified;
 
         if (mListener != null) {

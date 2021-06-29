@@ -1,5 +1,6 @@
 package org.opencv.android;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
@@ -184,7 +185,11 @@ public class JavaCamera2View extends CameraBridgeViewBase {
                     assert (image.getFormat() == mPreviewFormat);
 
                     JavaCamera2Frame tempFrame = new JavaCamera2Frame(image);
-                    deliverAndDrawFrame(tempFrame);
+                    try {
+                        deliverAndDrawFrame(tempFrame);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     tempFrame.release();
                     image.close();
                 }

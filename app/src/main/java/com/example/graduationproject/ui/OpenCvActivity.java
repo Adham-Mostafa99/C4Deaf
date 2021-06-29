@@ -30,7 +30,7 @@ import butterknife.ButterKnife;
 public class OpenCvActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2,
         HandRecognition.Statement {
 
-    private static String TAG = "OpenCvActivity";
+    private static final String TAG = "OpenCvActivity";
     private Activity activity = this;
 
     @BindView(R.id.camera_view)
@@ -39,7 +39,6 @@ public class OpenCvActivity extends AppCompatActivity implements CameraBridgeVie
     Button finish;
 
     Mat mRGBA, mGray;
-    Mat mRgbaFiltered;
 
     HandRecognition handRecognition;
     String statement;
@@ -79,6 +78,7 @@ public class OpenCvActivity extends AppCompatActivity implements CameraBridgeVie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -104,7 +104,6 @@ public class OpenCvActivity extends AppCompatActivity implements CameraBridgeVie
     public void onCameraViewStarted(int width, int height) {
         mRGBA = new Mat(height, width, CvType.CV_8UC4);
         mGray = new Mat(height, width, CvType.CV_8UC1);
-        mRgbaFiltered = new Mat(height, width, CvType.CV_8UC4);
 
     }
 
@@ -119,7 +118,7 @@ public class OpenCvActivity extends AppCompatActivity implements CameraBridgeVie
         mRGBA = inputFrame.rgba();
         mGray = inputFrame.gray();
 
-        mRGBA = handRecognition.recognizeImage(mRGBA, mRgbaFiltered);
+        mRGBA = handRecognition.recognizeImage(mRGBA);
 
         return mRGBA;
 

@@ -218,46 +218,29 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
             }
 
         });
-        btnEmoji.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btnEmoji.setOnClickListener(v -> {
 
-            }
         });
 
-        //TODO make animation when clicl button
-        btnKeyboard.setOnClickListener(new View.OnClickListener() {
+        //TODO make animation when click button
+        btnKeyboard.setOnClickListener(v -> keyboardManager.changeKeyboard(new KeyboardManager.OnHidePrimaryKeyboard() {
             @Override
-            public void onClick(View v) {
-
-                keyboardManager.changeKeyboard(new KeyboardManager.OnHidePrimaryKeyboard() {
-                    @Override
-                    public void afterHidePrimaryKeyboard() {
-                        ConvertIconToText convertIconToText = new ConvertIconToText(getApplicationContext(), onPressKey,
-                                keyA, keyB, keyC, keyD, keyE, keyF, keyG, keyH, keyI, keyJ, keyK, keyL, keyM, keyN
-                                , keyO, keyP, keyQ, keyR, keyS, keyT, keyU, keyV, keyW, keyX, keyY, keyZ, keySpace, keyBackspace);
-                        convertIconToText.initWithClick();
-                    }
-                });
+            public void afterHidePrimaryKeyboard() {
+                ConvertIconToText convertIconToText = new ConvertIconToText(getApplicationContext(), onPressKey,
+                        keyA, keyB, keyC, keyD, keyE, keyF, keyG, keyH, keyI, keyJ, keyK, keyL, keyM, keyN
+                        , keyO, keyP, keyQ, keyR, keyS, keyT, keyU, keyV, keyW, keyX, keyY, keyZ, keySpace, keyBackspace);
+                convertIconToText.initWithClick();
             }
+        }));
+
+        btnSend.setOnClickListener(v -> {
+            String msgText = textSend.getText().toString().trim();
+            textSend.setText("");
+            if (!msgText.isEmpty() && isFriendInfoUpdated)
+                sendTextMsg(msgText, getTimeNow());
         });
 
-        btnSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String msgText = textSend.getText().toString().trim();
-                textSend.setText("");
-                if (!msgText.isEmpty() && isFriendInfoUpdated)
-                    sendTextMsg(msgText, getTimeNow());
-            }
-        });
-
-        arrowBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        arrowBack.setOnClickListener(v -> onBackPressed());
 
     }
 
@@ -280,28 +263,25 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
 
 
     public void sendRecordVideo(DeafChat msg) {
-        DatabaseQueries.insertRecordVideoToStorage(new DatabaseQueries.InsertRecordVideoToStorage() {
-            @Override
-            public void afterInsertRecordVideoToStorage(String recordName, String downloadRecordAudioPathUrl) {
+        DatabaseQueries.insertRecordVideoToStorage((recordName, downloadRecordAudioPathUrl) -> {
 
-                String senderId = currentUser.getUid();
+            String senderId = currentUser.getUid();
 
-                HashMap<String, Object> textMsg = new HashMap<>();
-                textMsg.put("sender", senderId);
-                textMsg.put("recordName", recordName);
-                textMsg.put("msg", downloadRecordAudioPathUrl);
-                textMsg.put("msgDuration", msg.getMediaMsgTime());
-                textMsg.put("msgTime", getTimeNow());
-                textMsg.put("msgType", "record_video");
+            HashMap<String, Object> textMsg = new HashMap<>();
+            textMsg.put("sender", senderId);
+            textMsg.put("recordName", recordName);
+            textMsg.put("msg", downloadRecordAudioPathUrl);
+            textMsg.put("msgDuration", msg.getMediaMsgTime());
+            textMsg.put("msgTime", getTimeNow());
+            textMsg.put("msgType", "record_video");
 
 
-                //add current user msg
-                DatabaseQueries.sendMsg(sendMsg, DB_SEND_RECORD_VIDEO_MSG_USER_ID, textMsg, currentUser.getUid(), friendId);
+            //add current user msg
+            DatabaseQueries.sendMsg(sendMsg, DB_SEND_RECORD_VIDEO_MSG_USER_ID, textMsg, currentUser.getUid(), friendId);
 
-                //add the msg in other user
-                DatabaseQueries.sendMsg(sendMsg, DB_SEND_RECORD_VIDEO_MSG_FRIEND_ID, textMsg, friendId, currentUser.getUid());
+            //add the msg in other user
+            DatabaseQueries.sendMsg(sendMsg, DB_SEND_RECORD_VIDEO_MSG_FRIEND_ID, textMsg, friendId, currentUser.getUid());
 
-            }
         }, fileName);
     }
 

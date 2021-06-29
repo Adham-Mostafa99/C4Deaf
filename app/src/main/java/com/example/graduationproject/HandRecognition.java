@@ -72,7 +72,7 @@ public class HandRecognition {
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOfSet, declaredLength);
     }
 
-    public Mat recognizeImage(Mat mat_image, Mat mRgbaFiltered) throws IOException {
+    public Mat recognizeImage(Mat mat_image) throws IOException {
 
         Core.flip(mat_image.t(), mat_image, 1);
 

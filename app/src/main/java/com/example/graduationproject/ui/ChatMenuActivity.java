@@ -394,10 +394,10 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         //TODO make animation when click
         //open user
         String friendId = newMsgFriends.get(position).getUserId();
-        if (currentUserInfo.getUserState().equals("Normal"))
+        if (currentUserInfo.getUserState().equals("normal"))
             startActivity(new Intent(this, ChatPageNormal.class)
                     .putExtra(FRIEND_ID_INTENT, friendId));
-        else
+        else if(currentUserInfo.getUserState().equals("deaf"))
             startActivity(new Intent(this, ChatPageDeaf.class)
                     .putExtra(FRIEND_ID_INTENT, friendId));
         popupWindow.dismiss();
@@ -411,12 +411,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
                 if (!friendsId.isEmpty()) {
 
                     for (String friendId : friendsId) {
-                        DatabaseQueries.getFriendInfo(new DatabaseQueries.GetFriendInfo() {
-                            @Override
-                            public void afterGetFriendInfo(UserPublicInfo friendInfo, int id) {
-                                insertFriendToAdapter(friendInfo);
-                            }
-                        }, 0, friendId);
+                        DatabaseQueries.getFriendInfo((friendInfo, id1) -> insertFriendToAdapter(friendInfo), 0, friendId);
                     }
                     noFriendsTextMsg.setVisibility(View.GONE);
                     newMsgFriendList.setVisibility(View.VISIBLE);
