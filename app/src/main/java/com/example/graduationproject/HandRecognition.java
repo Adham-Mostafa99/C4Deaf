@@ -74,15 +74,15 @@ public class HandRecognition {
 
     public Mat recognizeImage(Mat mat_image) throws IOException {
 
-        Core.flip(mat_image.t(), mat_image, 1);
+//        Core.flip(mat_image.t(), mat_image, 1);
 
         Mat grayScaleImage = new Mat();
 
         Imgproc.cvtColor(mat_image, grayScaleImage, Imgproc.COLOR_RGBA2BGR);
 
-        int point1X = 500;
+        int point1X = 1000;
         int point1Y = 450;
-        int point2X = 50;
+        int point2X = 350;
         int point2Y = 50;
         int width = point1X - point2X;
         int height = point1Y - point2Y;
@@ -92,7 +92,7 @@ public class HandRecognition {
         Imgproc.rectangle(mat_image,
                 new Point(point1X, point1Y),
                 new Point(point2X, point2Y),
-                new Scalar(0, 0, 255), 2);
+                new Scalar(0, 255, 0), 2);
 
         //for clipping
         Rect roi = new Rect(point2X, point2Y
@@ -114,7 +114,7 @@ public class HandRecognition {
         if (isFree)
             runModel2(byteBuffer, mat_image);
 
-        Core.flip(mat_image.t(), mat_image, 0);
+//        Core.flip(mat_image.t(), mat_image, 0);
 
         return mat_image;
     }

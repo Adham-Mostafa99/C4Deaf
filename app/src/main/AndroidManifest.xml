@@ -22,7 +22,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.OpenCvActivity"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:theme="@style/FullscreenTheme"/>
         <activity android:name=".ui.SentRequests" />
         <activity android:name=".ui.AboutActivity" />
         <activity android:name=".ui.LogIn_or_SignUp" />
