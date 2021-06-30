@@ -2,29 +2,46 @@ package com.example.graduationproject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.gpu.GpuDelegate;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
+import static org.opencv.core.Core.inRange;
+import static org.opencv.imgproc.Imgproc.COLOR_BGR2GRAY;
+import static org.opencv.imgproc.Imgproc.COLOR_BGR2HSV;
+import static org.opencv.imgproc.Imgproc.THRESH_BINARY;
 
 public class HandRecognition {
 
@@ -37,11 +54,16 @@ public class HandRecognition {
     boolean isFree = true;
     Activity activity;
     Statement statementInterface;
+    Button button;
 
-    public HandRecognition(Statement statementInterface, AssetManager assetManager, Context context, Activity activity, String modelPath, int input_size) throws IOException {
+    double w = 0.5;
+    Mat background = null;
+
+    public HandRecognition(Button button, Statement statementInterface, AssetManager assetManager, Context context, Activity activity, String modelPath, int input_size) throws IOException {
         INPUT_SIZE = input_size;
         this.context = context;
         this.activity = activity;
+        this.button = button;
         this.statementInterface = statementInterface;
 
         statementString = new StringBuilder();
@@ -100,24 +122,153 @@ public class HandRecognition {
 
         Mat cropped_rgb = new Mat(mat_image, roi);
 
+        Mat finalMat = mask(cropped_rgb);
+
 
         Bitmap bitmap = null;
-        bitmap = Bitmap.createBitmap(cropped_rgb.cols(), cropped_rgb.rows(), Bitmap.Config.ARGB_8888);
+        bitmap = Bitmap.createBitmap(finalMat.cols(), finalMat.rows(), Bitmap.Config.ARGB_8888);
 
-        Utils.matToBitmap(cropped_rgb, bitmap);
+        Utils.matToBitmap(finalMat, bitmap);
 
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 200, 200, false);
 
 
-        ByteBuffer byteBuffer = convertBitmapToBytebuffer(scaledBitmap);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(new Intent(activity, TestBitmap.class)
+                        .putExtra("BitmapImage", scaledBitmap)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            }
+        });
 
-        if (isFree)
-            runModel2(byteBuffer, mat_image);
+
+//        ByteBuffer byteBuffer = convertBitmapToBytebuffer(scaledBitmap);
+//
+//        if (isFree)
+//            runModel2(byteBuffer, mat_image);
 
 //        Core.flip(mat_image.t(), mat_image, 0);
 
         return mat_image;
     }
+
+    public Mat mask(Mat mat) {
+
+//        Mat gray = new Mat();
+//
+//        Imgproc.cvtColor(mat, gray, COLOR_BGR2GRAY);
+//        Imgproc.GaussianBlur(gray, gray, new Size(5, 5), 0);
+
+        Mat hsv = new Mat();
+        Imgproc.cvtColor(mat, hsv, COLOR_BGR2HSV);
+
+
+        Scalar low = new Scalar(0, 49, 0);
+        Scalar high = new Scalar(255, 225, 105);
+
+        Mat mask = new Mat(mat.rows(), mat.cols(), CvType.CV_8U, Scalar.all(0));
+
+        inRange(mat, low, high, mask);
+//
+//        Mat kernel = new Mat(4, 4, CvType.CV_32F) {
+//            {
+//                put(0, 0, 1);
+//                put(0, 1, 1);
+//                put(0, 2, 1);
+//                put(0, 3, 1);
+//
+//                put(1, 0, 1);
+//                put(1, 1, 1);
+//                put(1, 2, 1);
+//                put(1, 3, 1);
+//
+//                put(2, 0, 1);
+//                put(2, 1, 1);
+//                put(2, 2, 1);
+//                put(2, 3, 1);
+//
+//                put(3, 0, 1);
+//                put(3, 1, 1);
+//                put(3, 2, 1);
+//                put(3, 3, 1);
+//
+//
+//            }
+//        };
+//
+//
+//        Mat dilation = new Mat();
+//        Imgproc.dilate(mask, dilation, kernel, new Point(-1, -1), 2);
+
+
+//        Core.bitwise_and();
+
+//                Imgproc.threshold(mat, mat, 25, 255, THRESH_BINARY);
+
+
+        return mask;
+
+    }
+
+//    Mat putMask(Mat src, Point center, Size face_size) {
+//
+//        //mask : masque chargé depuis l'image
+//        Mat mask_resized = new Mat(); //masque resizé
+//        src_roi = new Mat(); //ROI du visage croppé depuis la preview
+//        roi_gray = new Mat();
+//
+//
+//        Imgproc.resize(mask, mask_resized, face_size);
+//
+//        // ROI selection
+//        roi = new Rect((int) (center.x - face_size.width / 2), (int) (center.y - face_size.height / 2), (int) face_size.width, (int) face_size.height);
+//        //Rect roi = new Rect(10, 10, (int) face_size.width, (int) face_size.height);
+//
+//        src.submat(roi).copyTo(src_roi);
+//
+//        Log.e(TAG, "MASK SRC1 :" + src_roi.size());
+//
+//        // to make the white region transparent
+//        Mat mask_grey = new Mat(); //greymask
+//        roi_rgb = new Mat();
+//        Imgproc.cvtColor(mask_resized, mask_grey, Imgproc.COLOR_BGRA2GRAY);
+//        Imgproc.threshold(mask_grey, mask_grey, 230, 255, Imgproc.THRESH_BINARY_INV);
+//
+//        ArrayList<Mat> maskChannels = new ArrayList<>(4);
+//        ArrayList<Mat> result_mask = new ArrayList<>(4);
+//        result_mask.add(new Mat());
+//        result_mask.add(new Mat());
+//        result_mask.add(new Mat());
+//        result_mask.add(new Mat());
+//
+//        Core.split(mask_resized, maskChannels);
+//
+//        Core.bitwise_and(maskChannels.get(0), mask_grey, result_mask.get(0));
+//        Core.bitwise_and(maskChannels.get(1), mask_grey, result_mask.get(1));
+//        Core.bitwise_and(maskChannels.get(2), mask_grey, result_mask.get(2));
+//        Core.bitwise_and(maskChannels.get(3), mask_grey, result_mask.get(3));
+//
+//        Core.merge(result_mask, roi_gray);
+//
+//        Core.bitwise_not(mask_grey, mask_grey);
+//
+//        ArrayList<Mat> srcChannels = new ArrayList<>(4);
+//        Core.split(src_roi, srcChannels);
+//        Core.bitwise_and(srcChannels.get(0), mask_grey, result_mask.get(0));
+//        Core.bitwise_and(srcChannels.get(1), mask_grey, result_mask.get(1));
+//        Core.bitwise_and(srcChannels.get(2), mask_grey, result_mask.get(2));
+//        Core.bitwise_and(srcChannels.get(3), mask_grey, result_mask.get(3));
+//
+//        Core.merge(result_mask, roi_rgb);
+//
+//        Core.addWeighted(roi_gray, 1, roi_rgb, 1, 0, roi_rgb);
+//
+//        roi_rgb.copyTo(new Mat(src, roi));
+//
+//        return src;
+//    }
+
 
     private ByteBuffer convertBitmapToBytebuffer(Bitmap scaledBitmap) {
         ByteBuffer byteBuffer;
@@ -294,7 +445,7 @@ public class HandRecognition {
         return val;
     }
 
-   public interface Statement {
+    public interface Statement {
         void statement(String msg);
     }
 
