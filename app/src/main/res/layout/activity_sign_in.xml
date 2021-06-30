@@ -258,7 +258,8 @@
                     android:text=" Sign Up"
                     android:textColor="@android:color/white"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    />
             </LinearLayout>
         </LinearLayout>
 

@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="78dp"
+        android:layout_height="65dp"
         android:layout_gravity="center_vertical"
         android:background="@drawable/toolbar"
         >
@@ -48,13 +48,14 @@
         android:layout_height="match_parent"
         android:layout_below="@id/bar_layout"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
        >
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/friends_sent_requests_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="17dp"
+
                 />
 
 

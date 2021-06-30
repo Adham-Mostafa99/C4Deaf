@@ -57,9 +57,9 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="22dp"
             android:alpha="0.5"
-            android:hint="Search userName... "
+            android:hint="name... "
             android:textSize="18sp"
-            android:textColor="@color/white"/>
+            android:textColor="@color/black"/>
 
         <Button
             android:id="@+id/search_friends"

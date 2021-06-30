@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context=".ui.ChatMenuActivity"
-    tools:openDrawer="start">
+    tools:openDrawer="">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -19,8 +19,9 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/top_bar"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_marginTop="15dp"
+            android:layout_height="65dp"
+            android:paddingVertical="10dp"
+            android:background="@drawable/toolbar"
             >
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -65,7 +66,7 @@
             android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:alpha="0.5"
             android:background="@drawable/edit_text_search"
             android:orientation="horizontal">
@@ -76,9 +77,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="22dp"
                 android:alpha="0.5"
-                android:hint="Search userName... "
+                android:hint="name... "
                 android:textSize="18sp"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textAllCaps="false"/>
 
             <Button
@@ -106,6 +107,7 @@
             android:layout_height="match_parent"
             android:layout_below="@id/search_chat_friends"
             android:layout_centerHorizontal="true"
+            android:layout_marginTop="11dp"
             >
 
             <androidx.recyclerview.widget.RecyclerView

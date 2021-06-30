@@ -16,9 +16,9 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bar_layout"
             android:layout_width="match_parent"
-            android:layout_height="78dp"
+            android:layout_height="65dp"
             android:layout_gravity="center_vertical"
-            android:background="@drawable/bar_layout_background">
+            android:background="@drawable/toolbar">
 
             <ImageView
                 android:id="@+id/arrow_back"
@@ -142,7 +142,7 @@ There will be no problem if you\'re using sign language or text language because
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="For any technical peoblems or to get any additional information about how to use our app, please contact the following email:\n adham.dawey@gmail.com"
+                android:text="For any technical problems or to get any additional information about how to use our app, please contact the following email:\n adham.dawey@gmail.com"
                 android:textSize="18dp"
                 android:textColor="@color/white"
                 android:fontFamily="@font/andlso"
