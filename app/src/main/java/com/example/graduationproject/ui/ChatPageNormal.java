@@ -35,6 +35,7 @@ import com.example.graduationproject.models.UserMenuChat;
 import com.example.graduationproject.models.UserPublicInfo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.vanniktech.emoji.EmojiPopup;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -123,6 +124,18 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
         initFirebase();
         init();
 
+        final EmojiPopup emojiPopup = EmojiPopup.Builder
+                .fromRootView(findViewById(R.id.chat_view))
+                .build(textSend);
+
+        btnEmoji.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                emojiPopup.toggle();
+            }
+        });
+
+
         DatabaseQueries.readMsg(this, DB_READ_MSG_ID, friendId);
 
         arrowBack.setOnClickListener(new View.OnClickListener() {
@@ -136,7 +149,6 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
             @Override
             public void onStart() {
                 //Start Recording..
-
 
 
                 if (friendInfo.getUserState().equals("Normal")) {
@@ -203,13 +215,6 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
                 //When the record time is less than One Second
                 showInputText(editTextSend);
                 Log.d("RecordView", "onLessThanSecond");
-            }
-        });
-
-        btnEmoji.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
             }
         });
 

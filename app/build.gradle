@@ -176,4 +176,9 @@ dependencies {
     implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0-rc2'
 
 
+    //imoj
+    implementation 'com.vanniktech:emoji-material:0.7.0'
+    implementation 'com.vanniktech:emoji-ios:0.7.0'
+
+
 }

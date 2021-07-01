@@ -404,16 +404,23 @@
             android:layout_weight="1"
             android:hint="type here...." />
 
-        <ImageView
-            android:id="@+id/btn_send"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:background="@drawable/send_btn_backgroud"
-            android:padding="8dp"
-            android:src="@drawable/send_icon" />
 
     </LinearLayout>
+
+
+    <ImageView
+        android:id="@+id/btn_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/keyboard"
+        android:layout_alignParentEnd="true"
+        android:visibility="invisible"
+        android:layout_marginVertical="8dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/btn_video_record"
+        android:contentDescription="message_record"
+        android:scaleType="centerInside"
+        android:src="@drawable/send_icon" />
 
     <ImageView
         android:id="@+id/normal_record_button"

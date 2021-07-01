@@ -8,6 +8,9 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -40,6 +43,7 @@ import com.example.graduationproject.models.UserMenuChat;
 import com.example.graduationproject.models.UserPublicInfo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.vanniktech.emoji.EmojiPopup;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -197,6 +201,17 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
         //initialize objects
         init();
 
+        final EmojiPopup emojiPopup = EmojiPopup.Builder
+                .fromRootView(findViewById(R.id.chat_view_deaf))
+                .build(textSend);
+
+        btnEmoji.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                emojiPopup.toggle();
+            }
+        });
+
         DatabaseQueries.readMsg(this, DB_READ_MSG_ID, friendId);
 
         deafRecord.setOnClickListener(v -> {
@@ -214,10 +229,6 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
                 intent.putExtra("file name", fileName);
                 startActivityForResult(intent, OPEN_RECORD_VIDEO_REQUEST_CODE);
             }
-        });
-        btnEmoji.setOnClickListener(v -> {
-
-            //TODO add emoj
         });
 
         //TODO make animation when click button
@@ -238,9 +249,47 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
                 sendTextMsg(msgText, getTimeNow());
         });
 
+        textSend.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (TextUtils.isEmpty(s.toString()))
+                    showBtnRecord();
+                else
+                    showBtnSend();
+
+
+            }
+        });
+
         arrowBack.setOnClickListener(v -> onBackPressed());
 
     }
+
+    public void showBtnSend() {
+        deafRecord.setVisibility(View.INVISIBLE);
+        deafRecord.setClickable(false);
+        btnSend.setVisibility(View.VISIBLE);
+        btnSend.setClickable(true);
+
+    }
+
+    public void showBtnRecord() {
+        btnSend.setVisibility(View.INVISIBLE);
+        btnSend.setClickable(false);
+        deafRecord.setVisibility(View.VISIBLE);
+        deafRecord.setClickable(true);
+    }
+
 
     public void sendTextMsg(String msg, String msgTime) {
         String senderId = currentUser.getUid();
