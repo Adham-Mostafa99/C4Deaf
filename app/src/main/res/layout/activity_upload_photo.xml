@@ -41,16 +41,17 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="37dp"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:layout_marginTop="196dp"
+        android:layout_marginTop="180dp"
         android:background="@drawable/text_background"
         android:fontFamily="@font/andlso"
         android:gravity="center"
+        android:textStyle="bold"
         android:text="You can choose from your gallery or\n take a new photo with your camera phone "
         android:textColor="@android:color/white"
-        android:textSize="10sp"/>
+        android:textSize="18sp"/>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/photo"
@@ -67,7 +68,7 @@
         android:layout_height="250dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="307dp"
-        app:background_progressbar_color="#99FF9D"
+        app:background_progressbar_color="#EFFFEF"
         app:background_progressbar_width="15dp"
         app:progressbar_color="#00C90F"
         app:progressbar_width="15dp" />
