@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -33,7 +34,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class FriendsRequestsActivity extends AppCompatActivity implements FriendsRequestsAdapter.OnItemClick
         , FriendsRequestsAdapter.OnAcceptFriend, FriendsRequestsAdapter.OnIgnoreFriend, DatabaseQueries.GetFriendRequestList
         , SwipeRefreshLayout.OnRefreshListener {
-
+    @BindView(R.id.arrow_back)
+    ImageView backButton;
     @BindView(R.id.friends_requests_list)
     RecyclerView friendsRequestsList;
     @BindView(R.id.request_friends_refresh_swipe)
@@ -53,6 +55,13 @@ public class FriendsRequestsActivity extends AppCompatActivity implements Friend
         ButterKnife.bind(this);
         init();
         initAdapter();
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         DatabaseQueries.getFriendRequestList(this, DB_GetFriendRequestList);
     }

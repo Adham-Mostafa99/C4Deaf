@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
-import com.example.graduationproject.Converter;
 import com.example.graduationproject.R;
 import com.example.graduationproject.adapters.ChatListAdapter;
 import com.example.graduationproject.adapters.UserFriendsAdapter;
@@ -126,7 +125,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
                         startActivity(new Intent(getApplicationContext(), FriendsRequestsActivity.class));
                         break;
                     case R.id.sent_requests:
-                        startActivity(new Intent(getApplicationContext(), SentRequests.class));
+                        startActivity(new Intent(getApplicationContext(), SentRequestsActivity.class));
                         break;
                     case R.id.account_setting:
                         startActivity(new Intent(getApplicationContext(), ProfileActivity.class));

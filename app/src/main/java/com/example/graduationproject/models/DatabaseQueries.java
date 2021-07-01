@@ -452,6 +452,34 @@ public class DatabaseQueries {
                 });
     }
 
+    public static void getFriendSentList(GetFriendSentList friendSentList) {
+        ArrayList<String> requestListIds = new ArrayList<>();
+
+        DatabaseReference myRefUser = FirebaseDatabase.getInstance()
+                .getReference("users/" + currentUser().getUid() + "/" + REALTIME_ADD_FRIEND_REQUEST_LIST);
+
+        myRefUser.get()
+                .addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+                    @Override
+                    public void onSuccess(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            String currentRequestId = ((HashMap<String, Object>) snapshot.getValue()).get("id").toString();
+                            requestListIds.add(currentRequestId);
+                        }
+                        if (!requestListIds.isEmpty())
+                            friendSentList.afterGetFriendSentList(requestListIds);
+                        else
+                            friendSentList.afterGetFriendSentList(null);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+    }
+
     public static void getCurrentUserInfo(GetCurrentUserInfo getCurrentUserInfo, String userId, int id) {
 
         String currentUserPath = "users" + "/" + userId;
@@ -906,6 +934,10 @@ public class DatabaseQueries {
 
     public interface GetFriendRequestList {
         void afterGetFriendRequestList(ArrayList<String> friendsListId, int id);
+    }
+
+    public interface GetFriendSentList {
+        void afterGetFriendSentList(ArrayList<String> friendsListId);
     }
 
     public interface InsertPhotoToStorage {

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="17.7dp"
+    android:paddingVertical="4dp">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/add_friend_item_photo"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/default_photo" />
+
+    <TextView
+        android:id="@+id/add_friend_display_name"
+        android:layout_width="98dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="4dp"
+        android:layout_toEndOf="@id/add_friend_item_photo"
+        android:text="user name"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+
+
+    <Button
+        android:id="@+id/cancel_friend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/cancel_request_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/andlso"
+        android:paddingHorizontal="4dp"
+        android:text="Cancel Request"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        />
+
+
+</RelativeLayout>

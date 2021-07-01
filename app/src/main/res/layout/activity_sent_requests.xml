@@ -6,15 +6,14 @@
     android:layout_height="match_parent"
     android:background="@drawable/chat_page_back"
     android:orientation="vertical"
-    tools:context=".ui.SentRequests">
+    tools:context=".ui.SentRequestsActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bar_layout"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_gravity="center_vertical"
-        android:background="@drawable/toolbar"
-        >
+        android:background="@drawable/toolbar">
 
         <ImageView
             android:id="@+id/arrow_back"
@@ -42,20 +41,20 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/sent_request_friends_refresh_swipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/bar_layout"
-        android:layout_centerHorizontal="true"
-       >
+        android:layout_centerHorizontal="true">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/friends_sent_requests_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/friends_sent_requests_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
 
-                />
+            />
 
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
