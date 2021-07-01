@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.graduationproject.Converter;
 import com.example.graduationproject.R;
 import com.example.graduationproject.models.DatabaseQueries;
 import com.example.graduationproject.models.UserPrivateInfo;
@@ -36,12 +37,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -193,28 +197,52 @@ public class ProfileActivity extends AppCompatActivity {
         deleteAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseReference myRefMenuChat = FirebaseDatabase.getInstance().
-                        getReference("users/" + currentUser.getUid());
-
-                myRefMenuChat.removeValue();
-                FirebaseFirestore.getInstance().document("users/" + currentUser.getUid()).delete();
-
-                currentUser.delete()
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.document("users/" + currentUser.getUid())
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(getApplicationContext(), "Account Deleted", Toast.LENGTH_SHORT).show();
-                                    finish();
-                                    startActivity(new Intent(getApplicationContext(), LogIn_or_SignUp.class));
-                                } else {
-                                    Log.d(TAG, task.getException().getMessage());
-                                }
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                HashMap<String, Object> currentUserInfo = (HashMap<String, Object>) documentSnapshot.get("private-info");
+                                UserPrivateInfo privateInfo = Converter.ConvertMapToUserPrivateInfo(currentUserInfo);
+
+
+                                FirebaseDatabase.getInstance().getReference("users/" + currentUser.getUid()).removeValue();
+
+                                FirebaseFirestore.getInstance().document("users/" + currentUser.getUid()).delete();
+
+                                AuthCredential credential = EmailAuthProvider
+                                        .getCredential(privateInfo.getUserEmail(), privateInfo.getUserPassword());
+
+                                currentUser.reauthenticate(credential)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                Log.d(TAG, "User re-authenticated.");
+
+                                                currentUser.delete()
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if (task.isSuccessful()) {
+                                                                    Toast.makeText(getApplicationContext(), "Account Deleted", Toast.LENGTH_SHORT).show();
+                                                                    finish();
+                                                                    startActivity(new Intent(getApplicationContext(), LogIn_or_SignUp.class));
+                                                                } else {
+                                                                    Log.d(TAG, task.getException().getMessage());
+                                                                }
+                                                            }
+                                                        });
+                                            }
+                                        });
                             }
                         });
-
             }
         });
+    }
+
+    public void getPrivateInformation() {
+
     }
 
     //get Permission from user to use the camera
