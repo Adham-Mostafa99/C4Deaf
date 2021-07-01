@@ -92,6 +92,18 @@ public class UserPublicInfo implements Parcelable {
         return userPhotoPath;
     }
 
+    public void setUserDisplayName(String userDisplayName) {
+        this.userDisplayName = userDisplayName;
+    }
+
+    public void setUserFirstName(String userFirstName) {
+        this.userFirstName = userFirstName;
+    }
+
+    public void setUserLastName(String userLastName) {
+        this.userLastName = userLastName;
+    }
+
     public void setUserPhotoPath(String userPhotoPath) {
         this.userPhotoPath = userPhotoPath;
     }

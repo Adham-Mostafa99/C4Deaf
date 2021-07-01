@@ -70,7 +70,7 @@ public class AddFriendActivity extends AppCompatActivity implements AddFriendAda
             @Override
             public void onClick(View v) {
                 clearAdapter();
-                String displayName = displayNameSearch.getText().toString().trim();
+                String displayName = displayNameSearch.getText().toString().toLowerCase().trim();
                 DatabaseQueries.getFriendByDisplayName(getFriendByDisplayName
                         , DB_GET_FRIEND_BY_DISPLAY_NAME_ID, displayName);
 

@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
+import com.example.graduationproject.Converter;
 import com.example.graduationproject.R;
 import com.example.graduationproject.adapters.ChatListAdapter;
 import com.example.graduationproject.adapters.UserFriendsAdapter;
@@ -45,6 +46,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -109,30 +112,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         initializeFirebase();
 
 
-        DatabaseQueries.getCurrentUserInfo(new DatabaseQueries.GetCurrentUserInfo() {
-            @Override
-            public void afterGetCurrentUserInfo(UserPublicInfo userInfo, int id) {
-                currentUserInfo = userInfo;
-            }
-        }, currentUser.getUid(), 0);
-
-        try {
-            DatabaseQueries.getUserMenuChat(this, DB_GET_MENU_CHAT_ID);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (currentUser != null) {
-            //set user photo from Uri
-            Glide
-                    .with(this)
-                    .load(currentUser.getPhotoUrl())
-                    .centerCrop()
-                    .placeholder(R.drawable.user_photo)
-                    .into(menu);
-            //set user profile
-            setNavHeaderInfo(currentUser.getPhotoUrl(), currentUser.getDisplayName());
-        }
+        initProfile();
         //when click in item on menu in navigation drawer
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -199,6 +179,33 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
                 }
             }
         });
+    }
+
+    public void initProfile() {
+        DatabaseQueries.getCurrentUserInfo(new DatabaseQueries.GetCurrentUserInfo() {
+            @Override
+            public void afterGetCurrentUserInfo(UserPublicInfo userInfo, int id) {
+                currentUserInfo = userInfo;
+            }
+        }, currentUser.getUid(), 0);
+
+        try {
+            DatabaseQueries.getUserMenuChat(this, DB_GET_MENU_CHAT_ID);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (currentUser != null) {
+            //set user photo from Uri
+            Glide
+                    .with(this)
+                    .load(currentUser.getPhotoUrl())
+                    .centerCrop()
+                    .placeholder(R.drawable.user_photo)
+                    .into(menu);
+            //set user profile
+            setNavHeaderInfo(currentUser.getPhotoUrl(), currentUser.getDisplayName());
+        }
     }
 
     public void signOut() {
@@ -288,9 +295,64 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     public void setFriendsToAdapter(@NonNull DataSnapshot dataSnapshot) {
         ArrayList<UserMenuChat> menuChatArrayList = new ArrayList<>();
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-            menuChatArrayList.add(snapshot.getValue(UserMenuChat.class));
+            UserMenuChat userMenuChat = snapshot.getValue(UserMenuChat.class);
+            menuChatArrayList.add(userMenuChat);
+            refreshAdapter(menuChatArrayList);
         }
-        refreshAdapter(menuChatArrayList);
+        refreshFriendsData(menuChatArrayList);
+
+    }
+
+    public void refreshFriendsData(ArrayList<UserMenuChat> users) {
+        ArrayList<UserMenuChat> menuChatArrayList = new ArrayList<>();
+        for (UserMenuChat user : users) {
+            if (user != null) {
+                DatabaseQueries.getFriendInfo(new DatabaseQueries.GetFriendInfo() {
+                    @Override
+                    public void afterGetFriendInfo(UserPublicInfo friendInfo, int id) {
+                        if (friendInfo != null) {
+                            user.setUserPhotoUrl(friendInfo.getUserPhotoPath());
+                            user.setUserName(friendInfo.getUserDisplayName());
+                            menuChatArrayList.add(user);
+                            updateFriendMenuChat(user);
+                            if (menuChatArrayList.size() == users.size())
+                                refreshAdapter(menuChatArrayList);
+                        } else {
+                            menuChatArrayList.remove(user);
+                            refreshAdapter(menuChatArrayList);
+                            DatabaseReference myRefMenuChat = FirebaseDatabase.getInstance().
+                                    getReference("users/" + currentUser.getUid());
+
+                            myRefMenuChat
+                                    .child("menu-chat")
+                                    .child(user.getUserId())
+                                    .removeValue();
+                            menuChatArrayList.remove(user);
+
+                        }
+                    }
+                }, 0, user.getUserId());
+            }
+        }
+
+    }
+
+    public void updateFriendMenuChat(UserMenuChat userMenuChat) {
+        Map<String, Object> update = new HashMap<>();
+        update.put("messageTime", userMenuChat.getMessageTime());
+        update.put("userId", userMenuChat.getUserId());
+        update.put("userMessage", userMenuChat.getUserMessage());
+        update.put("userPhotoUrl", userMenuChat.getUserPhotoUrl());
+        update.put("userName", userMenuChat.getUserName());
+
+
+        DatabaseReference myRefMenuChat = FirebaseDatabase.getInstance().
+                getReference("users/" + currentUser.getUid());
+
+        myRefMenuChat
+                .child("menu-chat")
+                .child(userMenuChat.getUserId())
+                .updateChildren(update);
     }
 
     public ArrayList<String> getFriendsId(DataSnapshot dataSnapshot) {
@@ -325,6 +387,12 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         else {
             //some thing like close app
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initProfile();
     }
 
     @Override

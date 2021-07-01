@@ -267,7 +267,7 @@ public class DatabaseQueries {
                             UserPublicInfo friendInfo = Converter.ConvertMapToUserPublicInfo(currentUser);
 
                             //check if matched display name
-                            if (friendInfo.getUserDisplayName().equals(displayName)) {
+                            if (friendInfo.getUserDisplayName().toLowerCase().equals(displayName)) {
                                 getFriendByDisplayName.afterGetFriendByDisplayName(friendInfo, id);
                             }
                         }
@@ -831,31 +831,6 @@ public class DatabaseQueries {
 
     }
 
-
-    public static void convertRecordToText() {
-        CustomModelDownloadConditions conditions = new CustomModelDownloadConditions.Builder()
-                .requireWifi()  // Also possible: .requireCharging() and .requireDeviceIdle()
-                .build();
-        FirebaseModelDownloader.getInstance()
-                .getModel("ConverTextToSpeek", DownloadType.LOCAL_MODEL_UPDATE_IN_BACKGROUND, conditions)
-                .addOnSuccessListener(new OnSuccessListener<CustomModel>() {
-                    @Override
-                    public void onSuccess(CustomModel model) {
-                        // Download complete. Depending on your app, you could enable the ML
-                        // feature, or switch from the local model to the remote model, etc.
-
-                        // The CustomModel object contains the local path of the model file,
-                        // which you can use to instantiate a TensorFlow Lite interpreter.
-                        File modelFile = model.getFile();
-                        if (modelFile != null) {
-
-                            Interpreter interpreter = new Interpreter(modelFile);
-                            Log.v("interpreter", interpreter.toString());
-
-                        }
-                    }
-                });
-    }
 
     public interface GetUserFriends {
         void afterGetUserFriends(ArrayList<String> friendsId, int id);
