@@ -1,6 +1,7 @@
 package com.example.graduationproject.ui;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaPlayer;
@@ -69,6 +70,7 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
 
 
     private VideoView videoView;
+    private ProgressDialog dialog;
 
     private static final String TAG = "DeafPageNormal";
 
@@ -197,29 +199,25 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
 
         DatabaseQueries.readMsg(this, DB_READ_MSG_ID, friendId);
 
-        deafRecord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        deafRecord.setOnClickListener(v -> {
 
+            if (friendInfo.getUserState().equals("normal")) {
+                Intent intent = new Intent(getApplicationContext(), OpenCvActivity.class);
+                startActivityForResult(intent, OPEN_CV_REQUEST_CODE);
+            } else if (friendInfo.getUserState().equals("deaf")) {
 
-                if (friendInfo.getUserState().equals("normal")) {
-                    Intent intent = new Intent(getApplicationContext(), OpenCvActivity.class);
-                    startActivityForResult(intent, OPEN_CV_REQUEST_CODE);
-                } else if (friendInfo.getUserState().equals("deaf")) {
+                fileName = getExternalCacheDir().getAbsolutePath();
+                fileName += "/" + UUID.randomUUID().toString() + ".mp4";
 
-                    fileName = getExternalCacheDir().getAbsolutePath();
-                    fileName += "/" + UUID.randomUUID().toString() + ".mp4";
-
-                    // go to video recoding activity
-                    Intent intent = new Intent(getApplicationContext(), OpenRecordVideoActivity.class);
-                    intent.putExtra("file name", fileName);
-                    startActivityForResult(intent, OPEN_RECORD_VIDEO_REQUEST_CODE);
-                }
+                // go to video recoding activity
+                Intent intent = new Intent(getApplicationContext(), OpenRecordVideoActivity.class);
+                intent.putExtra("file name", fileName);
+                startActivityForResult(intent, OPEN_RECORD_VIDEO_REQUEST_CODE);
             }
-
         });
         btnEmoji.setOnClickListener(v -> {
 
+            //TODO add emoj
         });
 
         //TODO make animation when click button
@@ -313,10 +311,11 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
 
             }
         } else if (requestCode == OPEN_CV_REQUEST_CODE) {
+            //TODO finsh wait
             if (resultCode == RESULT_OK) {
                 String stringMsg = null;
                 if (data != null) {
-                    //get JsonString msg which contain video-message details
+                    //get msg which contain video-message details
                     stringMsg = data.getStringExtra("msg");
                 }
 
@@ -617,10 +616,16 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
             //get String from message
             String[] msgStringArray = msg.get(position).getMessage().split(" ");
 
+            dialog = new ProgressDialog(activity);
+            dialog.setMessage("Doing something, please wait.");
+            dialog.show();
             ConvertTextToVideo convertTextToVideo = new ConvertTextToVideo(msgStringArray);
             convertTextToVideo.convert(new ConvertTextToVideo.Converted() {
                 @Override
                 public void afterConverted(AnimationDrawable animationDrawable) {
+                    if (dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
                     if (animationDrawable != null) {
                         playAnimationVideo(animationDrawable);
                     }

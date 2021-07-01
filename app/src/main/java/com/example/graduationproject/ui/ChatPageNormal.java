@@ -115,6 +115,10 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
         setContentView(R.layout.activity_chat_page_normal);
         ButterKnife.bind(this);
 
+        //get permission for record
+        ActivityCompat.requestPermissions(ChatPageNormal.this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+
+
         //initialize objects
         initFirebase();
         init();
@@ -133,9 +137,7 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
             public void onStart() {
                 //Start Recording..
 
-                //TODO change th permission to be one time
-                //get permission for record
-                ActivityCompat.requestPermissions(ChatPageNormal.this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+
 
                 if (friendInfo.getUserState().equals("Normal")) {
                     // Record to the external cache directory for visibility

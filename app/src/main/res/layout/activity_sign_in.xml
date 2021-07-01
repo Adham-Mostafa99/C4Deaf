@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,17 +23,17 @@
             android:id="@+id/btn_arrow_back"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/arrow_back"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="27dp"
             android:background="@drawable/arrow_circle_background"
             android:paddingHorizontal="15.8dp"
-            android:layout_marginTop="27dp"
-            android:layout_marginStart="16dp"/>
+            android:src="@drawable/arrow_back" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="520dp"
+            android:layout_height="550dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="324dp"
+            android:layout_marginTop="294dp"
             android:background="@drawable/sign_in_lower_background">
 
             <ImageView
@@ -42,28 +41,32 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/sign_in_info_background" />
         </LinearLayout>
+
         <TextView
+            android:id="@+id/text_welcome"
             android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:layout_marginTop="348dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginHorizontal="26.7dp"
+            android:layout_marginTop="294dp"
+            android:fontFamily="@font/andlso"
+            android:gravity="center"
             android:text="Welcome back"
             android:textAllCaps="false"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:textSize="42sp"
             android:textColor="@color/white"
-            android:fontFamily="@font/andlso"
-            android:layout_marginHorizontal="26.7dp"/>
+            android:textSize="42sp" />
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@id/text_welcome"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="418dp"
-            android:gravity="center"
             android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
             android:orientation="vertical">
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/sign_in_email_edit_text"
                 android:layout_width="match_parent"
@@ -75,6 +78,7 @@
                 app:errorEnabled="true"
                 app:hintEnabled="false"
                 app:startIconDrawable="@drawable/sign_in_email_icon">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
@@ -115,6 +119,7 @@
                     android:paddingHorizontal="34dp" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
             <TextView
                 android:id="@+id/sign_in_forgot_pass"
                 android:layout_width="wrap_content"
@@ -126,6 +131,7 @@
                 android:text="Forget password ?"
                 android:textColor="@android:color/white"
                 android:textSize="17sp" />
+
             <Button
                 android:id="@+id/sign_in_button"
                 android:layout_width="match_parent"
@@ -149,11 +155,6 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
-<!--                <ImageView-->
-<!--                    android:layout_width="96dp"-->
-<!--                    android:layout_height="2dp"-->
-<!--                    android:background="@android:color/white" />-->
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -162,74 +163,60 @@
                     android:text="OR log in with..."
                     android:textColor="#7AFFF8F6"
                     android:textSize="16sp" />
-
-<!--                <ImageView-->
-<!--                    android:layout_width="96dp"-->
-<!--                    android:layout_height="2dp"-->
-<!--                    android:background="@android:color/white" />-->
             </LinearLayout>
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="30dp"
                 android:gravity="center"
-                android:orientation="horizontal"
-                android:layout_marginHorizontal="16dp">
+                android:orientation="horizontal">
 
                 <at.markushi.ui.CircleButton
                     android:id="@+id/sign_in_by_google_button"
                     android:layout_width="0dp"
                     android:layout_height="55dp"
                     android:layout_weight="1"
+                    android:background="@drawable/border_btn_sign_in_gft"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="@drawable/border_btn_sign_in_gft"
                     android:paddingVertical="8dp"
                     android:src="@drawable/sign_in_google_icon"
                     app:cb_color="#00FFFFFF"
-                    app:cb_pressedRingWidth="16dip"
-                    />
+                    app:cb_pressedRingWidth="16dip" />
 
                 <at.markushi.ui.CircleButton
                     android:id="@+id/sign_in_by_facebook_button"
                     android:layout_width="0dp"
                     android:layout_height="55dp"
+                    android:layout_marginStart="57dp"
                     android:layout_weight="1"
+                    android:background="@drawable/border_btn_sign_in_gft"
                     android:clickable="true"
                     android:focusable="true"
+                    android:paddingVertical="8dp"
                     android:src="@drawable/sign_in_facebook_icon"
                     app:cb_color="#00FFFFFF"
-                    app:cb_pressedRingWidth="8dip"
-                    android:layout_marginStart="57dp"
-                    android:background="@drawable/border_btn_sign_in_gft"
-                    android:paddingVertical="8dp"/>
+                    app:cb_pressedRingWidth="8dip" />
 
                 <at.markushi.ui.CircleButton
                     android:id="@+id/sign_in_by_twitter_button"
                     android:layout_width="0dp"
                     android:layout_height="55dp"
+                    android:layout_marginStart="57dp"
                     android:layout_weight="1"
+                    android:background="@drawable/border_btn_sign_in_gft"
                     android:clickable="true"
                     android:focusable="true"
+                    android:paddingVertical="8dp"
                     android:src="@drawable/sign_in_twitter_icon"
                     app:cb_color="#00FFFFFF"
-                    app:cb_pressedRingWidth="16dip"
-                    android:layout_marginStart="57dp"
-                    android:background="@drawable/border_btn_sign_in_gft"
-                    android:paddingVertical="8dp"/>
+                    app:cb_pressedRingWidth="16dip" />
 
 
             </LinearLayout>
-
-<!--            <ImageView-->
-<!--                android:layout_width="231dp"-->
-<!--                android:layout_height="2dp"-->
-<!--                android:layout_marginTop="15.5dp"-->
-<!--                android:background="@android:color/white" />-->
-
-
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -258,8 +245,7 @@
                     android:text=" Sign Up"
                     android:textColor="@android:color/white"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
 

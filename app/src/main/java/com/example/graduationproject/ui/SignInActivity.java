@@ -47,6 +47,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import at.markushi.ui.CircleButton;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -79,6 +80,8 @@ public class SignInActivity extends AppCompatActivity {
     CallbackManager mCallbackManager;
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
+    @BindView(R.id.btn_arrow_back)
+    CircleImageView backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +94,12 @@ public class SignInActivity extends AppCompatActivity {
 
         mCallbackManager = CallbackManager.Factory.create();
 
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         //sign in by email and password
         signIn.setOnClickListener(new View.OnClickListener() {

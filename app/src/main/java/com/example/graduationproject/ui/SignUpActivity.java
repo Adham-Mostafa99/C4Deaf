@@ -49,6 +49,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SignUpActivity extends AppCompatActivity implements DatePickerFragment.OnFinish {
 
@@ -95,7 +96,8 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
-
+    @BindView(R.id.btn_arrow_back)
+    CircleImageView backButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,6 +107,13 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         init();
         initializeFirebase();
         hideSystemUI();
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         CompleteInfo completeInfo = getIntent().getParcelableExtra(COMPLETE_USER_INFO_INTENT_EXTRA);
         assert completeInfo != null;

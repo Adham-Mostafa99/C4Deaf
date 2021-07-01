@@ -13,6 +13,8 @@
         android:layout_height="wrap_content"
         tools:context=".ui.SignUpActivity">
 
+
+
         <ImageView
             android:id="@+id/view"
             android:layout_width="match_parent"
@@ -21,42 +23,16 @@
             android:scaleType="centerCrop"
             android:src="@drawable/login_signup_vector" />
 
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/btn_arrow_back"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/arrow_back"
+            android:background="@drawable/arrow_circle_background"
+            android:paddingHorizontal="15.8dp"
+            android:layout_marginTop="27dp"
+            android:layout_marginStart="16dp"/>
 
-
-        <!--        <de.hdodenhof.circleimageview.CircleImageView-->
-        <!--            android:id="@+id/sign_up_profile_image"-->
-        <!--            android:layout_width="106dp"-->
-        <!--            android:layout_height="106dp"-->
-        <!--            android:layout_marginTop="24dp"-->
-        <!--            android:scaleType="centerCrop"-->
-        <!--            android:src="@drawable/photo"-->
-        <!--            app:layout_constraintBottom_toTopOf="@id/pick_up_image"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toTopOf="parent" />-->
-
-        <!--        <ImageView-->
-        <!--            android:id="@+id/sign_up_upload_image"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:src="@drawable/camera"-->
-        <!--            app:layout_constraintBottom_toBottomOf="@+id/sign_up_profile_image"-->
-        <!--            app:layout_constraintEnd_toEndOf="@+id/sign_up_profile_image" />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/pick_up_image"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginHorizontal="@dimen/margin_horizontal_value"-->
-        <!--            android:layout_marginVertical="20dp"-->
-        <!--            android:gravity="center"-->
-        <!--            android:text="@string/pick_up_your_photo"-->
-        <!--            android:textColor="#FCFCFC"-->
-        <!--            android:textSize="20sp"-->
-        <!--            app:layout_constraintBottom_toBottomOf="@id/view"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/sign_up_profile_image" />-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -117,21 +93,6 @@
                     android:paddingHorizontal="@dimen/padding_horizontal_value" />
 
             </LinearLayout>
-
-            <!--        <EditText-->
-            <!--            android:id="@+id/sign_up_edit_display_name"-->
-            <!--            android:layout_width="match_parent"-->
-            <!--            android:layout_height="wrap_content"-->
-            <!--            android:layout_marginHorizontal="@dimen/margin_horizontal_value"-->
-            <!--            android:layout_marginVertical="@dimen/margin_vertical_value"-->
-            <!--            android:background="@drawable/email_edit"-->
-            <!--            android:hint="Enter Your Display Name"-->
-            <!--            android:inputType="textEmailAddress"-->
-            <!--            android:paddingHorizontal="@dimen/padding_horizontal_value"-->
-            <!--            app:layout_constraintBottom_toTopOf="@id/sign_up_edit_email"-->
-            <!--            app:layout_constraintEnd_toEndOf="parent"-->
-            <!--            app:layout_constraintStart_toStartOf="parent"-->
-            <!--            app:layout_constraintTop_toBottomOf="@id/name" />-->
 
 
             <com.google.android.material.textfield.TextInputLayout
@@ -217,40 +178,6 @@
                     android:paddingHorizontal="34dp" />
 
             </com.google.android.material.textfield.TextInputLayout>
-            <!--        <LinearLayout-->
-            <!--            android:id="@+id/number"-->
-            <!--            android:layout_width="match_parent"-->
-            <!--            android:layout_height="wrap_content"-->
-            <!--            android:layout_marginHorizontal="@dimen/margin_horizontal_value"-->
-            <!--            android:gravity="center_vertical"-->
-            <!--            android:orientation="horizontal"-->
-            <!--            app:layout_constraintBottom_toTopOf="@id/birth_day"-->
-            <!--            app:layout_constraintEnd_toEndOf="parent"-->
-            <!--            app:layout_constraintStart_toStartOf="parent"-->
-            <!--            app:layout_constraintTop_toBottomOf="@id/sign_up_edit_pass">-->
-
-
-            <!--            <com.rilixtech.widget.countrycodepicker.CountryCodePicker-->
-            <!--                android:id="@+id/sign_up_country_code"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="42dp"-->
-            <!--                android:layout_marginEnd="8dp"-->
-            <!--                android:layout_marginRight="8dp"-->
-            <!--                android:background="@drawable/code_shape"-->
-            <!--                android:gravity="center"-->
-            <!--                android:paddingHorizontal="4dp"-->
-            <!--                app:ccp_textSize="12sp" />-->
-
-            <!--            <EditText-->
-            <!--                android:id="@+id/sign_up_edit_phone"-->
-            <!--                android:layout_width="0dp"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_weight="1"-->
-            <!--                android:background="@drawable/phone_number"-->
-            <!--                android:hint="@string/phone_number"-->
-            <!--                android:inputType="phone"-->
-            <!--                android:paddingHorizontal="8dp" />-->
-            <!--        </LinearLayout>-->
 
 
             <LinearLayout
