@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#954"
+        android:background="@drawable/toolbar"
         android:paddingHorizontal="32dp"
         android:paddingVertical="8dp"
         android:text="Choose Friend to chat"

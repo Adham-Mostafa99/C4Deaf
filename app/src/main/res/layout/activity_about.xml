@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:text="we published this app to make easier communication between deaf and ordinary people.
     The application makes it easier to chat with people using video, audio and message chatting.
-There will be no problem if you\'re using sign language or text language because the app will help you to communicate easily and clearly."
+There will be no problem if you\'re using sign language or text language because the app will help you to communicate easily and clearly.\ncreated by: Alpha Codec Team"
                 android:textSize="18dp"
                 android:textColor="@color/white"
                 android:fontFamily="@font/andlso"
@@ -87,45 +87,9 @@ There will be no problem if you\'re using sign language or text language because
 
         </LinearLayout>
         <LinearLayout
-            android:id="@+id/team_member"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/app_info"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="7dp"
-            android:layout_marginEnd="8dp"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Team members"
-                android:textSize="22sp"
-                android:textColor="@color/white"
-                android:padding="5dp"
-                android:fontFamily="@font/allerta"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="This application is done by:\n Adham Mostafa\n Osama Saleh\n Aya Hassan\n Alaa Hella\n Alaa Alawady\n Arwa Negm\n Toqa Yousri"
-                android:textSize="18dp"
-                android:textColor="@color/white"
-                android:fontFamily="@font/andlso"
-                android:layout_marginTop="11dp"
-                android:padding="5dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@drawable/bar_layout_background"
-                android:alpha="0.7"
-                android:layout_marginHorizontal="5dp"
-                android:layout_marginTop="3dp"/>
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/team_member"
             android:layout_marginTop="20dp"
             android:layout_marginStart="7dp"
             android:layout_marginEnd="8dp"

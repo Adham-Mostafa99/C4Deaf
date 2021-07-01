@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="78dp"
+        android:layout_height="60dp"
         android:layout_gravity="center_vertical"
         android:background="@drawable/toolbar"
         >
@@ -46,7 +46,7 @@
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         android:alpha="0.5"
         android:background="@drawable/edit_text_search"
         android:orientation="horizontal">
@@ -77,13 +77,14 @@
         android:layout_height="match_parent"
         android:layout_below="@id/search_add_friends"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
         >
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/searched_friend_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="16dp" />
+                 />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

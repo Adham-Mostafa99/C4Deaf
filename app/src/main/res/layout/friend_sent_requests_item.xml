@@ -13,8 +13,8 @@
         >
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/friend_sent_request_item_photo"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_gravity="center"
         android:src="@drawable/default_photo" />
     <TextView
@@ -43,11 +43,6 @@
         android:padding="10dp"
         android:layout_marginTop="5dp"/>
     </LinearLayout>
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/white"
-        android:layout_marginStart="77dp"/>
     <Space
         android:layout_width="match_parent"
         android:layout_height="10dp"/>

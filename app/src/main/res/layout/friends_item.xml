@@ -12,8 +12,8 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/friend_item_photo"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="center"
             android:src="@drawable/default_photo" />
 
@@ -29,11 +29,6 @@
 
 
     </LinearLayout>
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="1.5dp"
-        android:background="@color/white"
-        android:layout_marginStart="77dp"/>
     <Space
         android:layout_width="match_parent"
         android:layout_height="21dp"/>
