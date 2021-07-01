@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -34,14 +36,21 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static org.opencv.core.Core.inRange;
 import static org.opencv.imgproc.Imgproc.COLOR_BGR2GRAY;
 import static org.opencv.imgproc.Imgproc.COLOR_BGR2HSV;
+import static org.opencv.imgproc.Imgproc.MORPH_CLOSE;
+import static org.opencv.imgproc.Imgproc.MORPH_ELLIPSE;
+import static org.opencv.imgproc.Imgproc.MORPH_OPEN;
 import static org.opencv.imgproc.Imgproc.THRESH_BINARY;
+import static org.opencv.imgproc.Imgproc.THRESH_OTSU;
+import static org.opencv.imgproc.Imgproc.getStructuringElement;
 
 public class HandRecognition {
 
@@ -55,9 +64,6 @@ public class HandRecognition {
     Activity activity;
     Statement statementInterface;
     Button button;
-
-    double w = 0.5;
-    Mat background = null;
 
     public HandRecognition(Button button, Statement statementInterface, AssetManager assetManager, Context context, Activity activity, String modelPath, int input_size) throws IOException {
         INPUT_SIZE = input_size;
@@ -130,30 +136,21 @@ public class HandRecognition {
 
         Utils.matToBitmap(finalMat, bitmap);
 
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 200, 200, false);
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 128, 128, false);
 
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                context.startActivity(new Intent(activity, TestBitmap.class)
-                        .putExtra("BitmapImage", scaledBitmap)
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            }
-        });
 
+        ByteBuffer byteBuffer = convertBitmapToBytebuffer(scaledBitmap);
 
-//        ByteBuffer byteBuffer = convertBitmapToBytebuffer(scaledBitmap);
-//
-//        if (isFree)
-//            runModel2(byteBuffer, mat_image);
+        if (isFree)
+            runModel2(byteBuffer, mat_image);
 
 //        Core.flip(mat_image.t(), mat_image, 0);
 
         return mat_image;
     }
 
-    public Mat mask(Mat mat) {
+    public Mat mask2(Mat mat) {
 
 //        Mat gray = new Mat();
 //
@@ -211,63 +208,31 @@ public class HandRecognition {
 
     }
 
-//    Mat putMask(Mat src, Point center, Size face_size) {
-//
-//        //mask : masque chargé depuis l'image
-//        Mat mask_resized = new Mat(); //masque resizé
-//        src_roi = new Mat(); //ROI du visage croppé depuis la preview
-//        roi_gray = new Mat();
-//
-//
-//        Imgproc.resize(mask, mask_resized, face_size);
-//
-//        // ROI selection
-//        roi = new Rect((int) (center.x - face_size.width / 2), (int) (center.y - face_size.height / 2), (int) face_size.width, (int) face_size.height);
-//        //Rect roi = new Rect(10, 10, (int) face_size.width, (int) face_size.height);
-//
-//        src.submat(roi).copyTo(src_roi);
-//
-//        Log.e(TAG, "MASK SRC1 :" + src_roi.size());
-//
-//        // to make the white region transparent
-//        Mat mask_grey = new Mat(); //greymask
-//        roi_rgb = new Mat();
-//        Imgproc.cvtColor(mask_resized, mask_grey, Imgproc.COLOR_BGRA2GRAY);
-//        Imgproc.threshold(mask_grey, mask_grey, 230, 255, Imgproc.THRESH_BINARY_INV);
-//
-//        ArrayList<Mat> maskChannels = new ArrayList<>(4);
-//        ArrayList<Mat> result_mask = new ArrayList<>(4);
-//        result_mask.add(new Mat());
-//        result_mask.add(new Mat());
-//        result_mask.add(new Mat());
-//        result_mask.add(new Mat());
-//
-//        Core.split(mask_resized, maskChannels);
-//
-//        Core.bitwise_and(maskChannels.get(0), mask_grey, result_mask.get(0));
-//        Core.bitwise_and(maskChannels.get(1), mask_grey, result_mask.get(1));
-//        Core.bitwise_and(maskChannels.get(2), mask_grey, result_mask.get(2));
-//        Core.bitwise_and(maskChannels.get(3), mask_grey, result_mask.get(3));
-//
-//        Core.merge(result_mask, roi_gray);
-//
-//        Core.bitwise_not(mask_grey, mask_grey);
-//
-//        ArrayList<Mat> srcChannels = new ArrayList<>(4);
-//        Core.split(src_roi, srcChannels);
-//        Core.bitwise_and(srcChannels.get(0), mask_grey, result_mask.get(0));
-//        Core.bitwise_and(srcChannels.get(1), mask_grey, result_mask.get(1));
-//        Core.bitwise_and(srcChannels.get(2), mask_grey, result_mask.get(2));
-//        Core.bitwise_and(srcChannels.get(3), mask_grey, result_mask.get(3));
-//
-//        Core.merge(result_mask, roi_rgb);
-//
-//        Core.addWeighted(roi_gray, 1, roi_rgb, 1, 0, roi_rgb);
-//
-//        roi_rgb.copyTo(new Mat(src, roi));
-//
-//        return src;
-//    }
+    public Mat mask(@NonNull Mat mat) {
+
+        Mat gray = new Mat();
+        mat.copyTo(gray);
+
+        //Extract red color channel (because the hand color is more red than the background).
+        List<Mat> planes = new ArrayList<>();
+        planes.add(new Mat());
+        planes.add(new Mat());
+        planes.add(new Mat());
+        Core.split(gray, planes);
+
+        //Apply binary threshold using automatically selected threshold (using cv2.THRESH_OTSU parameter).
+        Mat thresh_gray = new Mat();
+        Imgproc.threshold(planes.get(2), thresh_gray, 0, 255, THRESH_BINARY + THRESH_OTSU);
+
+        //Use "opening" morphological operation for clearing some small dots (noise)
+        Imgproc.morphologyEx(thresh_gray, thresh_gray, MORPH_OPEN, getStructuringElement(MORPH_ELLIPSE, new Size(3, 3)));
+
+        //Use "closing" morphological operation for closing small gaps
+        Imgproc.morphologyEx(thresh_gray, thresh_gray, MORPH_CLOSE, getStructuringElement(MORPH_ELLIPSE, new Size(9, 9)));
+
+        return thresh_gray;
+
+    }
 
 
     private ByteBuffer convertBitmapToBytebuffer(Bitmap scaledBitmap) {
@@ -295,7 +260,7 @@ public class HandRecognition {
     }
 
     public void runModel2(ByteBuffer byteBuffer, Mat mat_image) {
-        float[][] hand_value = new float[1][29];
+        float[][] hand_value = new float[1][26];
 
         interpreter.run(byteBuffer, hand_value);
 
@@ -315,7 +280,7 @@ public class HandRecognition {
             activity.runOnUiThread(new Runnable() {
                 public void run() {
 
-                    new CountDownTimer(3000, 1000) {
+                    new CountDownTimer(4000, 1000) {
 
                         public void onTick(long millisUntilFinished) {
                         }
@@ -363,78 +328,69 @@ public class HandRecognition {
                 val = "d";
                 break;
             case 4:
-                val = "del";
-                break;
-            case 5:
                 val = "e";
                 break;
-            case 6:
+            case 5:
                 val = "f";
                 break;
-            case 7:
+            case 6:
                 val = "g";
                 break;
-            case 8:
+            case 7:
                 val = "h";
                 break;
-            case 9:
+            case 8:
                 val = "i";
                 break;
-            case 10:
+            case 9:
                 val = "j";
                 break;
-            case 11:
+            case 10:
                 val = "k";
                 break;
-            case 12:
+            case 11:
                 val = "l";
                 break;
-            case 13:
+            case 12:
                 val = "m";
                 break;
-            case 14:
+            case 13:
                 val = "n";
                 break;
-            case 15:
-                val = "none";
-                break;
-            case 16:
+            case 14:
                 val = "o";
                 break;
-            case 17:
+            case 15:
                 val = "p";
                 break;
-            case 18:
+            case 16:
                 val = "q";
                 break;
-            case 19:
+            case 17:
                 val = "r";
                 break;
-            case 20:
+            case 18:
                 val = "s";
                 break;
-            case 21:
-                val = "space";
-                break;
-            case 22:
+            case 19:
                 val = "t";
                 break;
-            case 23:
+            case 20:
                 val = "u";
                 break;
-            case 24:
+            case 21:
                 val = "v";
                 break;
-            case 25:
+            case 22:
                 val = "w";
                 break;
-            case 26:
+            case 23:
                 val = "x";
                 break;
-            case 27:
+            case 24:
                 val = "y";
                 break;
-            case 28:
+            case 25:
                 val = "z";
                 break;
             default:

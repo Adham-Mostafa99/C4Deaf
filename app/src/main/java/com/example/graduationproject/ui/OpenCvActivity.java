@@ -54,14 +54,14 @@ public class OpenCvActivity extends AppCompatActivity implements CameraBridgeVie
                 case BaseLoaderCallback.SUCCESS:
 
                     try {
-                        int size = 64;
+                        int size = 128;
                         handRecognition = new HandRecognition(
                                 finish,
                                 statementInterface,
                                 getAssets(),
                                 getApplicationContext(),
                                 activity,
-                                "model.tflite",
+                                "mask_model.tflite",
                                 size);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -94,12 +94,12 @@ public class OpenCvActivity extends AppCompatActivity implements CameraBridgeVie
         javaCameraView.setVisibility(SurfaceView.VISIBLE);
         javaCameraView.setCvCameraViewListener(this);
 
-//        finish.setOnClickListener(v -> {
-//            Intent intent = new Intent();
-//            intent.putExtra("msg", statement);
-//            setResult(RESULT_OK, intent);
-//            finish();
-//        });
+        finish.setOnClickListener(v -> {
+            Intent intent = new Intent();
+            intent.putExtra("msg", statement);
+            setResult(RESULT_OK, intent);
+            finish();
+        });
 
 
     }

@@ -150,7 +150,6 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
             public void onStart() {
                 //Start Recording..
 
-
                 if (friendInfo.getUserState().equals("Normal")) {
                     // Record to the external cache directory for visibility
                     fileName = getExternalCacheDir().getAbsolutePath();
