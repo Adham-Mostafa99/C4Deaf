@@ -159,13 +159,13 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
                     hideInputText(editTextSend);
                     Log.d("RecordView", "onStart");
                 } else {
+                    hideInputText(editTextSend);
                     voiceRecognize = new VoiceRecognize(getApplicationContext(), new VoiceRecognize.Result() {
                         @Override
                         public void result(String msg) {
                             sendTextMsg(msg, getTimeNow());
                         }
                     });
-
                     voiceRecognize.startRecognize();
                 }
             }
