@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -79,8 +80,8 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
     static class ViewHolder extends RecyclerView.ViewHolder {
         private CircleImageView friendPhoto;
         private TextView displayName;
-        private CircleImageView acceptFriend;
-        private CircleImageView ignoreFriend;
+        private Button acceptFriend;
+        private Button ignoreFriend;
 
         private OnItemClick onItemClick;
 

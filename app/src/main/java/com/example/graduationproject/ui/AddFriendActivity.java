@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -55,6 +56,8 @@ public class AddFriendActivity extends AppCompatActivity implements AddFriendAda
     private DatabaseQueries.GetFriendByDisplayName getFriendByDisplayName = this;
     private DatabaseQueries.SendAddRequest sendAddRequest = this;
     private PopupWindow popupWindow;
+    @BindView(R.id.arrow_back)
+    ImageView backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +68,12 @@ public class AddFriendActivity extends AppCompatActivity implements AddFriendAda
         init();
         initAdapter();
 
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         searchFriends.setOnClickListener(new View.OnClickListener() {
             @Override

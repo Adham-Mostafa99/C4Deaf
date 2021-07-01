@@ -108,7 +108,7 @@ public class FriendsRequestsActivity extends AppCompatActivity implements Friend
         DatabaseQueries.acceptFriendRequest(new DatabaseQueries.AcceptFriendRequest() {
             @Override
             public void afterAcceptFriendRequest(int id) {
-                friendsRequestsArrayList.clear();
+                friendsRequestsArrayList.remove(position);
                 adapter.notifyDataSetChanged();
                 Toast.makeText(getApplicationContext(), " accepted", Toast.LENGTH_SHORT).show();
             }
@@ -121,7 +121,7 @@ public class FriendsRequestsActivity extends AppCompatActivity implements Friend
         DatabaseQueries.ignoreFriendRequest(new DatabaseQueries.IgnoreFriendRequest() {
             @Override
             public void afterIgnoreFriendRequest(int id) {
-                friendsRequestsArrayList.clear();
+                friendsRequestsArrayList.remove(position);
                 adapter.notifyDataSetChanged();
                 Toast.makeText(getApplicationContext(), " ignored", Toast.LENGTH_SHORT).show();
             }

@@ -1,88 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_marginEnd="15dp"
-    android:layout_marginStart="17dp">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
+    android:layout_marginHorizontal="17.7dp"
+    android:paddingVertical="4dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/friend_request_item_photo"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_gravity="center"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
         android:src="@drawable/default_photo" />
 
     <TextView
         android:id="@+id/friend_request_item_display_name"
-        android:layout_width="wrap_content"
+        android:layout_width="98dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="8dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="4dp"
+        android:layout_toEndOf="@id/friend_request_item_photo"
         android:text="user name"
         android:textColor="@color/white"
-        android:textAllCaps="false"
-        android:textSize="18sp"/>
-
-    <!--    <de.hdodenhof.circleimageview.CircleImageView-->
-    <!--        android:id="@+id/accept_friend_request"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_gravity="center"-->
-    <!--        android:layout_marginLeft="64dp"-->
-    <!--        android:src="@drawable/accept"-->
-    <!--        android:layout_marginStart="64dp" />-->
-
-    <!--    <de.hdodenhof.circleimageview.CircleImageView-->
-    <!--        android:id="@+id/ignore_friend_request"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_gravity="center"-->
-    <!--        android:layout_marginLeft="32dp"-->
-    <!--        android:src="@drawable/ignore"-->
-    <!--        android:layout_marginStart="32dp" />-->
+        android:textSize="18sp" />
 
 
     <Button
         android:id="@+id/accept_friend_request"
-        android:layout_width="62dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="62dp"
-        android:layout_marginTop="5dp"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="4dp"
+        android:layout_toStartOf="@id/ignore_friend_request"
         android:background="@drawable/sign_in_button_backgroud"
         android:clickable="true"
         android:focusable="true"
         android:fontFamily="@font/andlso"
-        android:text="Accept"
+        android:paddingHorizontal="8dp"
+        android:text="Accept Request"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
-        android:textSize="16sp" />
+        android:textSize="14sp" />
 
     <Button
         android:id="@+id/ignore_friend_request"
-        android:layout_width="62dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="5dp"
-        android:background="@drawable/border_btn_sign_in_gft"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/cancel_request_background"
         android:clickable="true"
         android:focusable="true"
         android:fontFamily="@font/andlso"
-        android:text="Remove"
+        android:paddingHorizontal="4dp"
+        android:text="Cancel Request"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
-        android:textSize="16sp" />
+        android:textSize="14sp" />
 
-    </LinearLayout>
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="21dp"/>
-</LinearLayout>
+</RelativeLayout>
