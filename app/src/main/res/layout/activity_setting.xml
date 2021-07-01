@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/chat_page_back"
     android:orientation="vertical"
-    tools:context=".ui.SettingActivity">
+    tools:context=".ui.ProfileActivity">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

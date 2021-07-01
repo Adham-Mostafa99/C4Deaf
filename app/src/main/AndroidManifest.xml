@@ -34,7 +34,7 @@
         <activity android:name=".ui.UserFriendsActivity" />
         <activity android:name=".ui.WelcomeDeafChatActivity" />
         <activity android:name=".ui.RestUserPasswordActivity" />
-        <activity android:name=".ui.SettingActivity" />
+        <activity android:name=".ui.ProfileActivity" />
         <activity android:name=".ui.ChatPageDeaf" />
         <activity android:name=".ui.ChatPageNormal" />
         <activity android:name=".ui.OpenRecordVideoActivity" />

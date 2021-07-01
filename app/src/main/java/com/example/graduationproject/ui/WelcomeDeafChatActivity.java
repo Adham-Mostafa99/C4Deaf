@@ -60,9 +60,13 @@ public class WelcomeDeafChatActivity extends AppCompatActivity {
 
         initializeFirebase();
 
+
         userPublicInfo = getIntent().getParcelableExtra(ConfirmEmailActivity.USER_PUBLIC_INFO_INTENT_EXTRA);
         userPrivateInfo = getIntent().getParcelableExtra(ConfirmEmailActivity.USER_PRIVATE_INFO_INTENT_EXTRA);
 
+        UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
+                .setDisplayName(userPublicInfo.getUserDisplayName()).build();
+        currentUser.updateProfile(request);
 
         insertUserPrivateInfoToDatabase(userPrivateInfo);
 

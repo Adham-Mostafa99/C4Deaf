@@ -33,27 +33,17 @@ import com.example.graduationproject.models.UserMenuChat;
 import com.example.graduationproject.models.UserPublicInfo;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -156,10 +146,10 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
                         startActivity(new Intent(getApplicationContext(), SentRequests.class));
                         break;
                     case R.id.account_setting:
-                        startActivity(new Intent(getApplicationContext(), SettingActivity.class));
+                        startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
                         break;
                     case R.id.about:
-                        startActivity(new Intent(getApplicationContext(),AboutActivity.class));
+                        startActivity(new Intent(getApplicationContext(), AboutActivity.class));
                         break;
                     case R.id.sign_out:
                         signOut();
@@ -263,6 +253,9 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
                 .placeholder(R.drawable.user_photo)
                 .into(userPhotoImage);
 
+        Log.d(TAG, "displayName: " + userName);
+
+
         //set UserName
         userNameText.setText(userName);
     }
@@ -320,7 +313,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
             if (currentUserInfo.getUserState().equals("normal"))
                 startActivity(new Intent(this, ChatPageNormal.class)
                         .putExtra(FRIEND_ID_INTENT, friendId));
-            else if(currentUserInfo.getUserState().equals("deaf"))
+            else if (currentUserInfo.getUserState().equals("deaf"))
                 startActivity(new Intent(this, ChatPageDeaf.class)
                         .putExtra(FRIEND_ID_INTENT, friendId));
         } else {
@@ -397,7 +390,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         if (currentUserInfo.getUserState().equals("normal"))
             startActivity(new Intent(this, ChatPageNormal.class)
                     .putExtra(FRIEND_ID_INTENT, friendId));
-        else if(currentUserInfo.getUserState().equals("deaf"))
+        else if (currentUserInfo.getUserState().equals("deaf"))
             startActivity(new Intent(this, ChatPageDeaf.class)
                     .putExtra(FRIEND_ID_INTENT, friendId));
         popupWindow.dismiss();

@@ -26,8 +26,8 @@ import com.bumptech.glide.Glide;
 import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
-import com.example.graduationproject.ConvertSpeechToText;
 import com.example.graduationproject.R;
+import com.example.graduationproject.VoiceRecognize;
 import com.example.graduationproject.adapters.NormalMessageAdapter;
 import com.example.graduationproject.models.DatabaseQueries;
 import com.example.graduationproject.models.NormalChat;
@@ -36,7 +36,6 @@ import com.example.graduationproject.models.UserPublicInfo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -108,6 +107,8 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
     @BindView(R.id.text_send)
     EditText textSend;
 
+    private VoiceRecognize voiceRecognize;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,15 +133,27 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
             public void onStart() {
                 //Start Recording..
 
+                //TODO change th permission to be one time
                 //get permission for record
                 ActivityCompat.requestPermissions(ChatPageNormal.this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
-                // Record to the external cache directory for visibility
-                fileName = getExternalCacheDir().getAbsolutePath();
-                fileName += "/" + UUID.randomUUID().toString() + ".m4a";
-                startRecording(fileName);
-                hideInputText(editTextSend);
-                Log.d("RecordView", "onStart");
+                if (friendInfo.getUserState().equals("Normal")) {
+                    // Record to the external cache directory for visibility
+                    fileName = getExternalCacheDir().getAbsolutePath();
+                    fileName += "/" + UUID.randomUUID().toString() + ".m4a";
+                    startRecording(fileName);
+                    hideInputText(editTextSend);
+                    Log.d("RecordView", "onStart");
+                } else {
+                    voiceRecognize = new VoiceRecognize(getApplicationContext(), new VoiceRecognize.Result() {
+                        @Override
+                        public void result(String msg) {
+                            sendTextMsg(msg, getTimeNow());
+                        }
+                    });
+
+                    voiceRecognize.startRecognize();
+                }
             }
 
             @Override
@@ -164,20 +177,21 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
                 if (friendInfo.getUserState().equals("Normal"))
                     sendRecordAudio(fileName, time);
                 else {
-                    ConvertSpeechToText convertSpeechToText = new ConvertSpeechToText(getApplicationContext(), fileName);
-                    try {
-                        convertSpeechToText.convert(new ConvertSpeechToText.OnConvert() {
-                            @Override
-                            public void afterConvert(String msgText) {
-                                sendTextMsg(msgText, getTimeNow());
-                            }
-                        });
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-
-                    //convert record to video
-                    Toast.makeText(getApplicationContext(), "will be converted", Toast.LENGTH_SHORT).show();
+                    voiceRecognize.stopRecognize();
+//                    ConvertSpeechToText convertSpeechToText = new ConvertSpeechToText(getApplicationContext(), fileName);
+//                    try {
+//                        convertSpeechToText.convert(new ConvertSpeechToText.OnConvert() {
+//                            @Override
+//                            public void afterConvert(String msgText) {
+//                                sendTextMsg(msgText, getTimeNow());
+//                            }
+//                        });
+//                    } catch (FileNotFoundException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    //convert record to video
+//                    Toast.makeText(getApplicationContext(), "will be converted", Toast.LENGTH_SHORT).show();
                 }
 
             }

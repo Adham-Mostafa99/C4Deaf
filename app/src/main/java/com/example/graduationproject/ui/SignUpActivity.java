@@ -197,7 +197,7 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
                                             UserPublicInfo(currentUser.getUid()
                                             , firstName
                                             , lastName
-                                            , null
+                                            , firstName
                                             , currentState
                                             , currentGender
                                             , null);
