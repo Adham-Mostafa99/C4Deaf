@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -81,6 +82,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     ArrayList<UserMenuChat> userFriends;
     ArrayList<UserPublicInfo> newMsgFriends;
 
+
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
     FirebaseFirestore db;
@@ -94,6 +96,8 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     TextView noChatItems;
     @BindView(R.id.fab)
     FloatingActionButton newMsgButton;
+    @BindView(R.id.display_name_search)
+    EditText editTextName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +121,6 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         if (currentUser != null) {
             //set user photo from Uri
@@ -182,10 +185,20 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO will add search Friends in my friends
+                String displayName = editTextName.getText().toString().trim();
+
+                if (displayName != null) {
+
+                    DatabaseQueries.getUserMenuChat(new DatabaseQueries.GetUserMenuChat() {
+                        @Override
+                        public void afterGetUserMenuChat(DataSnapshot snapshot, int id) {
+                            ArrayList<String> friendsId = getFriendsId(snapshot);
+                            popSearchWindowCreation(friendsId);
+                        }
+                    }, 0);
+                }
             }
         });
-
     }
 
     public void signOut() {
@@ -280,6 +293,14 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         refreshAdapter(menuChatArrayList);
     }
 
+    public ArrayList<String> getFriendsId(DataSnapshot dataSnapshot) {
+        ArrayList<String> menuChatArrayList = new ArrayList<>();
+        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+            menuChatArrayList.add(snapshot.getValue(UserMenuChat.class).getUserId());
+        }
+        return menuChatArrayList;
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -371,6 +392,48 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
 
     }
 
+    public void popSearchWindowCreation(ArrayList<String> friends) {
+        View popupView = LayoutInflater.from(this).inflate(R.layout.new_msg_pop_window, null);
+
+        //TODO make pop ex.. 300*200
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+        noFriendsTextMsg = popupView.findViewById(R.id.no_friends_to_show_text_view);
+        newMsgFriendList = popupView.findViewById(R.id.new_msg_friends_list);
+        newMsgFriends = new ArrayList<>();
+        newChatAdapter = new UserFriendsAdapter(this, newMsgFriends, this);
+
+        newMsgFriendList.setAdapter(newChatAdapter);
+        newMsgFriendList.setLayoutManager(new LinearLayoutManager(this));
+        newMsgFriendList.addItemDecoration(
+                new HorizontalDividerItemDecoration.Builder(this)
+                        .color(Color.GRAY)
+                        .sizeResId(R.dimen.divider)
+                        .build());
+
+        if (!friends.isEmpty()) {
+            noFriendsTextMsg.setVisibility(View.GONE);
+            newMsgFriendList.setVisibility(View.VISIBLE);
+            for (String friendId : friends) {
+                DatabaseQueries.getFriendInfo(new DatabaseQueries.GetFriendInfo() {
+                    @Override
+                    public void afterGetFriendInfo(UserPublicInfo friendInfo, int id) {
+                        insertFriendToAdapter(friendInfo);
+                    }
+                }, 0, friendId);
+            }
+        }
+    }
+
 
     public void insertFriendToAdapter(UserPublicInfo userPublicInfo) {
         int firstItemInList = 0;
@@ -427,5 +490,4 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
                 break;
         }
     }
-
 }
