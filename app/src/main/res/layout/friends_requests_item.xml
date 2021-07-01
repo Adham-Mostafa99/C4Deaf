@@ -37,7 +37,7 @@
         android:focusable="true"
         android:fontFamily="@font/andlso"
         android:paddingHorizontal="8dp"
-        android:text="Accept Request"
+        android:text="Accept"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="14sp" />
@@ -54,7 +54,7 @@
         android:focusable="true"
         android:fontFamily="@font/andlso"
         android:paddingHorizontal="4dp"
-        android:text="Cancel Request"
+        android:text="Cancel"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="14sp" />

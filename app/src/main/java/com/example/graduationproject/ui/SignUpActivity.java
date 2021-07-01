@@ -98,6 +98,7 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
 
     @BindView(R.id.btn_arrow_back)
     CircleImageView backButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -233,6 +234,7 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         });
 
     }
+
 
     public void setCompleteInfo(@NonNull CompleteInfo completeInfo) {
         String[] name = extractUserName(completeInfo.getUserName());
@@ -492,7 +494,7 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
     @Override
     public void onBackPressed() {
         signOut();
-        super.onBackPressed();
+        startActivity(new Intent(this, LogIn_or_SignUp.class));
     }
 
     @Override
