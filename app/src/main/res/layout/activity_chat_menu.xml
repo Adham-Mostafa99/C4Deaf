@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context=".ui.ChatMenuActivity"
-    tools:openDrawer="">
+    tools:openDrawer="start">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -19,15 +19,15 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/top_bar"
             android:layout_width="match_parent"
-            android:layout_height="65dp"
+            android:layout_height="60dp"
             android:paddingVertical="10dp"
             android:background="@drawable/toolbar"
             >
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/menu"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_marginStart="18dp"
                 android:src="@drawable/default_photo"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -107,14 +107,14 @@
             android:layout_height="match_parent"
             android:layout_below="@id/search_chat_friends"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="11dp"
+            android:layout_marginTop="16dp"
             >
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_chat"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="15dp"/>
+                />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <com.github.clans.fab.FloatingActionButton

@@ -12,8 +12,8 @@
         >
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/add_friend_item_photo"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="center"
             android:src="@drawable/default_photo" />
 
@@ -30,7 +30,7 @@
         <Button
             android:id="@+id/add_friend"
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="@drawable/sign_in_button_backgroud"
             android:clickable="true"
@@ -44,11 +44,6 @@
             android:layout_marginStart="99dp"/>
 
     </LinearLayout>
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="1.5dp"
-        android:background="@color/white"
-        android:layout_marginStart="77dp"/>
     <Space
         android:layout_width="match_parent"
         android:layout_height="12dp"/>

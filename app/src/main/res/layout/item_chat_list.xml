@@ -4,38 +4,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
-<<<<<<< Updated upstream
-=======
+
     android:paddingHorizontal="4dp"
 
->>>>>>> Stashed changes
-    >
+>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/user_photo"
-<<<<<<< Updated upstream
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="14dp"
-        app:civ_border_width="0.50dp"
-        android:src="@drawable/default_photo" />
-=======
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_marginTop="14dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/default_photo"
-        app:civ_border_width="0.50dp" />
->>>>>>> Stashed changes
+        app:civ_border_width="0.50dp"
+        android:src="@drawable/default_photo" />
 
     <LinearLayout
         android:id="@+id/userMenuChat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-<<<<<<< Updated upstream
-=======
         android:layout_centerVertical="true"
         android:layout_marginStart="8dp"
->>>>>>> Stashed changes
         android:layout_toEndOf="@id/user_photo"
         android:orientation="vertical">
 
@@ -45,15 +33,10 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/andlso"
             android:text="@string/user_name"
-<<<<<<< Updated upstream
             android:textColor="@android:color/white"
-            android:textSize="20dp"
+            android:textSize="18sp"
             android:layout_marginTop="10dp"
              />
-=======
-            android:textColor="@color/white"
-            android:textSize="18sp" />
->>>>>>> Stashed changes
 
         <TextView
             android:id="@+id/user_message"
@@ -61,16 +44,10 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/catamaran_thin"
             android:text="@string/last_message"
-<<<<<<< Updated upstream
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:textStyle="normal"
-            />
-=======
             android:textColor="@color/black"
             android:textSize="14sp"
-            android:textStyle="normal" />
->>>>>>> Stashed changes
+            android:textStyle="normal"
+            />
     </LinearLayout>
 
     <TextView
@@ -78,43 +55,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/userMenuChat"
-<<<<<<< Updated upstream
         android:layout_marginHorizontal="8dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="24dp"
-        android:text="@string/time"
-        android:textSize="15sp"
-        android:textColor="@color/white"/>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="1.5dp"
-        android:background="@color/white"
-        android:layout_marginStart="77dp"
-        android:layout_below="@id/userMenuChat"
-        android:layout_marginTop="4dp"/>
-=======
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="0dp"
-
         android:text="@string/time"
-        android:textColor="@color/white"
-        android:textSize="14sp" />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_below="@id/userMenuChat"
-        android:layout_marginStart="77dp"
-        android:layout_marginTop="6dp"
-        android:textColor="@color/white" />
-
->>>>>>> Stashed changes
+        android:textSize="14sp"
+        android:textColor="@color/white"/>
     <Space
         android:layout_width="match_parent"
-        android:layout_height="21dp"
+        android:layout_height="18dp"
         android:layout_below="@id/userMenuChat" />
 
 
