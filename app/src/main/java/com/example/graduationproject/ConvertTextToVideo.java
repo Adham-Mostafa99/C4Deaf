@@ -83,7 +83,7 @@ public class ConvertTextToVideo {
                 Log.d("Files", "Size: " + files.length);
                 for (File currentFile : files) {
                     Log.d("Files", "FileName:" + currentFile.getName());
-                    animationDrawable.addFrame(Drawable.createFromPath(currentFile.getPath()), 50);
+                    animationDrawable.addFrame(Drawable.createFromPath(currentFile.getPath()), 30);
                 }
             }
             converted.afterConverted(animationDrawable);

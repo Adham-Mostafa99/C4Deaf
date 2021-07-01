@@ -311,7 +311,6 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
 
             }
         } else if (requestCode == OPEN_CV_REQUEST_CODE) {
-            //TODO finsh wait
             if (resultCode == RESULT_OK) {
                 String stringMsg = null;
                 if (data != null) {
@@ -608,8 +607,6 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
 
     @Override
     public void onWordClick(int position) {
-        Toast.makeText(getApplicationContext(), "please wait", Toast.LENGTH_SHORT).show();
-
 
         if (!msg.get(position).getMessage().trim().isEmpty()) {
             Log.v(TAG, "message: " + msg.get(position).getMessage());
@@ -617,7 +614,7 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
             String[] msgStringArray = msg.get(position).getMessage().split(" ");
 
             dialog = new ProgressDialog(activity);
-            dialog.setMessage("Doing something, please wait.");
+            dialog.setMessage("Text being converted, please wait.");
             dialog.show();
             ConvertTextToVideo convertTextToVideo = new ConvertTextToVideo(msgStringArray);
             convertTextToVideo.convert(new ConvertTextToVideo.Converted() {
@@ -733,7 +730,7 @@ public class ChatPageDeaf extends AppCompatActivity implements DatabaseQueries.S
                 animationDrawable.stop();
                 popupWindow.dismiss();
             }
-        }, getTotalDuration(animationDrawable));
+        }, getTotalDuration(animationDrawable)+500);
     }
 
     public int getTotalDuration(AnimationDrawable animationDrawable) {
