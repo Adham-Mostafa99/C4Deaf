@@ -1,53 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_marginHorizontal="17.7dp">
+    android:layout_marginHorizontal="17.7dp"
+    android:paddingVertical="4dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/add_friend_item_photo"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/default_photo" />
+
+    <TextView
+        android:id="@+id/add_friend_display_name"
+        android:layout_width="98dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/add_friend_item_photo"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:src="@drawable/default_photo" />
+        android:layout_centerVertical="true"
+        android:layout_marginStart="4dp"
+        android:layout_toEndOf="@id/add_friend_item_photo"
+        android:text="user name"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/add_friend_display_name"
-            android:layout_width="98dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="15.8dp"
-            android:text="user name"
-            android:textSize="18sp"
-            android:textColor="@color/white" />
+    <Button
+        android:id="@+id/add_friend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/sign_in_button_backgroud"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/andlso"
+        android:paddingHorizontal="4dp"
+        android:text="Add Friend"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:visibility="invisible" />
 
-        <Button
-            android:id="@+id/add_friend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/sign_in_button_backgroud"
-            android:clickable="true"
-            android:focusable="true"
-            android:fontFamily="@font/andlso"
-            android:text="Add Friends"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            android:layout_marginVertical="16dp"
-            android:layout_marginStart="99dp"/>
-
-    </LinearLayout>
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="12dp"/>
+    <Button
+        android:id="@+id/cancel_friend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/cancel_request_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/andlso"
+        android:paddingHorizontal="4dp"
+        android:text="Cancel Request"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:visibility="invisible" />
 
 
-
-</LinearLayout>
+</RelativeLayout>

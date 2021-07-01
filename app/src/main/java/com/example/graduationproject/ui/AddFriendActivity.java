@@ -32,8 +32,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class AddFriendActivity extends AppCompatActivity implements AddFriendAdapter.OnItemClick
-        , DatabaseQueries.GetFriendByDisplayName, AddFriendAdapter.AddFriend, DatabaseQueries.SendAddRequest {
+public class AddFriendActivity extends AppCompatActivity implements AddFriendAdapter.OnItemClick,
+        DatabaseQueries.GetFriendByDisplayName, AddFriendAdapter.AddFriend,
+        DatabaseQueries.SendAddRequest, AddFriendAdapter.CancelFriend,
+        AddFriendAdapter.FriendOrNot {
 
     @BindView(R.id.display_name_search)
     EditText displayNameSearch;
@@ -82,7 +84,11 @@ public class AddFriendActivity extends AppCompatActivity implements AddFriendAda
 
 
     public void initAdapter() {
-        adapter = new AddFriendAdapter(this, friendsArrayList, this, this);
+        adapter = new AddFriendAdapter(this, friendsArrayList,
+                this,
+                this,
+                this,
+                this);
         searchedFriendRecycler.setLayoutManager(new LinearLayoutManager(this));
         searchedFriendRecycler.addItemDecoration(
                 new HorizontalDividerItemDecoration.Builder(this)
@@ -189,5 +195,29 @@ public class AddFriendActivity extends AppCompatActivity implements AddFriendAda
         friendGender.setText(friendInfo.getUserGender());
         friendState.setText(friendInfo.getUserState());
 
+    }
+
+    @Override
+    public void onCancelFriend(int position) {
+        String clickedFriendId = friendsArrayList.get(position).getUserId();
+        DatabaseQueries.cancelRequest(clickedFriendId);
+    }
+
+    @Override
+    public void friendOrNot(int position, Button add) {
+        String clickedFriendId = friendsArrayList.get(position).getUserId();
+
+        if (!clickedFriendId.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+            //check if he is in friends list
+            DatabaseQueries.checkClickedUserInFriendList(new DatabaseQueries.IsUserInFriendList() {
+                @Override
+                public void isUserInFriendList(boolean isFound) {
+                    if (!isFound) {
+                        add.setVisibility(View.VISIBLE);
+                    }
+
+                }
+            }, clickedFriendId);
+        }
     }
 }

@@ -23,12 +23,16 @@ public class AddFriendAdapter extends RecyclerView.Adapter<AddFriendAdapter.View
     ArrayList<UserPublicInfo> friendsArray;
     OnItemClick onItemClick;
     AddFriend onAddFriend;
+    CancelFriend cancelFriend;
+    FriendOrNot friendOrNot;
 
-    public AddFriendAdapter(Context context, ArrayList<UserPublicInfo> friendsArray, OnItemClick onItemClick, AddFriend onAcceptFriend) {
+    public AddFriendAdapter(Context context, ArrayList<UserPublicInfo> friendsArray, OnItemClick onItemClick, AddFriend onAcceptFriend, CancelFriend cancelFriend, FriendOrNot friendOrNot) {
         this.context = context;
         this.friendsArray = friendsArray;
         this.onItemClick = onItemClick;
         this.onAddFriend = onAcceptFriend;
+        this.cancelFriend = cancelFriend;
+        this.friendOrNot = friendOrNot;
     }
 
     @NonNull
@@ -54,11 +58,23 @@ public class AddFriendAdapter extends RecyclerView.Adapter<AddFriendAdapter.View
         //set friend display name
         holder.displayName.setText(currentFriend.getUserDisplayName());
 
-        //TODO change add friend to cancel after sent reqeust
+        friendOrNot.friendOrNot(position, holder.addFriend);
+
         holder.addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onAddFriend.onAddFriend(position);
+                holder.addFriend.setVisibility(View.INVISIBLE);
+                holder.cancelFriend.setVisibility(View.VISIBLE);
+            }
+        });
+
+        holder.cancelFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancelFriend.onCancelFriend(position);
+                holder.addFriend.setVisibility(View.VISIBLE);
+                holder.cancelFriend.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -74,6 +90,7 @@ public class AddFriendAdapter extends RecyclerView.Adapter<AddFriendAdapter.View
         private CircleImageView friendPhoto;
         private TextView displayName;
         private Button addFriend;
+        private Button cancelFriend;
 
         private OnItemClick onItemClick;
 
@@ -82,6 +99,7 @@ public class AddFriendAdapter extends RecyclerView.Adapter<AddFriendAdapter.View
             friendPhoto = itemView.findViewById(R.id.add_friend_item_photo);
             displayName = itemView.findViewById(R.id.add_friend_display_name);
             addFriend = itemView.findViewById(R.id.add_friend);
+            cancelFriend = itemView.findViewById(R.id.cancel_friend);
 
             this.onItemClick = onItemClick;
 
@@ -102,5 +120,12 @@ public class AddFriendAdapter extends RecyclerView.Adapter<AddFriendAdapter.View
         void onAddFriend(int position);
     }
 
+    public interface CancelFriend {
+        void onCancelFriend(int position);
+    }
+
+    public interface FriendOrNot {
+        void friendOrNot(int position, Button add);
+    }
 
 }

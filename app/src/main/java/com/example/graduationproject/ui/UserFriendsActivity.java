@@ -2,18 +2,18 @@ package com.example.graduationproject.ui;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,6 +51,8 @@ public class UserFriendsActivity extends AppCompatActivity implements SwipeRefre
 
     @BindView(R.id.fab_add_friend)
     FloatingActionButton addFriendButton;
+    @BindView(R.id.arrow_back)
+    ImageView backButton;
 
     private FirebaseUser currentUser;
     private ArrayList<UserPublicInfo> userFriends;
@@ -74,11 +76,17 @@ public class UserFriendsActivity extends AppCompatActivity implements SwipeRefre
             e.printStackTrace();
         }
 
-
         addFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), AddFriendActivity.class));
+            }
+        });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
 
@@ -127,13 +135,13 @@ public class UserFriendsActivity extends AppCompatActivity implements SwipeRefre
     @Override
     public void onItemClick(int position) {
         //open user
-        String friendDisplayName = userFriends.get(position).getUserDisplayName();
-        DatabaseQueries.getFriendByDisplayName(new DatabaseQueries.GetFriendByDisplayName() {
+        String friendId = userFriends.get(position).getUserId();
+        DatabaseQueries.getFriendInfo(new DatabaseQueries.GetFriendInfo() {
             @Override
-            public void afterGetFriendByDisplayName(UserPublicInfo friendInfo, int id) {
+            public void afterGetFriendInfo(UserPublicInfo friendInfo, int id) {
                 popWindowCreation(friendInfo);
             }
-        }, 0, friendDisplayName);
+        }, 0, friendId);
 
     }
 

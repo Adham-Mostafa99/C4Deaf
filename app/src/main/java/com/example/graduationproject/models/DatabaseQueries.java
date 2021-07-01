@@ -373,6 +373,30 @@ public class DatabaseQueries {
 
     }
 
+    public static void cancelRequest(String friendId) {
+        DatabaseQueries.checkIfFriendRequestIsInRequestList(new CheckIfFriendRequestIsInRequestList() {
+            @Override
+            public void afterCheckIfFriendRequestIsInRequestList(boolean isFound) {
+                if (isFound) {
+
+                    DatabaseReference myRefUser = FirebaseDatabase.getInstance()
+                            .getReference("users/" + currentUser().getUid() + "/" + REALTIME_ADD_FRIEND_REQUEST_LIST);
+                    myRefUser
+                            .child(friendId)
+                            .removeValue();
+
+                    DatabaseReference myRefFriend = FirebaseDatabase.getInstance()
+                            .getReference("users/" + friendId + "/" + REALTIME_FRIEND_REQUEST_LIST);
+
+                    myRefFriend
+                            .child(currentUser().getUid())
+                            .removeValue();
+
+                }
+            }
+        }, friendId);
+    }
+
     public static void checkIfFriendRequestIsInRequestList(CheckIfFriendRequestIsInRequestList check, String friendId) {
 
         DatabaseReference myRef = FirebaseDatabase.getInstance()
