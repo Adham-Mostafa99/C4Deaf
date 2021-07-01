@@ -9,12 +9,21 @@
     android:orientation="vertical"
     tools:context=".ui.ChatPageNormal">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/wallpaper" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bar_layout"
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_gravity="center_vertical"
         android:background="@drawable/toolbar">
+
 
         <ImageView
             android:id="@+id/arrow_back"
@@ -54,13 +63,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/bar_layout"
-        android:layout_centerHorizontal="true"
-        android:scaleType="centerCrop"
-        android:src="@drawable/wallpaper" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -75,11 +78,11 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_chat_normal"
-            android:focusable="true"
-            android:clickable="true"
-            android:foreground="?android:attr/selectableItemBackground"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground" />
 
     </LinearLayout>
 

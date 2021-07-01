@@ -9,6 +9,13 @@
     android:orientation="vertical"
     tools:context=".ui.ChatPageDeaf">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/wallpaper" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bar_layout"
         android:layout_width="match_parent"
@@ -56,13 +63,7 @@
 
 
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/bar_layout"
-        android:layout_centerHorizontal="true"
-        android:scaleType="centerCrop"
-        android:src="@drawable/wallpaper" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
