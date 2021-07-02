@@ -145,13 +145,6 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
                 currentType = FACEBOOK;
         }
 
-
-//        //upload photo form camera or gallery button
-//        signUpUploadImage.setOnClickListener(v -> {
-//            setCameraPermission();
-//            uploadProfileImage();
-//        });
-
         //define user birthDate
         signUpDateOfBirthDay.setOnClickListener(v -> {
             DatePickerFragment newFragment = new DatePickerFragment();
@@ -211,36 +204,32 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
             String currentGender = genderSelected;
             String currentState = stateSelected;
 
-
             //check validate of input user information
             if (isInputValid(firstName, lastName, email, pass, confirmPass)) {
 
                 //creating account for user using his mail and password
                 mAuth.createUserWithEmailAndPassword(email, pass)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    Log.d(TAG, "createUserWithEmail:success");
-                                    currentUser = mAuth.getCurrentUser();
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "createUserWithEmail:success");
+                                currentUser = mAuth.getCurrentUser();
 
-                                    UserPrivateInfo userPrivateInfo = new
-                                            UserPrivateInfo(email, pass, null, date);
-                                    UserPublicInfo userPublicInfo = new
-                                            UserPublicInfo(currentUser.getUid()
-                                            , firstName
-                                            , lastName
-                                            , firstName
-                                            , currentState
-                                            , currentGender
-                                            , null);
+                                UserPrivateInfo userPrivateInfo = new
+                                        UserPrivateInfo(email, pass, null, date);
+                                UserPublicInfo userPublicInfo = new
+                                        UserPublicInfo(currentUser.getUid()
+                                        , firstName
+                                        , lastName
+                                        , firstName
+                                        , currentState
+                                        , currentGender
+                                        , null);
 
-                                    //confirming the uer email and phone number
-                                    confirmEmailAndPhone(userPrivateInfo, userPublicInfo);
+                                //confirming the uer email and phone number
+                                confirmEmailAndPhone(userPrivateInfo, userPublicInfo);
 
-                                } else {
-                                    Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                }
+                            } else {
+                                Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
             }
@@ -479,38 +468,6 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         signUpSpinnerGender.setSelection(0);
     }
 
-//    //upload image from camera or gallery
-//    public void uploadProfileImage() {
-//        final String[] items = {"Take Photo", "Choose From Gallery", "Cancel"};
-//        AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
-//        builder.setTitle("Add Photo");
-//        builder.setItems(items, new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int i) {
-//                switch (items[i]) {
-//                    case "Take Photo":
-//                        userChosenPhoto = "Take Photo";
-//                        //camera Intent
-//                        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//                        startActivityForResult(cameraIntent, 100);
-//                        break;
-//                    case "Choose From Gallery":
-//                        userChosenPhoto = "Choose From Gallery";
-//                        //gallery Intent
-//                        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-//                        startActivityForResult(galleryIntent, 100);
-//                        break;
-//                    case "Cancel":
-//                        dialog.dismiss();
-//                        break;
-//                    default:
-//                        break;
-//                }
-//            }
-//        });
-//        builder.create().show();
-//    }
-
     @Override
     public void finish(List<Integer> dateTime) {
         //get BirthDate from DatePickerFragment
@@ -530,59 +487,6 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         date.setTextColor(Color.RED);
         date.setText("Empty Data");
     }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        switch (userChosenPhoto) {
-//            case "Take Photo":
-//                if (requestCode == 100 && resultCode == RESULT_OK) {
-//                    // get capture Image
-//                    Bitmap captureImage = (Bitmap) data.getExtras().get("data");
-//                    //set user photo uri
-//                    Uri captureImageUri = getImageUri(this, captureImage);
-//                    userPhotoPath = getRealPathFromURI(captureImageUri);
-//                    // set capture Image to ImageView
-//                    signUpProfileImage.setImageBitmap(captureImage);
-//                }
-//                break;
-//            case "Choose From Gallery":
-//                if (requestCode == 100 && resultCode == RESULT_OK) {
-//                    // get capture Image
-//                    Uri uri = data.getData();
-//                    //set user photo uri
-//                    userPhotoPath = getRealPathFromURI(uri);
-//                    // set capture Image to profileImage
-//                    signUpProfileImage.setImageURI(uri);
-//                }
-//                break;
-//        }
-//    }
-//
-//    //get uri from bitmap image
-//    public Uri getImageUri(@NonNull Context inContext, Bitmap inImage) {
-//        Bitmap OutImage = Bitmap.createScaledBitmap(inImage, 1000, 1000, true);
-//        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), OutImage, "CapturedImage", null);
-//        return Uri.parse(path);
-//    }
-
-//    //get full path from uri
-//    public String getRealPathFromURI(Uri uri) {
-//        String result = null;
-//        String[] proj = {MediaStore.Images.Media.DATA};
-//        Cursor cursor = this.getContentResolver().query(uri, proj, null, null, null);
-//        if (cursor != null) {
-//            if (cursor.moveToFirst()) {
-//                int column_index = cursor.getColumnIndexOrThrow(proj[0]);
-//                result = cursor.getString(column_index);
-//            }
-//            cursor.close();
-//        }
-//        if (result == null) {
-//            result = "Not found";
-//        }
-//        return result;
-//    }
 
     @Override
     public void onBackPressed() {

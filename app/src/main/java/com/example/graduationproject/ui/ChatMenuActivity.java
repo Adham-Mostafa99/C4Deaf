@@ -113,34 +113,31 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
 
         initProfile();
         //when click in item on menu in navigation drawer
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.user_friends:
-                        Toast.makeText(getApplicationContext(), "friends", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(getApplicationContext(), UserFriendsActivity.class));
-                        break;
-                    case R.id.user_friends_requests:
-                        startActivity(new Intent(getApplicationContext(), FriendsRequestsActivity.class));
-                        break;
-                    case R.id.sent_requests:
-                        startActivity(new Intent(getApplicationContext(), SentRequestsActivity.class));
-                        break;
-                    case R.id.account_setting:
-                        startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
-                        break;
-                    case R.id.about:
-                        startActivity(new Intent(getApplicationContext(), AboutActivity.class));
-                        break;
-                    case R.id.sign_out:
-                        signOut();
-                        finish();
-                        startActivity(new Intent(getApplicationContext(), SignInActivity.class));
-                        break;
-                }
-                return true;
+        navigationView.setNavigationItemSelectedListener(menuItem -> {
+            switch (menuItem.getItemId()) {
+                case R.id.user_friends:
+                    Toast.makeText(getApplicationContext(), "friends", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getApplicationContext(), UserFriendsActivity.class));
+                    break;
+                case R.id.user_friends_requests:
+                    startActivity(new Intent(getApplicationContext(), FriendsRequestsActivity.class));
+                    break;
+                case R.id.sent_requests:
+                    startActivity(new Intent(getApplicationContext(), SentRequestsActivity.class));
+                    break;
+                case R.id.account_setting:
+                    startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+                    break;
+                case R.id.about:
+                    startActivity(new Intent(getApplicationContext(), AboutActivity.class));
+                    break;
+                case R.id.sign_out:
+                    signOut();
+                    finish();
+                    startActivity(new Intent(getApplicationContext(), SignInActivity.class));
+                    break;
             }
+            return true;
         });
 
         //when click on menu button
@@ -245,9 +242,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     public void initializeFirebase() {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-//        db = FirebaseFirestore.getInstance();
-//        database = FirebaseDatabase.getInstance();
-//        myRef = database.getReference("users/" + currentUser.getUid() + "/menu-chat");
+
     }
 
     /**
@@ -285,11 +280,6 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         adapter.notifyDataSetChanged();
     }
 
-//    public void insertChatToAdapter(UserMenuChat userMenuChat) {
-//        userFriends.add(userMenuChat);
-//        int lastItem = userFriends.size() - 1;
-//        adapter.notifyItemInserted(lastItem);
-//    }
 
     public void setFriendsToAdapter(@NonNull DataSnapshot dataSnapshot) {
         ArrayList<UserMenuChat> menuChatArrayList = new ArrayList<>();
@@ -306,34 +296,29 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         ArrayList<UserMenuChat> menuChatArrayList = new ArrayList<>();
         for (UserMenuChat user : users) {
             if (user != null) {
-                DatabaseQueries.getFriendInfo(new DatabaseQueries.GetFriendInfo() {
-                    @Override
-                    public void afterGetFriendInfo(UserPublicInfo friendInfo, int id) {
-                        if (friendInfo != null) {
-                            user.setUserPhotoUrl(friendInfo.getUserPhotoPath());
-                            user.setUserName(friendInfo.getUserDisplayName());
-                            menuChatArrayList.add(user);
-                            updateFriendMenuChat(user);
-                            if (menuChatArrayList.size() == users.size())
-                                refreshAdapter(menuChatArrayList);
-                        } else {
-                            menuChatArrayList.remove(user);
+                DatabaseQueries.getFriendInfo((friendInfo, id) -> {
+                    if (friendInfo != null) {
+                        user.setUserPhotoUrl(friendInfo.getUserPhotoPath());
+                        user.setUserName(friendInfo.getUserDisplayName());
+                        menuChatArrayList.add(user);
+                        updateFriendMenuChat(user);
+                        if (menuChatArrayList.size() == users.size())
                             refreshAdapter(menuChatArrayList);
-                            DatabaseReference myRefMenuChat = FirebaseDatabase.getInstance().
-                                    getReference("users/" + currentUser.getUid());
+                    } else {
+                        menuChatArrayList.remove(user);
+                        refreshAdapter(menuChatArrayList);
+                        DatabaseReference myRefMenuChat = FirebaseDatabase.getInstance().
+                                getReference("users/" + currentUser.getUid());
 
-                            myRefMenuChat
-                                    .child("menu-chat")
-                                    .child(user.getUserId())
-                                    .removeValue();
-                            menuChatArrayList.remove(user);
-
-                        }
+                        myRefMenuChat
+                                .child("menu-chat")
+                                .child(user.getUserId())
+                                .removeValue();
+                        menuChatArrayList.remove(user);
                     }
                 }, 0, user.getUserId());
             }
         }
-
     }
 
     public void updateFriendMenuChat(UserMenuChat userMenuChat) {
@@ -430,8 +415,6 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
     public void popWindowCreation() {
         View popupView = LayoutInflater.from(this).inflate(R.layout.new_msg_pop_window, null);
 
-        //TODO make pop ex.. 300*200
-
         // create the popup window
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
@@ -457,7 +440,6 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
                         .build());
 
         DatabaseQueries.getUserFriends(this, DB_GET_USER_FRIENDS_ID);
-
     }
 
     public void popSearchWindowCreation(ArrayList<String> friends) {

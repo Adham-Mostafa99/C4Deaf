@@ -190,20 +190,6 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
                     sendRecordAudio(fileName, time);
                 else {
                     voiceRecognize.stopRecognize();
-//                    ConvertSpeechToText convertSpeechToText = new ConvertSpeechToText(getApplicationContext(), fileName);
-//                    try {
-//                        convertSpeechToText.convert(new ConvertSpeechToText.OnConvert() {
-//                            @Override
-//                            public void afterConvert(String msgText) {
-//                                sendTextMsg(msgText, getTimeNow());
-//                            }
-//                        });
-//                    } catch (FileNotFoundException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    //convert record to video
-//                    Toast.makeText(getApplicationContext(), "will be converted", Toast.LENGTH_SHORT).show();
                 }
 
             }
