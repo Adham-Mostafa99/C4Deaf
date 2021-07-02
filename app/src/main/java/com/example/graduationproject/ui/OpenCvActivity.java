@@ -14,7 +14,7 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.graduationproject.HandRecognition;
+import com.example.graduationproject.video_to_text.HandRecognition;
 import com.example.graduationproject.R;
 
 import org.opencv.android.BaseLoaderCallback;

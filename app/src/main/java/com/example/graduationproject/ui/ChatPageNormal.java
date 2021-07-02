@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,7 +26,7 @@ import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
 import com.example.graduationproject.R;
-import com.example.graduationproject.VoiceRecognize;
+import com.example.graduationproject.speech_to_text.VoiceRecognize;
 import com.example.graduationproject.adapters.NormalMessageAdapter;
 import com.example.graduationproject.models.DatabaseQueries;
 import com.example.graduationproject.models.NormalChat;
@@ -150,14 +149,14 @@ public class ChatPageNormal extends AppCompatActivity implements DatabaseQueries
             public void onStart() {
                 //Start Recording..
 
-                if (friendInfo.getUserState().equals("Normal")) {
+                if (friendInfo.getUserState().equals("normal")) {
                     // Record to the external cache directory for visibility
                     fileName = getExternalCacheDir().getAbsolutePath();
                     fileName += "/" + UUID.randomUUID().toString() + ".m4a";
                     startRecording(fileName);
                     hideInputText(editTextSend);
                     Log.d("RecordView", "onStart");
-                } else {
+                } else if(friendInfo.getUserState().equals("deaf")) {
                     hideInputText(editTextSend);
                     voiceRecognize = new VoiceRecognize(getApplicationContext(), new VoiceRecognize.Result() {
                         @Override

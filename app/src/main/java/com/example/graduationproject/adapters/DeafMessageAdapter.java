@@ -1,27 +1,16 @@
 package com.example.graduationproject.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Handler;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.MediaController;
-import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.graduationproject.ConvertTextToVideo;
 import com.example.graduationproject.R;
 import com.example.graduationproject.models.DeafChat;
 import com.google.firebase.auth.FirebaseAuth;

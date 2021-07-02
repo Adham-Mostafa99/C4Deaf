@@ -21,7 +21,6 @@ import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
@@ -31,7 +30,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.graduationproject.ConvertTextToVideo;
+import com.example.graduationproject.text_to_video.ConvertTextToVideo;
 import com.example.graduationproject.sign_language.ConvertIconToText;
 import com.example.graduationproject.sign_language.KeyboardManager;
 import com.example.graduationproject.R;

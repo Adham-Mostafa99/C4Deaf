@@ -1,4 +1,4 @@
-package com.example.graduationproject;
+package com.example.graduationproject.video_to_text;
 
 import android.app.Activity;
 import android.content.Context;

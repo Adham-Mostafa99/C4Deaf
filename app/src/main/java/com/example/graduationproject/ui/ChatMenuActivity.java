@@ -445,6 +445,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         noFriendsTextMsg = popupView.findViewById(R.id.no_friends_to_show_text_view);
         newMsgFriendList = popupView.findViewById(R.id.new_msg_friends_list);
         newMsgFriends = new ArrayList<>();
+
         newChatAdapter = new UserFriendsAdapter(this, newMsgFriends, this);
 
         newMsgFriendList.setAdapter(newChatAdapter);
@@ -477,6 +478,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
         noFriendsTextMsg = popupView.findViewById(R.id.no_friends_to_show_text_view);
         newMsgFriendList = popupView.findViewById(R.id.new_msg_friends_list);
         newMsgFriends = new ArrayList<>();
+
         newChatAdapter = new UserFriendsAdapter(this, newMsgFriends, this);
 
         newMsgFriendList.setAdapter(newChatAdapter);

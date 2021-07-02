@@ -1,4 +1,4 @@
-package com.example.graduationproject;
+package com.example.graduationproject.speech_to_text;
 
 import android.content.Context;
 import android.content.Intent;

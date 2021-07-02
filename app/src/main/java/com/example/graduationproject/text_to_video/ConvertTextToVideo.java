@@ -1,4 +1,4 @@
-package com.example.graduationproject;
+package com.example.graduationproject.text_to_video;
 
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
