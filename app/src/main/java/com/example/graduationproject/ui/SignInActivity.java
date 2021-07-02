@@ -52,6 +52,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class SignInActivity extends AppCompatActivity {
 
     public static final int RC_SIGN_IN = 10;
+    public static final int FACEBOOK = 2;
+    public static final int GOOGLE = 3;
+    public static final String TYPE = "type";
+
     public static final String TAG = "SignInActivity";
 
     @BindView(R.id.sign_in_button)
@@ -94,82 +98,54 @@ public class SignInActivity extends AppCompatActivity {
 
         mCallbackManager = CallbackManager.Factory.create();
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        backButton.setOnClickListener(v -> onBackPressed());
 
         //sign in by email and password
-        signIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = getEmail();
-                String pass = getPassword();
+        signIn.setOnClickListener(v -> {
+            String email = getEmail();
+            String pass = getPassword();
 
-                //check validate of email and password
-                if (isInputValid(email, pass)) {
-                    mAuth.signInWithEmailAndPassword(email, pass)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        //get instance from current user
-                                        currentUser = mAuth.getCurrentUser();
-                                        signInToChat(currentUser);
-                                    } else {
-                                        Toast.makeText(getApplicationContext()
-                                                , task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                }
+            //check validate of email and password
+            if (isInputValid(email, pass)) {
+                mAuth.signInWithEmailAndPassword(email, pass)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                //get instance from current user
+                                currentUser = mAuth.getCurrentUser();
+                                signInToChat(currentUser);
+                            } else {
+                                Toast.makeText(getApplicationContext()
+                                        , task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
         });
 
         //forgetting password
-        signInForgotPass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), RestUserPasswordActivity.class));
-            }
+        signInForgotPass.setOnClickListener(v -> {
+            startActivity(new Intent(getApplicationContext(), RestUserPasswordActivity.class));
         });
 
-        signInByGoogleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getString(R.string.default_web_client_id))
-                        .requestEmail()
-                        .build();
-                GoogleSignIn.getClient(getApplicationContext(), gso).signOut();
-                googleSignIn();
-            }
+        signInByGoogleButton.setOnClickListener(v -> {
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+            GoogleSignIn.getClient(getApplicationContext(), gso).signOut();
+            googleSignIn();
         });
 
-        signInByFacebookButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                facebookLogin();
-            }
+        signInByFacebookButton.setOnClickListener(v -> {
+            facebookLogin();
         });
 
-        signInByTwitterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
+        signInByTwitterButton.setOnClickListener(v -> {
+            //TODO will add feature
         });
 
         //not have an account and want to create one
-        signInCreateAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), SignUpActivity.class)
-                        .putExtra(SignUpActivity.COMPLETE_USER_INFO_INTENT_EXTRA, new CompleteInfo()));
-            }
-        });
+        signInCreateAccount.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), SignUpActivity.class)
+                .putExtra(SignUpActivity.COMPLETE_USER_INFO_INTENT_EXTRA, new CompleteInfo())));
     }
 
     public String getEmail() {
@@ -308,7 +284,13 @@ public class SignInActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             assert user != null;
-                            completeUserInformation(user);
+
+                            finish();
+                            startActivity(new Intent(getApplicationContext(), SignUpActivity.class)
+                                    .putExtra(SignUpActivity.COMPLETE_USER_INFO_INTENT_EXTRA
+                                            , new CompleteInfo(user.getUid(), user.getEmail(), user.getDisplayName()
+                                                    , user.getPhotoUrl().toString(), user.getPhoneNumber()))
+                                    .putExtra(TYPE, GOOGLE));
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -320,66 +302,6 @@ public class SignInActivity extends AppCompatActivity {
                 });
     }
 
-    public void completeUserInformation(@NonNull FirebaseUser user) {
-        progressBar.setVisibility(View.VISIBLE);
-        String userId = user.getUid();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference
-                .child("users ids")
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-                    @Override
-                    public void onSuccess(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            String id = snapshot.getValue(String.class);
-                            if (id != null && id.equals(userId)) {
-                                progressBar.setVisibility(View.GONE);
-                                finish();
-                                startActivity(new Intent(getApplicationContext(), ChatMenuActivity.class)
-                                        .putExtra(ChatMenuActivity.FRIEND_ID_INTENT_EXTRA, user.getUid()));
-                            }
-                        }
-                        finish();
-                        startActivity(new Intent(getApplicationContext(), SignUpActivity.class)
-                                .putExtra(SignUpActivity.COMPLETE_USER_INFO_INTENT_EXTRA
-                                        , new CompleteInfo(user.getUid(), user.getEmail(), user.getDisplayName()
-                                                , user.getPhotoUrl().toString(), user.getPhoneNumber())));
-
-//                        ProgressDialog progressDialog = new ProgressDialog(getApplicationContext());
-//                        progressDialog.setMessage("please wait");
-//                        progressDialog.show();
-
-//                        HashMap<String, String> userId = new HashMap<>();
-//                        userId.put(user.getUid(), user.getUid());
-//                        databaseReference
-//                                .child("users ids")
-//                                .setValue(userId)
-//                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                    @Override
-//                                    public void onSuccess(Void aVoid) {
-////                                        progressDialog.dismiss();
-//                                        startActivity(new Intent(getApplicationContext(), SignUpActivity.class)
-//                                                .putExtra(SignUpActivity.COMPLETE_USER_INFO_INTENT_EXTRA
-//                                                        , new CompleteInfo(user.getUid(), user.getEmail(), user.getDisplayName()
-//                                                                , user.getPhotoUrl().toString(), user.getPhoneNumber())));
-//                                    }
-//                                });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.v(TAG, "message::::" + e.getMessage());
-                        finish();
-                        startActivity(new Intent(getApplicationContext(), SignUpActivity.class)
-                                .putExtra(SignUpActivity.COMPLETE_USER_INFO_INTENT_EXTRA
-                                        , new CompleteInfo(user.getUid(), user.getEmail(), user.getDisplayName()
-                                                , user.getPhotoUrl().toString(), user.getPhoneNumber())));
-                    }
-                });
-
-
-    }
 
     public void facebookLogin() {
         LoginButton loginButton = new LoginButton(this);
@@ -417,7 +339,14 @@ public class SignInActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             assert user != null;
-                            completeUserInformation(user);
+
+                            finish();
+                            startActivity(new Intent(getApplicationContext(), SignUpActivity.class)
+                                    .putExtra(SignUpActivity.COMPLETE_USER_INFO_INTENT_EXTRA
+                                            , new CompleteInfo(user.getUid(), user.getEmail(), user.getDisplayName()
+                                                    , user.getPhotoUrl().toString(), user.getPhoneNumber()))
+                                    .putExtra(TYPE, FACEBOOK));
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());

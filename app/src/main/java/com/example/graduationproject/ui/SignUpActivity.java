@@ -1,9 +1,11 @@
 package com.example.graduationproject.ui;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
@@ -30,20 +32,33 @@ import com.example.graduationproject.models.CompleteInfo;
 import com.example.graduationproject.models.SpinnerModel;
 import com.example.graduationproject.models.UserPrivateInfo;
 import com.example.graduationproject.models.UserPublicInfo;
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +67,11 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SignUpActivity extends AppCompatActivity implements DatePickerFragment.OnFinish {
+
+    public static final int FACEBOOK = 2;
+    public static final int GOOGLE = 3;
+    public static final String TYPE = "type";
+
 
     @BindView(R.id.sign_up_edit_first_name)
     EditText signUpEditFirstName;
@@ -96,6 +116,7 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
+    private int currentType;
     @BindView(R.id.btn_arrow_back)
     CircleImageView backButton;
 
@@ -109,17 +130,19 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         initializeFirebase();
         hideSystemUI();
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        backButton.setOnClickListener(v -> onBackPressed());
 
         CompleteInfo completeInfo = getIntent().getParcelableExtra(COMPLETE_USER_INFO_INTENT_EXTRA);
+
         assert completeInfo != null;
         if (completeInfo.getUserEmail() != null) {
             setCompleteInfo(completeInfo);
+
+            int t = getIntent().getIntExtra(TYPE, 0);
+            if (t == GOOGLE)
+                currentType = GOOGLE;
+            else
+                currentType = FACEBOOK;
         }
 
 
@@ -247,9 +270,79 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         signUpEditEmail.getEditText().setInputType(InputType.TYPE_NULL);
 
 
-//        Glide.with(this)
-//                .load(completeInfo.getUserPhotoUrl())
-//                .into(signUpProfileImage);
+        GetToken getToken = new GetToken(this);
+        getToken.execute();
+
+
+    }
+
+    public class GetToken extends AsyncTask<Void, Void, String> {
+
+        private final Context context;
+
+        public GetToken(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            if (currentType == GOOGLE) {
+                try {
+                    String scope = "oauth2:" + Scopes.EMAIL + " " + Scopes.PROFILE;
+                    GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(context);
+                    return GoogleAuthUtil.getToken(context, account.getAccount(), scope, new Bundle());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (GoogleAuthException e) {
+                    e.printStackTrace();
+                }
+
+            } else if (currentType == FACEBOOK) {
+                return getFacebookTokenId();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            deleteAccount(s);
+        }
+    }
+
+    public void deleteAccount(String token) {
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        AuthCredential credential = null;
+        if (currentType == FACEBOOK)
+            credential = FacebookAuthProvider.getCredential(token);
+        else if (currentType == GOOGLE)
+            credential = GoogleAuthProvider.getCredential(token, null);
+        if (credential != null) {
+            // Prompt the user to re-provide their sign-in credentials
+            user.reauthenticate(credential)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            user.delete()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "User account deleted.");
+                                            }
+                                        }
+                                    });
+
+                        }
+                    });
+        }
+    }
+
+    public String getFacebookTokenId() {
+        if (AccessToken.getCurrentAccessToken() != null) {
+            return AccessToken.getCurrentAccessToken().getToken();
+        }
+        return null;
     }
 
     public String[] extractUserName(@NonNull String name) {
