@@ -301,7 +301,7 @@ public class ChatMenuActivity extends AppCompatActivity implements ChatListAdapt
                         user.setUserPhotoUrl(friendInfo.getUserPhotoPath());
                         user.setUserName(friendInfo.getUserDisplayName());
                         menuChatArrayList.add(user);
-                        updateFriendMenuChat(user);
+//                        updateFriendMenuChat(user);
                         if (menuChatArrayList.size() == users.size())
                             refreshAdapter(menuChatArrayList);
                     } else {
